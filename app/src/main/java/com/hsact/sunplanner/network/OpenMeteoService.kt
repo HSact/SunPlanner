@@ -1,4 +1,6 @@
-package com.hsact.sunplanner
+package com.hsact.sunplanner.network
+
+import com.hsact.sunplanner.data.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

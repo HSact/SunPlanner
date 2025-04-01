@@ -1,4 +1,4 @@
-package com.hsact.sunplanner
+package com.hsact.sunplanner.data
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
