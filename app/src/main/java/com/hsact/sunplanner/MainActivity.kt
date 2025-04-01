@@ -30,7 +30,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        viewModel.fetchWeather()
+        val cityName = "Moscow"
+        val startDate = "2024-01-01"
+        val endDate = "2024-01-02"
+        viewModel.fetchWeatherByCity(cityName, startDate, endDate)
     }
 }
 

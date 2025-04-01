@@ -7,20 +7,33 @@ import com.hsact.sunplanner.network.RetrofitInstance
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    private val repository = WeatherRepository(RetrofitInstance.api)
+    private val repository = WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
-    fun fetchWeather() {
+    fun fetchWeather(latitude: Double, longitude: Double, startDate: String, endDate: String) {
         viewModelScope.launch {
             try {
                 val response = repository.getWeather(
-                    latitude = 55.7522,
-                    longitude = 37.6156,
-                    startDate = "2024-01-01",
-                    endDate = "2024-01-02"
+                    latitude = latitude,
+                    longitude = longitude,
+                    startDate = startDate,
+                    endDate = endDate
                 )
                 println(response)
             } catch (e: Exception) {
                 println("Ошибка: ${e.message}")
+            }
+        }
+    }
+    fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
+        viewModelScope.launch {
+            val location = repository.getCoordinatesByCity(
+                cityName = cityName
+            )
+            if (location != null) {
+                fetchWeather(location.latitude, location.longitude, startDate, endDate)
+            } else {
+                //_uiState.value = "Город не найден"
+                println("Ошибка geo")
             }
         }
     }
