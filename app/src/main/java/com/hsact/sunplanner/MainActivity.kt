@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,9 +24,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             SunPlannerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
+                    MainScreen(
                         name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding).padding(10.dp)
                     )
                 }
             }
@@ -33,19 +34,19 @@ class MainActivity : ComponentActivity() {
         val cityName = "Moscow"
         val startDate = "2024-01-01"
         val endDate = "2024-01-02"
-        viewModel.fetchWeatherByCity(cityName, startDate, endDate)
+        //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
+fun MainScreen(name: String, modifier: Modifier = Modifier) {
     Text(text = "Hello $name!", modifier = modifier)
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainScreenPreview() {
     SunPlannerTheme {
-        Greeting("Android")
+        MainScreen("Android")
     }
 }
