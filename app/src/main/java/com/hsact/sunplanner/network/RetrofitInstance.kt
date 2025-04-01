@@ -1,6 +1,5 @@
 package com.hsact.sunplanner.network
 
-import com.hsact.sunplanner.network.OpenMeteoService
 import com.squareup.moshi.Moshi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
