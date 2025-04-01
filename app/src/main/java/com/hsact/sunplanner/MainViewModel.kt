@@ -9,7 +9,20 @@ import kotlinx.coroutines.launch
 class MainViewModel : ViewModel() {
     private val repository = WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
-    fun fetchWeather(latitude: Double, longitude: Double, startDate: String, endDate: String) {
+    fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
+        viewModelScope.launch {
+            val location = repository.getCoordinatesByCity(
+                cityName = cityName
+            )
+            if (location != null) {
+                fetchWeather(location.latitude, location.longitude, startDate, endDate)
+            } else {
+                //_uiState.value = "Город не найден"
+                println("Ошибка geo")
+            }
+        }
+    }
+    private fun fetchWeather(latitude: Double, longitude: Double, startDate: String, endDate: String) {
         viewModelScope.launch {
             try {
                 val response = repository.getWeather(
@@ -21,19 +34,6 @@ class MainViewModel : ViewModel() {
                 println(response)
             } catch (e: Exception) {
                 println("Ошибка: ${e.message}")
-            }
-        }
-    }
-    fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
-        viewModelScope.launch {
-            val location = repository.getCoordinatesByCity(
-                cityName = cityName
-            )
-            if (location != null) {
-                fetchWeather(location.latitude, location.longitude, startDate, endDate)
-            } else {
-                //_uiState.value = "Город не найден"
-                println("Ошибка geo")
             }
         }
     }
