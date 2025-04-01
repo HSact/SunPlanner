@@ -1,10 +1,10 @@
 package com.hsact.sunplanner
 
-import OpenMeteoService
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -13,14 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
-import com.squareup.moshi.Moshi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 
 class MainActivity : ComponentActivity() {
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -34,22 +30,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        val moshi = Moshi.Builder().build()
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://api.open-meteo.com/")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-        val service: OpenMeteoService = retrofit.create(OpenMeteoService::class.java)
-        fetchWeather(service)
+        viewModel.fetchWeather()
     }
 }
+
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
+    Text(text = "Hello $name!", modifier = modifier)
 }
 
 @Preview(showBackground = true)
@@ -57,23 +44,5 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     SunPlannerTheme {
         Greeting("Android")
-    }
-}
-
-fun fetchWeather(service: OpenMeteoService) {
-    CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val response = service.getHistoricalWeather(
-                latitude = 55.7522,
-                longitude = 37.6156,
-                startDate = "2024-01-01",
-                endDate = "2024-01-02",
-                daily = "temperature_2m_max,temperature_2m_min",
-                timezone = "auto"
-            )
-            println(response)
-        } catch (e: Exception) {
-            println("Ошибка: ${e.message}")
-        }
     }
 }

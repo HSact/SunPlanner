@@ -1,9 +1,9 @@
-import com.hsact.sunplanner.WeatherResponse
+package com.hsact.sunplanner
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface OpenMeteoService {
-    @GET("v1/forecast")
+    @GET("v1/archive")
     suspend fun getHistoricalWeather(
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
