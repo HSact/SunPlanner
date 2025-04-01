@@ -66,9 +66,10 @@ fun fetchWeather(service: OpenMeteoService) {
             val response = service.getHistoricalWeather(
                 latitude = 55.7522,
                 longitude = 37.6156,
-                startDate = "2010-01-01",
-                endDate = "2019-12-31",
-                hourly = "temperature_2m"
+                startDate = "2024-01-01",
+                endDate = "2024-01-02",
+                daily = "temperature_2m_max,temperature_2m_min",
+                timezone = "auto"
             )
             println(response)
         } catch (e: Exception) {

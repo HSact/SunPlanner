@@ -7,10 +7,12 @@ import com.squareup.moshi.JsonClass
 data class WeatherResponse (
     val latitude: Double,
     val longitude: Double,
+    val daily: DailyWeather
 )
 
 @JsonClass(generateAdapter = true)
-data class Hourly(
+data class DailyWeather(
     val time: List<String>,
-    @Json(name = "temperature_2m") val temperature2m: List<Double>
+    @Json(name = "temperature_2m_max") val maxTemperature: List<Double>,
+    @Json(name = "temperature_2m_min") val minTemperature: List<Double>
 )
