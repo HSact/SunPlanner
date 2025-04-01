@@ -1,14 +1,16 @@
 package com.hsact.sunplanner.data
 
-import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
+@JsonClass(generateAdapter = true)
 data class LocationResponse(
-    @Json(name = "results") val results: List<Location>?
+    val results: List<Location>?
 )
 
+@JsonClass(generateAdapter = true)
 data class Location(
-    @Json(name = "name") val name: String,
-    @Json(name = "latitude") val latitude: Double,
-    @Json(name = "longitude") val longitude: Double,
-    @Json(name = "country") val country: String?
+    val name: String,
+    val latitude: Double,
+    val longitude: Double,
+    val country: String?
 )

@@ -12,6 +12,7 @@ class WeatherRepository(private val service: OpenMeteoService, private val geolo
             val response = geolocationService.getCityCoordinates(cityName)
             response.results?.firstOrNull()  // Берём первый результат, если есть
         } catch (e: Exception) {
+            println("Ошибка при получении координат: ${e.message}")
             null  // Ошибку пока просто игнорируем
         }
     }
