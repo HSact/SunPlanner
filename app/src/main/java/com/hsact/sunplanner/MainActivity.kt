@@ -1,5 +1,6 @@
 package com.hsact.sunplanner
 
+import android.R.attr.onClick
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,12 +17,18 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,6 +42,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -58,7 +68,7 @@ class MainActivity : ComponentActivity() {
         val startDate = "2024-01-01"
         val endDate = "2024-01-02"
         //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
-        viewModel.fetchCityList(cityName)
+        //viewModel.fetchCityList(cityName)
     }
 }
 
@@ -68,20 +78,14 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     var years by remember { mutableIntStateOf(1) }
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
-    val cityList by viewModel.citiesList.collectAsState()
+    val searchDataUI by viewModel.searchDataUI.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
     ) {
         Row {
-            OutlinedTextField(
-                modifier = Modifier
-                    .weight(0.7f),
-                value = cityName,
-                onValueChange = { cityName = it },
-                label = { Text("City") }
-            )
-            YearsPicker(years = years, onYearsChange = { years = it })
+            SearchCityBar()
         }
         Row(
             modifier = Modifier
@@ -121,23 +125,51 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
         )
         {
             CityList(viewModel)
-            /*if (cityList.isNotEmpty()) {
-                LazyColumn {
-                    items(cityList.size) { index ->
-                        Text(text = cityList[index].name, modifier = Modifier.padding(8.dp))
-                    }
-                }
-            }
-            else {
-               Text("No cities available.", modifier = Modifier.padding(8.dp))
-           }*/
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchCityBar() {
+    var isSearchExpanded by remember { mutableStateOf(false) }
+    var query by remember { mutableStateOf("") }
+    val searchBarShape: Shape = MaterialTheme.shapes.extraLarge
+
+    SearchBar(
+        inputField = {
+            TextField(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier.fillMaxWidth(),
+                shape = searchBarShape,
+                placeholder = { Text("City/Town") },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Search,
+                        contentDescription = "Search")
+                },
+                colors = TextFieldDefaults.colors(
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent)
+            )
+        },
+        expanded = isSearchExpanded,
+        onExpandedChange = { isSearchExpanded = it },
+        modifier = Modifier,
+        shape = searchBarShape,
+        colors = SearchBarDefaults.colors(),
+        tonalElevation = 6.dp,
+        shadowElevation = 4.dp
+    ) {
+        Column {
+            CityList(viewModel = MainViewModel())
         }
     }
 }
 
 @Composable
 fun CityList(viewModel: MainViewModel) {
-    val cityList by viewModel.citiesList.collectAsState()
+    val cityList by viewModel.searchDataUI.collectAsState()
     if (cityList.isNotEmpty()) {
         LazyColumn {
             items(cityList.size) { index ->
