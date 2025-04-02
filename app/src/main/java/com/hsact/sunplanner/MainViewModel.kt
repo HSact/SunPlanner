@@ -12,8 +12,8 @@ import kotlinx.coroutines.launch
 class MainViewModel : ViewModel() {
     private val repository = WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
-    private val _searchDataUI = MutableStateFlow<List<Location>>(emptyList())
-    val searchDataUI: StateFlow<List<Location>> get() = _searchDataUI
+    private val _searchDataUI = MutableStateFlow(MainUIData())
+    val searchDataUI: StateFlow<MainUIData> get() = _searchDataUI
 
     fun fetchCityList(cityName: String): List<Location>? {
         var cities: List<Location>? = null
@@ -22,7 +22,7 @@ class MainViewModel : ViewModel() {
                 cityName = cityName
             )
             if (cities != null) {
-                _searchDataUI.value = cities!!
+                _searchDataUI.value.cities = cities!!
             println(cities)
             }
         }

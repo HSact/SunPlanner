@@ -6,6 +6,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 
@@ -85,7 +88,7 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
             .fillMaxSize()
     ) {
         Row {
-            SearchCityBar()
+            SearchCityBar(viewModel)
         }
         Row(
             modifier = Modifier
@@ -131,26 +134,42 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchCityBar() {
+fun SearchCityBar(viewModel: MainViewModel) {
     var isSearchExpanded by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
     val searchBarShape: Shape = MaterialTheme.shapes.extraLarge
+
+    LaunchedEffect(isFocused) {
+        isSearchExpanded = isFocused
+    }
 
     SearchBar(
         inputField = {
             TextField(
                 value = query,
-                onValueChange = { query = it },
+                onValueChange = { query = it
+                    isSearchExpanded = query.isNotEmpty() || isFocused
+                    if (query.length > 2)
+                    {
+                        //viewModel.fetchCityList(query)
+                        //isSearchExpanded = true
+                    }
+                    else {
+                        //isSearchExpanded = false
+                    }
+                                },
                 modifier = Modifier.fillMaxWidth(),
                 shape = searchBarShape,
                 placeholder = { Text("City/Town") },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Search,
+                leadingIcon = { Icon(imageVector = Icons.Default.Search,
                         contentDescription = "Search")
                 },
                 colors = TextFieldDefaults.colors(
                     unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent)
+                    focusedIndicatorColor = Color.Transparent),
+                interactionSource = interactionSource
             )
         },
         expanded = isSearchExpanded,
@@ -158,8 +177,8 @@ fun SearchCityBar() {
         modifier = Modifier,
         shape = searchBarShape,
         colors = SearchBarDefaults.colors(),
-        tonalElevation = 6.dp,
-        shadowElevation = 4.dp
+        /*tonalElevation = 6.dp,
+        shadowElevation = 4.dp*/
     ) {
         Column {
             CityList(viewModel = MainViewModel())
@@ -170,10 +189,11 @@ fun SearchCityBar() {
 @Composable
 fun CityList(viewModel: MainViewModel) {
     val cityList by viewModel.searchDataUI.collectAsState()
-    if (cityList.isNotEmpty()) {
+    if (cityList.cities.isNotEmpty()) {
         LazyColumn {
-            items(cityList.size) { index ->
-                Text(text = cityList[index].name, modifier = Modifier.padding(8.dp))
+            items(cityList.cities.size) { index ->
+                Text(text = (cityList.cities[index].name + ", "
+                        + cityList.cities[index].country), modifier = Modifier.padding(8.dp))
             }
         }
     }
