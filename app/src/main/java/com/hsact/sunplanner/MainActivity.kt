@@ -120,10 +120,9 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
                 .fillMaxWidth()
         )
         {
-            if (cityList.isNotEmpty()) {
+            CityList(viewModel)
+            /*if (cityList.isNotEmpty()) {
                 LazyColumn {
-                    /*items(cityList) { location  ->
-                        Text(text = location.name, modifier = Modifier.padding(8.dp))*/
                     items(cityList.size) { index ->
                         Text(text = cityList[index].name, modifier = Modifier.padding(8.dp))
                     }
@@ -131,20 +130,23 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
             }
             else {
                Text("No cities available.", modifier = Modifier.padding(8.dp))
-           }
+           }*/
         }
     }
 }
 
 @Composable
 fun CityList(viewModel: MainViewModel) {
-    // Получаем список городов
-    val citiesList by viewModel.citiesList.collectAsState()
-
-    // Отображаем список городов
-    LazyColumn {
-        /*items(citiesList) { city ->
-            Text(city.name)*/
+    val cityList by viewModel.citiesList.collectAsState()
+    if (cityList.isNotEmpty()) {
+        LazyColumn {
+            items(cityList.size) { index ->
+                Text(text = cityList[index].name, modifier = Modifier.padding(8.dp))
+            }
+        }
+    }
+    else {
+        Text("No cities available.", modifier = Modifier.padding(8.dp))
     }
 }
 
