@@ -10,10 +10,19 @@ class WeatherRepository(private val service: OpenMeteoService, private val geolo
     suspend fun getCoordinatesByCity(cityName: String): Location? {
         return try {
             val response = geolocationService.getCityCoordinates(cityName)
-            response.results?.firstOrNull()  // Берём первый результат, если есть
+            response.results?.firstOrNull()
         } catch (e: Exception) {
-            println("Ошибка при получении координат: ${e.message}")
-            null  // Ошибку пока просто игнорируем
+            println("Error fetching coordinates: ${e.message}")
+            null
+        }
+    }
+    suspend fun getCitiesList(cityName: String): List<Location>? {
+        return try {
+            val response = geolocationService.getCityCoordinates(cityName)
+            response.results
+        } catch (e: Exception) {
+            println("Error fetching list of cities: ${e.message}")
+            null
         }
     }
 }

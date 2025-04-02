@@ -7,8 +7,8 @@ import retrofit2.http.Query
 interface OpenMeteoGeo {
     @GET("v1/search")
     suspend fun getCityCoordinates(
-        @Query("name") cityName: String
-        //@Query("count") count: Int = 1
+        @Query("name") cityName: String,
+        @Query("count") count: Int = 5
         //@Query("language") language: String = "en",
         //@Query("format") format: String = "json"
     ): LocationResponse

@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -21,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,24 +48,27 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .padding(10.dp)
+                            .padding(10.dp),
+                        viewModel
                     )
                 }
             }
         }
-        val cityName = "Moscow"
+        val cityName = "Mosc"
         val startDate = "2024-01-01"
         val endDate = "2024-01-02"
         //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
+        viewModel.fetchCityList(cityName)
     }
 }
 
 @Composable
-fun MainScreen(modifier: Modifier = Modifier) {
+fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     var cityName by remember { mutableStateOf("") }
     var years by remember { mutableIntStateOf(1) }
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
+    val cityList by viewModel.citiesList.collectAsState()
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -109,6 +115,36 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 Text("Search")
             }
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        {
+            if (cityList.isNotEmpty()) {
+                LazyColumn {
+                    /*items(cityList) { location  ->
+                        Text(text = location.name, modifier = Modifier.padding(8.dp))*/
+                    items(cityList.size) { index ->
+                        Text(text = cityList[index].name, modifier = Modifier.padding(8.dp))
+                    }
+                }
+            }
+            else {
+               Text("No cities available.", modifier = Modifier.padding(8.dp))
+           }
+        }
+    }
+}
+
+@Composable
+fun CityList(viewModel: MainViewModel) {
+    // Получаем список городов
+    val citiesList by viewModel.citiesList.collectAsState()
+
+    // Отображаем список городов
+    LazyColumn {
+        /*items(citiesList) { city ->
+            Text(city.name)*/
     }
 }
 
@@ -143,6 +179,6 @@ private fun RowScope.YearsPicker(years: Int, onYearsChange: (Int) -> Unit) {
 @Composable
 fun MainScreenPreview() {
     SunPlannerTheme {
-        MainScreen()
+        MainScreen(viewModel = MainViewModel())
     }
 }
