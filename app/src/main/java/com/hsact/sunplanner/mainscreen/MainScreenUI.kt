@@ -1,5 +1,6 @@
 package com.hsact.sunplanner.mainscreen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
@@ -35,7 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.hsact.sunplanner.data.Location
+import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.zIndex
@@ -61,7 +62,7 @@ class MainScreenUI {
                 .fillMaxSize()
         ) {
             Row {
-                SearchCityBar(viewModel)
+                SearchCityBar(viewModel) {selectedCity ->}
             }
             Row(
                 modifier = Modifier
@@ -72,7 +73,7 @@ class MainScreenUI {
                         .weight(1f),
                     value = startYear,
                     onValueChange = { startYear = it },
-                    label = { Text("Start date") }
+                    label = { Text("Start year") }
                 )
                 OutlinedTextField(
                     modifier = Modifier
@@ -80,7 +81,7 @@ class MainScreenUI {
                         .padding(start = 10.dp),
                     value = endYear,
                     onValueChange = { endYear = it },
-                    label = { Text("End date") }
+                    label = { Text("End year") }
                 )
             }
             Row(
@@ -121,7 +122,7 @@ class MainScreenUI {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun SearchCityBar(viewModel: MainViewModel) {
+    fun SearchCityBar(viewModel: MainViewModel, onCitySelected: (Location) -> Unit) {
         var isSearchExpanded by remember { mutableStateOf(false) }
         var query by remember { mutableStateOf("") }
         val interactionSource = remember { MutableInteractionSource() }
@@ -170,19 +171,19 @@ class MainScreenUI {
                 //shadowElevation = 0.dp
             ) {
                 Column {
-                    CityList(viewModel)
+                    CityList(viewModel, onCitySelected)
                 }
             }
         }
     }
 
     @Composable
-    fun CityList(viewModel: MainViewModel) {
+    fun CityList(viewModel: MainViewModel, onCitySelected: (Location) -> Unit) {
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         if (searchDataUI.cities.isNotEmpty()) {
             LazyColumn {
                 items(searchDataUI.cities) { city ->
-                    CityCard(city)
+                    CityCard(city, onCityClick = onCitySelected)
                 }
             }
         }
@@ -195,11 +196,12 @@ class MainScreenUI {
     }
 
     @Composable
-    private fun CityCard(city: Location) {
+    private fun CityCard(city: Location, onCityClick: (Location) -> Unit) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 5.dp)
+                .clickable { onCityClick(city) }
         ) {
             Text(
                 text = listOfNotNull(

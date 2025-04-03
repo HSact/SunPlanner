@@ -2,7 +2,7 @@ package com.hsact.sunplanner.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hsact.sunplanner.data.Location
+import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
 import com.hsact.sunplanner.network.RetrofitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +15,10 @@ class MainViewModel : ViewModel() {
 
     private val _searchDataUI = MutableStateFlow(MainUIData())
     val searchDataUI: StateFlow<MainUIData> get() = _searchDataUI
+
+    fun onCityCardClick(city: Location) {
+        _searchDataUI.value = _searchDataUI.value.copy(location = city)
+    }
 
     fun fetchCityList(cityName: String) {
         var cities: List<Location>? = null

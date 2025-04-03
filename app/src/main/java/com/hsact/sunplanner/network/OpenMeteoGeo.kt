@@ -1,6 +1,6 @@
 package com.hsact.sunplanner.network
 
-import com.hsact.sunplanner.data.LocationResponse
+import com.hsact.sunplanner.data.responses.LocationResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

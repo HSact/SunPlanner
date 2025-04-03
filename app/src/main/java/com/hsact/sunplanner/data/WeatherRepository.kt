@@ -1,5 +1,6 @@
 package com.hsact.sunplanner.data
 
+import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.network.OpenMeteoGeo
 import com.hsact.sunplanner.network.OpenMeteoService
 
