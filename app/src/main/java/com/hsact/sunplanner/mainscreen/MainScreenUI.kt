@@ -158,6 +158,6 @@ class MainScreenUI (val viewModel: MainViewModel) {
 fun MainScreenPreview() {
     val viewModel = MainViewModel()
     SunPlannerTheme {
-        MainScreenUI(viewModel = MainViewModel())
+        MainScreenUI(viewModel = viewModel).MainScreen()
     }
 }
