@@ -56,6 +56,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
         var isSearchExpanded by remember { mutableStateOf(false) }
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         val searchUI = SearchUI()
+        var query by remember { mutableStateOf("") }
 
         //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
         //viewModel.fetchCityList(cityName)
@@ -67,11 +68,14 @@ class MainScreenUI(val viewModel: MainViewModel) {
             Row {
                 searchUI.SearchCityBar(
                     viewModel = viewModel,
+                    query = query,
+                    onQueryChange = { query = it },
                     onCitySelected = { selectedCity ->
-                            viewModel.saveLocationToVM(selectedCity)
-                            isSearchExpanded = false
-                            cityName = LocationUtils.buildCityFullName(selectedCity)
-                            //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
+                        viewModel.saveLocationToVM(selectedCity)
+                        isSearchExpanded = false
+                        cityName = LocationUtils.buildCityFullName(selectedCity)
+                        query = cityName
+                        //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
                     },
                     isSearchExpanded = isSearchExpanded,
                     onSearchExpandedChange = { isSearchExpanded = it }
