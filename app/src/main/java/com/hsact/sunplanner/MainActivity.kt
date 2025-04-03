@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
                     MainScreen(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .padding(10.dp),
+                            .padding(0.dp),
                         viewModel
                     )
                 }
@@ -79,6 +79,8 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     var cityName by remember { mutableStateOf("") }
     var years by remember { mutableIntStateOf(1) }
+    var startYear by remember { mutableStateOf("") }
+    var endYear by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf("") }
     var endDate by remember { mutableStateOf("") }
     val searchDataUI by viewModel.searchDataUI.collectAsState()
@@ -89,6 +91,26 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
     ) {
         Row {
             SearchCityBar(viewModel)
+        }
+        Row(
+            modifier = Modifier
+                .padding(top = 10.dp)
+        ) {
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f),
+                value = startYear,
+                onValueChange = { startYear = it },
+                label = { Text("Start date") }
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 10.dp),
+                value = endYear,
+                onValueChange = { endYear = it },
+                label = { Text("End date") }
+            )
         }
         Row(
             modifier = Modifier
@@ -135,6 +157,7 @@ fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchCityBar(viewModel: MainViewModel) {
+    val cityList by viewModel.searchDataUI.collectAsState()
     var isSearchExpanded by remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
     val interactionSource = remember { MutableInteractionSource() }
@@ -153,11 +176,7 @@ fun SearchCityBar(viewModel: MainViewModel) {
                     isSearchExpanded = query.isNotEmpty() || isFocused
                     if (query.length > 2)
                     {
-                        //viewModel.fetchCityList(query)
-                        //isSearchExpanded = true
-                    }
-                    else {
-                        //isSearchExpanded = false
+                        viewModel.fetchCityList(query)
                     }
                                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -181,19 +200,19 @@ fun SearchCityBar(viewModel: MainViewModel) {
         shadowElevation = 4.dp*/
     ) {
         Column {
-            CityList(viewModel = MainViewModel())
+            CityList(viewModel)
         }
     }
 }
 
 @Composable
 fun CityList(viewModel: MainViewModel) {
-    val cityList by viewModel.searchDataUI.collectAsState()
-    if (cityList.cities.isNotEmpty()) {
+    val searchDataUI by viewModel.searchDataUI.collectAsState()
+    if (searchDataUI.cities.isNotEmpty()) {
         LazyColumn {
-            items(cityList.cities.size) { index ->
-                Text(text = (cityList.cities[index].name + ", "
-                        + cityList.cities[index].country), modifier = Modifier.padding(8.dp))
+            items(searchDataUI.cities.size) { index ->
+                Text(text = (searchDataUI.cities[index].name + ", "
+                        + searchDataUI.cities[index].country), modifier = Modifier.padding(8.dp))
             }
         }
     }

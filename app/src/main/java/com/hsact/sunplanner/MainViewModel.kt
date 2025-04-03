@@ -15,18 +15,19 @@ class MainViewModel : ViewModel() {
     private val _searchDataUI = MutableStateFlow(MainUIData())
     val searchDataUI: StateFlow<MainUIData> get() = _searchDataUI
 
-    fun fetchCityList(cityName: String): List<Location>? {
+    fun fetchCityList(cityName: String) {
         var cities: List<Location>? = null
         viewModelScope.launch {
             cities = repository.getCitiesList(
                 cityName = cityName
             )
             if (cities != null) {
-                _searchDataUI.value.cities = cities!!
-            println(cities)
+                _searchDataUI.value = _searchDataUI.value.copy(cities = cities!!)
+
+                println(cities)
             }
         }
-        return cities
+
     }
 
     fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
