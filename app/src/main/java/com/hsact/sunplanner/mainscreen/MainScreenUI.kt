@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hsact.sunplanner.data.Location
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
+import androidx.compose.foundation.lazy.items
+
+private const val minCityLetters = 2
 
 class MainScreenUI {
     @Composable
@@ -137,7 +142,7 @@ class MainScreenUI {
                     value = query,
                     onValueChange = { query = it
                         isSearchExpanded = query.isNotEmpty() || isFocused
-                        if (query.length > 2)
+                        if (query.length >= minCityLetters)
                         {
                             viewModel.fetchCityList(query)
                         }
@@ -173,14 +178,37 @@ class MainScreenUI {
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         if (searchDataUI.cities.isNotEmpty()) {
             LazyColumn {
-                items(searchDataUI.cities.size) { index ->
-                    Text(text = (searchDataUI.cities[index].name + ", "
-                            + searchDataUI.cities[index].country), modifier = Modifier.padding(8.dp))
+                items(searchDataUI.cities) { city ->
+                    CityCard(city)
                 }
             }
         }
-        else {
+        else if (searchDataUI.cityName.length >= minCityLetters) {
             Text("No cities available.", modifier = Modifier.padding(8.dp))
+        }
+        else {
+            Text("Enter at least a two letters of a city name", modifier = Modifier.padding(8.dp))
+        }
+    }
+
+    @Composable
+    private fun CityCard(city: Location) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 5.dp)
+        ) {
+            Text(
+                text = listOfNotNull(
+                    city.name,
+                    city.admin1,
+                    city.admin2,
+                    city.admin3,
+                    city.admin4,
+                    city.country
+                ).joinToString(", "),
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 
