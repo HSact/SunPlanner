@@ -43,11 +43,7 @@ import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.mainscreen.searchui.SearchUI
 
-class MainScreenUI (val viewModel: MainViewModel) {
-
-    fun onCityCardClick(city: Location) {
-        viewModel.saveLocationToVM(city)
-    }
+class MainScreenUI(val viewModel: MainViewModel) {
 
     @Composable
     fun MainScreen(modifier: Modifier = Modifier) {
@@ -57,6 +53,7 @@ class MainScreenUI (val viewModel: MainViewModel) {
         var endYear by remember { mutableStateOf("") }
         var startDate by remember { mutableStateOf("") }
         var endDate by remember { mutableStateOf("") }
+        var isSearchExpanded by remember { mutableStateOf(false) }
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         val searchUI = SearchUI()
 
@@ -68,7 +65,17 @@ class MainScreenUI (val viewModel: MainViewModel) {
                 .fillMaxSize()
         ) {
             Row {
-                searchUI.SearchCityBar(viewModel) {selectedCity -> onCityCardClick(selectedCity)}
+                searchUI.SearchCityBar(
+                    viewModel = viewModel,
+                    onCitySelected = { selectedCity ->
+                            viewModel.saveLocationToVM(selectedCity)
+                            isSearchExpanded = false
+                            cityName = LocationUtils.buildCityFullName(selectedCity)
+                            //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
+                    },
+                    isSearchExpanded = isSearchExpanded,
+                    onSearchExpandedChange = { isSearchExpanded = it }
+                ) //{selectedCity -> onCityCardClick(selectedCity , searchUI)}
             }
             Row(
                 modifier = Modifier
@@ -153,6 +160,7 @@ class MainScreenUI (val viewModel: MainViewModel) {
         }
     }*/
 }
+
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {

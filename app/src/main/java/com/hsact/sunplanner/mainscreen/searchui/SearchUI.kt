@@ -1,5 +1,6 @@
 package com.hsact.sunplanner.mainscreen.searchui
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -40,8 +41,9 @@ class SearchUI {
     private val minCityLetters = 2
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun SearchCityBar(viewModel: MainViewModel, onCitySelected: (Location) -> Unit) {
-        var isSearchExpanded by remember { mutableStateOf(false) }
+    fun SearchCityBar(viewModel: MainViewModel, onCitySelected: (Location) -> Unit,
+                      isSearchExpanded: Boolean, onSearchExpandedChange: (Boolean) -> Unit) {
+        //var isSearchExpanded by remember { mutableStateOf(false) }
         var query by remember { mutableStateOf("") }
         val interactionSource = remember { MutableInteractionSource() }
         val isFocused by interactionSource.collectIsFocusedAsState()
@@ -49,7 +51,7 @@ class SearchUI {
         val location = remember {viewModel.searchDataUI.value.location}
 
         LaunchedEffect(isFocused) {
-            isSearchExpanded = isFocused
+            onSearchExpandedChange(isFocused)
         }
         Box(modifier = Modifier.zIndex(1f))
         {
@@ -59,7 +61,7 @@ class SearchUI {
                         value = query,
                         onValueChange = {
                             query = it
-                            isSearchExpanded = query.isNotEmpty() || isFocused
+                            onSearchExpandedChange(query.isNotEmpty() || isFocused)
                             if (query.length >= minCityLetters) {
                                 viewModel.fetchCityList(query)
                             }
@@ -81,7 +83,7 @@ class SearchUI {
                     )
                 },
                 expanded = isSearchExpanded,
-                onExpandedChange = { isSearchExpanded = it },
+                onExpandedChange = onSearchExpandedChange,
                 modifier = Modifier,
                 shape = searchBarShape,
                 colors = SearchBarDefaults.colors(),
@@ -120,7 +122,9 @@ class SearchUI {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 5.dp)
-                .clickable { onCityClick(city) }
+                .clickable {
+                    Log.d("SearchUI", "City clicked: $city")
+                    onCityClick(city) }
         ) {
             Text(
                 LocationUtils.buildCityFullName(city),
