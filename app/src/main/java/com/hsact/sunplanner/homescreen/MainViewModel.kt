@@ -1,4 +1,4 @@
-package com.hsact.sunplanner
+package com.hsact.sunplanner.homescreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,7 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
-    private val repository = WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
+    private val repository =
+        WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
     private val _searchDataUI = MutableStateFlow(MainUIData())
     val searchDataUI: StateFlow<MainUIData> get() = _searchDataUI
