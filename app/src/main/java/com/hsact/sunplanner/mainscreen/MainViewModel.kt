@@ -16,7 +16,7 @@ class MainViewModel : ViewModel() {
     private val _searchDataUI = MutableStateFlow(MainUIData())
     val searchDataUI: StateFlow<MainUIData> get() = _searchDataUI
 
-    fun onCityCardClick(city: Location) {
+    fun saveLocationToVM(city: Location) {
         _searchDataUI.value = _searchDataUI.value.copy(location = city)
     }
 

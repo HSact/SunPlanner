@@ -41,12 +41,16 @@ import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.LocationUtils
+import com.hsact.sunplanner.mainscreen.searchui.SearchUI
 
-private const val minCityLetters = 2
+class MainScreenUI (val viewModel: MainViewModel) {
 
-class MainScreenUI {
+    fun onCityCardClick(city: Location) {
+        viewModel.saveLocationToVM(city)
+    }
+
     @Composable
-    fun MainScreen(modifier: Modifier = Modifier, viewModel: MainViewModel) {
+    fun MainScreen(modifier: Modifier = Modifier) {
         var cityName by remember { mutableStateOf("") }
         var years by remember { mutableIntStateOf(1) }
         var startYear by remember { mutableStateOf("") }
@@ -54,6 +58,7 @@ class MainScreenUI {
         var startDate by remember { mutableStateOf("") }
         var endDate by remember { mutableStateOf("") }
         val searchDataUI by viewModel.searchDataUI.collectAsState()
+        val searchUI: SearchUI = SearchUI()
 
         //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
         //viewModel.fetchCityList(cityName)
@@ -63,7 +68,7 @@ class MainScreenUI {
                 .fillMaxSize()
         ) {
             Row {
-                SearchCityBar(viewModel) {selectedCity -> viewModel.onCityCardClick(selectedCity)}
+                searchUI.SearchCityBar(viewModel) {selectedCity -> onCityCardClick(selectedCity)}
             }
             Row(
                 modifier = Modifier
@@ -117,98 +122,7 @@ class MainScreenUI {
                     Text("Search")
                 }
             }
-            //TODO: Cards with weather data
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun SearchCityBar(viewModel: MainViewModel, onCitySelected: (Location) -> Unit) {
-        var isSearchExpanded by remember { mutableStateOf(false) }
-        var query by remember { mutableStateOf("") }
-        val interactionSource = remember { MutableInteractionSource() }
-        val isFocused by interactionSource.collectIsFocusedAsState()
-        val searchBarShape: Shape = MaterialTheme.shapes.extraLarge
-        val location = remember {viewModel.searchDataUI.value.location}
-
-        LaunchedEffect(isFocused) {
-            isSearchExpanded = isFocused
-        }
-        Box(modifier = Modifier.zIndex(1f))
-        {
-            SearchBar(
-                inputField = {
-                    TextField(
-                        value = if (location != null) location.name else query,
-                        onValueChange = {
-                            query = it
-                            isSearchExpanded = query.isNotEmpty() || isFocused
-                            if (query.length >= minCityLetters) {
-                                viewModel.fetchCityList(query)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = searchBarShape,
-                        placeholder = { Text("City/Town") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
-                            )
-                        },
-                        colors = TextFieldDefaults.colors(
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent
-                        ),
-                        interactionSource = interactionSource
-                    )
-                },
-                expanded = isSearchExpanded,
-                onExpandedChange = { isSearchExpanded = it },
-                modifier = Modifier,
-                shape = searchBarShape,
-                colors = SearchBarDefaults.colors(),
-                //colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
-                //tonalElevation = 0.dp,
-                //shadowElevation = 0.dp
-            ) {
-                Column {
-                    CityList(viewModel, onCitySelected)
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun CityList(viewModel: MainViewModel, onCitySelected: (Location) -> Unit) {
-        val searchDataUI by viewModel.searchDataUI.collectAsState()
-        if (searchDataUI.cities.isNotEmpty()) {
-            LazyColumn {
-                items(searchDataUI.cities) { city ->
-                    CityCard(city, onCityClick = onCitySelected)
-                }
-            }
-        }
-        else if (searchDataUI.cityName.length >= minCityLetters) {
-            Text("No cities available.", modifier = Modifier.padding(8.dp))
-        }
-        else {
-            Text("Enter at least a two letters of a city name", modifier = Modifier.padding(8.dp))
-        }
-    }
-
-    @Composable
-    private fun CityCard(city: Location, onCityClick: (Location) -> Unit) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 5.dp)
-                .clickable { onCityClick(city) }
-        ) {
-            Text(
-                LocationUtils.buildCityFullName(city),
-                modifier = Modifier.padding(8.dp)
-            )
+            //Cards with weather data
         }
     }
 
@@ -238,12 +152,12 @@ class MainScreenUI {
             }
         }
     }*/
-
-    @Preview(showBackground = true)
-    @Composable
-    fun MainScreenPreview() {
-        SunPlannerTheme {
-            MainScreen(viewModel = MainViewModel())
-        }
+}
+@Preview(showBackground = true)
+@Composable
+fun MainScreenPreview() {
+    val viewModel = MainViewModel()
+    SunPlannerTheme {
+        MainScreenUI(viewModel = MainViewModel())
     }
 }

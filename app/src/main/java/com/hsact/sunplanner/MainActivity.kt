@@ -20,15 +20,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val mainScreenUI = MainScreenUI()
+        val mainScreenUI = MainScreenUI(viewModel)
         setContent {
             SunPlannerTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     mainScreenUI.MainScreen(
                         modifier = Modifier
                             .padding(innerPadding)
-                            .padding(0.dp),
-                        viewModel
+                            .padding(0.dp)
+                        //viewModel
                     )
                 }
             }
