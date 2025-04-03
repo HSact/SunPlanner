@@ -2,6 +2,7 @@ package com.hsact.sunplanner.mainscreen
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.data.Location
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import androidx.compose.foundation.lazy.items
+import androidx.compose.ui.zIndex
 
 private const val minCityLetters = 2
 
@@ -113,13 +115,7 @@ class MainScreenUI {
                     Text("Search")
                 }
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            {
-                CityList(viewModel)
-            }
+            //TODO: Cards with weather data
         }
     }
 
@@ -135,40 +131,47 @@ class MainScreenUI {
         LaunchedEffect(isFocused) {
             isSearchExpanded = isFocused
         }
-
-        SearchBar(
-            inputField = {
-                TextField(
-                    value = query,
-                    onValueChange = { query = it
-                        isSearchExpanded = query.isNotEmpty() || isFocused
-                        if (query.length >= minCityLetters)
-                        {
-                            viewModel.fetchCityList(query)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = searchBarShape,
-                    placeholder = { Text("City/Town") },
-                    leadingIcon = { Icon(imageVector = Icons.Default.Search,
-                        contentDescription = "Search")
-                    },
-                    colors = TextFieldDefaults.colors(
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent),
-                    interactionSource = interactionSource
-                )
-            },
-            expanded = isSearchExpanded,
-            onExpandedChange = { isSearchExpanded = it },
-            modifier = Modifier,
-            shape = searchBarShape,
-            colors = SearchBarDefaults.colors(),
-            /*tonalElevation = 6.dp,
-            shadowElevation = 4.dp*/
-        ) {
-            Column {
-                CityList(viewModel)
+        Box(modifier = Modifier.zIndex(1f))
+        {
+            SearchBar(
+                inputField = {
+                    TextField(
+                        value = query,
+                        onValueChange = {
+                            query = it
+                            isSearchExpanded = query.isNotEmpty() || isFocused
+                            if (query.length >= minCityLetters) {
+                                viewModel.fetchCityList(query)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = searchBarShape,
+                        placeholder = { Text("City/Town") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search"
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            unfocusedIndicatorColor = Color.Transparent,
+                            focusedIndicatorColor = Color.Transparent
+                        ),
+                        interactionSource = interactionSource
+                    )
+                },
+                expanded = isSearchExpanded,
+                onExpandedChange = { isSearchExpanded = it },
+                modifier = Modifier,
+                shape = searchBarShape,
+                colors = SearchBarDefaults.colors(),
+                //colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
+                //tonalElevation = 0.dp,
+                //shadowElevation = 0.dp
+            ) {
+                Column {
+                    CityList(viewModel)
+                }
             }
         }
     }
