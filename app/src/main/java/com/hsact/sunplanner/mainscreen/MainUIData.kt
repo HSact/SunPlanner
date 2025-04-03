@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.homescreen
+package com.hsact.sunplanner.mainscreen
 
 import com.hsact.sunplanner.data.Location
 
