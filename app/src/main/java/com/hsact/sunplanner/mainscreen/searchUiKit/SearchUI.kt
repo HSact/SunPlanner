@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.mainscreen.searchui
+package com.hsact.sunplanner.mainscreen.searchUiKit
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

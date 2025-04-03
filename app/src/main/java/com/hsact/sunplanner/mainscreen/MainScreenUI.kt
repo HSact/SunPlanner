@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.LocationUtils
-import com.hsact.sunplanner.mainscreen.searchui.SearchUI
+import com.hsact.sunplanner.mainscreen.searchUiKit.SearchUI
 
 class MainScreenUI(val viewModel: MainViewModel) {
 
