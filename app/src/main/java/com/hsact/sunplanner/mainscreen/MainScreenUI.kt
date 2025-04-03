@@ -40,6 +40,7 @@ import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.zIndex
+import com.hsact.sunplanner.data.LocationUtils
 
 private const val minCityLetters = 2
 
@@ -62,7 +63,7 @@ class MainScreenUI {
                 .fillMaxSize()
         ) {
             Row {
-                SearchCityBar(viewModel) {selectedCity ->}
+                SearchCityBar(viewModel) {selectedCity -> viewModel.onCityCardClick(selectedCity)}
             }
             Row(
                 modifier = Modifier
@@ -128,6 +129,7 @@ class MainScreenUI {
         val interactionSource = remember { MutableInteractionSource() }
         val isFocused by interactionSource.collectIsFocusedAsState()
         val searchBarShape: Shape = MaterialTheme.shapes.extraLarge
+        val location = remember {viewModel.searchDataUI.value.location}
 
         LaunchedEffect(isFocused) {
             isSearchExpanded = isFocused
@@ -137,7 +139,7 @@ class MainScreenUI {
             SearchBar(
                 inputField = {
                     TextField(
-                        value = query,
+                        value = if (location != null) location.name else query,
                         onValueChange = {
                             query = it
                             isSearchExpanded = query.isNotEmpty() || isFocused
@@ -204,14 +206,7 @@ class MainScreenUI {
                 .clickable { onCityClick(city) }
         ) {
             Text(
-                text = listOfNotNull(
-                    city.name,
-                    city.admin1,
-                    city.admin2,
-                    city.admin3,
-                    city.admin4,
-                    city.country
-                ).joinToString(", "),
+                LocationUtils.buildCityFullName(city),
                 modifier = Modifier.padding(8.dp)
             )
         }
