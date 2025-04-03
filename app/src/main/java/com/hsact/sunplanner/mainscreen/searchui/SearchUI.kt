@@ -97,7 +97,7 @@ class SearchUI {
     }
 
     @Composable
-    fun CityList(viewModel: MainViewModel, onCitySelected: (Location) -> Unit) {
+    private fun CityList(viewModel: MainViewModel, onCitySelected: (Location) -> Unit) {
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         if (searchDataUI.cities.isNotEmpty()) {
             LazyColumn {

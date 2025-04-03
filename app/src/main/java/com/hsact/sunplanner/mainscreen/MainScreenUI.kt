@@ -58,7 +58,7 @@ class MainScreenUI (val viewModel: MainViewModel) {
         var startDate by remember { mutableStateOf("") }
         var endDate by remember { mutableStateOf("") }
         val searchDataUI by viewModel.searchDataUI.collectAsState()
-        val searchUI: SearchUI = SearchUI()
+        val searchUI = SearchUI()
 
         //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
         //viewModel.fetchCityList(cityName)
