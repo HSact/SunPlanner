@@ -25,8 +25,8 @@ class MainViewModel : ViewModel() {
         val params = WeatherRequestParams()
         params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
         params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
-        params.startDate = _searchDataUI.value.startDate
-        params.endDate = _searchDataUI.value.endDate
+        params.startDate = _searchDataUI.value.startYear.toString() + _searchDataUI.value.startDate
+        params.endDate = _searchDataUI.value.endDate.toString() + _searchDataUI.value.endDate
         fetchWeather(params)
     }
 
@@ -54,23 +54,29 @@ class MainViewModel : ViewModel() {
                     endDate = params.endDate
                 )
                 println(response)
+                _searchDataUI.value = _searchDataUI.value.copy(weatherData = response)
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
             }
         }
     }
 
-    /*fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
+    fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
         viewModelScope.launch {
             val location = repository.getCoordinatesByCity(
                 cityName = cityName
             )
+            val params = WeatherRequestParams()
+            params.latitude = location?.latitude ?: 0.0
+            params.longitude = location?.longitude ?: 0.0
+            params.startDate = startDate
+            params.endDate = endDate
             if (location != null) {
-                fetchWeather(location.latitude, location.longitude, startDate, endDate)
+                fetchWeather(params)
             } else {
                 //_uiState.value = "Город не найден"
                 println("Error fetching coordinates")
             }
         }
-    }*/
+    }
 }

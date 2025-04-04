@@ -3,6 +3,7 @@ package com.hsact.sunplanner.mainscreen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
@@ -36,7 +37,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
         val searchUI = SearchUI()
         var query by remember { mutableStateOf("") }
 
-        //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
+        //viewModel.fetchWeatherByCity("Moscow", "01.01.2024", "02.01.2024")
         //viewModel.fetchCityList(cityName)
 
         Column(
@@ -103,12 +104,16 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     .padding(top = 10.dp)
             ) {
                 Button(
-                    onClick = {},
+                    onClick = {viewModel.prepareParamsForRequest()},
                     modifier = Modifier
                         .weight(1f)
                 ) {
                     Text("Search")
                 }
+            }
+            Row (modifier.fillMaxWidth() )
+            {
+                Text("Weather: ${searchDataUI.weatherData.toString()}")
             }
             //Cards with weather data
         }
