@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
 import com.hsact.sunplanner.network.RetrofitInstance
+import com.hsact.sunplanner.network.WeatherRequestParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,6 +21,15 @@ class MainViewModel : ViewModel() {
         _searchDataUI.value = _searchDataUI.value.copy(location = city)
     }
 
+    fun prepareParamsForRequest() {
+        val params = WeatherRequestParams()
+        params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
+        params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
+        params.startDate = _searchDataUI.value.startDate
+        params.endDate = _searchDataUI.value.endDate
+        fetchWeather(params)
+    }
+
     fun fetchCityList(cityName: String) {
         var cities: List<Location>? = null
         viewModelScope.launch {
@@ -28,14 +38,29 @@ class MainViewModel : ViewModel() {
             )
             if (cities != null) {
                 _searchDataUI.value = _searchDataUI.value.copy(cities = cities!!)
-
                 println(cities)
             }
         }
 
     }
 
-    fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
+    private fun fetchWeather(params: WeatherRequestParams) {
+        viewModelScope.launch {
+            try {
+                val response = repository.getWeather(
+                    latitude = params.latitude,
+                    longitude = params.longitude,
+                    startDate = params.startDate,
+                    endDate = params.endDate
+                )
+                println(response)
+            } catch (e: Exception) {
+                println("Error fetching weather: ${e.message}")
+            }
+        }
+    }
+
+    /*fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
         viewModelScope.launch {
             val location = repository.getCoordinatesByCity(
                 cityName = cityName
@@ -47,20 +72,5 @@ class MainViewModel : ViewModel() {
                 println("Error fetching coordinates")
             }
         }
-    }
-    private fun fetchWeather(latitude: Double, longitude: Double, startDate: String, endDate: String) {
-        viewModelScope.launch {
-            try {
-                val response = repository.getWeather(
-                    latitude = latitude,
-                    longitude = longitude,
-                    startDate = startDate,
-                    endDate = endDate
-                )
-                println(response)
-            } catch (e: Exception) {
-                println("Error fetching weather: ${e.message}")
-            }
-        }
-    }
+    }*/
 }

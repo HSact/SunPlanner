@@ -53,11 +53,10 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         isSearchExpanded = false
                         cityName = LocationUtils.buildCityFullName(selectedCity)
                         query = cityName
-                        //viewModel.fetchWeatherByCity(cityName, startDate, endDate)
                     },
                     isSearchExpanded = isSearchExpanded,
                     onSearchExpandedChange = { isSearchExpanded = it }
-                ) //{selectedCity -> onCityCardClick(selectedCity , searchUI)}
+                )
             }
             Row(
                 modifier = Modifier

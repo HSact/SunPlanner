@@ -6,7 +6,9 @@ data class MainUIData (
     val cityName: String = "",
     var cities: List<Location> = emptyList(),
     val location: Location? = null,
-    val years: Int = 0,
+    val startYear: Int = 0,
+    val endYear: Int = 0,
+    val years: Int = endYear - startYear,
     val startDate: String = "",
     val endDate: String = ""
 )
