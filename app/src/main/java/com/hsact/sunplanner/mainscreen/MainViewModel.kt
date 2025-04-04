@@ -2,6 +2,7 @@ package com.hsact.sunplanner.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
 import com.hsact.sunplanner.network.RetrofitInstance
@@ -26,6 +27,7 @@ class MainViewModel : ViewModel() {
         params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
         params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
         params.startDate = _searchDataUI.value.startYear.toString() + _searchDataUI.value.startDate
+        //params.startDate = LocationUtils.prepareDate(_searchDataUI.value.startYear, _searchDataUI.value.startDate)
         params.endDate = _searchDataUI.value.endDate.toString() + _searchDataUI.value.endDate
         fetchWeather(params)
     }
