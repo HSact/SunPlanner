@@ -43,7 +43,6 @@ class MainViewModel : ViewModel() {
                 println(cities)
             }
         }
-
     }
 
     private fun fetchWeather(params: WeatherRequestParams) {
