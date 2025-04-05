@@ -5,7 +5,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,15 +27,20 @@ import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.mainscreen.searchUiKit.SearchUI
+import java.time.LocalDate
 
 class MainScreenUI(val viewModel: MainViewModel) {
-
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen(modifier: Modifier = Modifier) {
         var cityName by remember { mutableStateOf("") }
-        var years by remember { mutableIntStateOf(1) }
+        val years = (1940 until LocalDate.now().year).toList()
+        var expandedStartYear by remember { mutableStateOf(false) }
+        var expandedEndYear by remember { mutableStateOf(false) }
         var startYear by remember { mutableStateOf("") }
         var endYear by remember { mutableStateOf("") }
+        var selectedStartYear by remember { mutableStateOf(startYear) }
+        var selectedEndYear by remember { mutableStateOf(endYear) }
         var startDate by remember { mutableStateOf("") }
         var endDate by remember { mutableStateOf("") }
         var isSearchExpanded by remember { mutableStateOf(false) }
@@ -68,15 +79,47 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         .weight(1f),
                     value = startYear,
                     onValueChange = { startYear = it },
-                    label = { Text("Start year") }
+                    label = { Text("Start year") },
+                    readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Dropdown Icon"
+                        )
+                    }
                 )
+                ExposedDropdownMenuBox(
+                    expanded = expandedStartYear,
+                    onExpandedChange = { expandedStartYear = it }
+                ) { //TODO: fix dropdown menu
+                    /*ExposedDropdownMenu(
+                        expanded = expandedStartYear,
+                        onDismissRequest = { expandedStartYear = false }
+                    ) {
+                        years.forEach { year ->
+                            DropdownMenuItem(onClick = {
+                                selectedStartYear = startYear.toString()
+                                expandedStartYear = false
+                            }) {
+                                Text(text = startYear.toString())
+                            }
+                        }
+                    }*/
+                }
                 OutlinedTextField(
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 10.dp),
                     value = endYear,
                     onValueChange = { endYear = it },
-                    label = { Text("End year") }
+                    label = { Text("End year") },
+                    readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Dropdown Icon"
+                        )
+                    }
                 )
             }
             Row(
