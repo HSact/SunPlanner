@@ -62,21 +62,31 @@ class MainViewModel : ViewModel() {
             prepareDate(_searchDataUI.value.dates.endYear, _searchDataUI.value.dates.endMonth, _searchDataUI.value.dates.endDay))
     }
     private fun prepareDate(year: Int, month: String, day: Int): String {
-        var monthNumber = ""
-        when (month) {
-            "January" -> monthNumber = "01"
-            "February" -> monthNumber = "02"
-            "March" -> monthNumber = "03"
+        val monthNumber = when (month) {
+            "January" -> "01"
+            "February" -> "02"
+            "March" -> "03"
+            "April" -> "04"
+            "May" -> "05"
+            "June" -> "06"
+            "July" -> "07"
+            "August" -> "08"
+            "September" -> "09"
+            "October" -> "10"
+            "November" -> "11"
+            "December" -> "12"
+            else -> "00" //throw IllegalArgumentException("Invalid month name")
         }
-        return "$year-$month-$day"
+        val dayFormatted = day.toString().padStart(2, '0')
+        return "$year-$monthNumber-$dayFormatted"
     }
 
     fun prepareParamsForRequest() { //TODO: rewrite
         val params = WeatherRequestParams()
         params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
         params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
-        params.startDate = _searchDataUI.value.startYear.toString() + _searchDataUI.value.startDate
-        params.endDate = _searchDataUI.value.endDate.toString() + _searchDataUI.value.endDate
+        params.startDate = _searchDataUI.value.startDate
+        params.endDate = _searchDataUI.value.endDate
         fetchWeather(params)
     }
 
