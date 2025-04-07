@@ -5,15 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +23,6 @@ import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.mainscreen.searchUiKit.SearchUI
 import com.hsact.sunplanner.mainscreen.searchUiKit.YearDropDownPicker
-import java.time.LocalDate
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -85,24 +77,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     label = "End year",
                     selectedYear = selectedEndYear,
                     onYearSelected = { selectedEndYear = it },
-                    modifier = Modifier.weight(0.5f).padding(start = 10.dp)
+                    modifier = Modifier.weight(0.5f).padding(start = 5.dp)
                 )
-
-                /*OutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 10.dp),
-                    value = endYear,
-                    onValueChange = { endYear = it },
-                    label = { Text("End year") },
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown Icon"
-                        )
-                    }
-                )*/
             }
             Row(
                 modifier = Modifier
@@ -143,33 +119,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
             //Cards with weather data
         }
     }
-
-    /*@Composable
-    private fun RowScope.YearsPicker(years: Int, onYearsChange: (Int) -> Unit) {
-        Row(
-            modifier = Modifier
-                .weight(0.3f)
-                .padding(start = 10.dp)
-
-                .padding(horizontal = 4.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(
-                onClick = { if (years > 1) onYearsChange(years - 1) },
-                enabled = years > 1
-            ) {
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Decrease")
-            }
-            Text(text = years.toString(), fontSize = 18.sp)
-            IconButton(
-                onClick = { if (years < 10) onYearsChange(years + 1) },
-                enabled = years < 10
-            ) {
-                Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Increase")
-            }
-        }
-    }*/
 }
 
 @Preview(showBackground = true)
