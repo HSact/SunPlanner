@@ -58,7 +58,6 @@ class SearchUI {
         val focusRequester = remember { FocusRequester() }
         focusManager = LocalFocusManager.current
         val searchBarShape: Shape = MaterialTheme.shapes.extraLarge
-        val location = remember { viewModel.searchDataUI.value.location }
 
         LaunchedEffect(isFocused) {
             if (isSearchExpanded != isFocused) {

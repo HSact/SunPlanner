@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -94,43 +95,50 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     modifier = Modifier.weight(0.5f).padding(start = 5.dp)
                 )
             }
-            Row(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-            ) {
-                DropDownPicker().ItemsDropdown(
-                    label = "Start day",
-                    list = days,
-                    selected = selectedStartDay,
-                    onSelected = { selectedStartDay = it },
-                    modifier = Modifier.weight(0.5f)
-                )
-                DropDownPicker().ItemsDropdown(
-                    label = "Start month",
-                    list = months,
-                    selected = selectedStartMonth,
-                    onSelected = { selectedStartMonth = it },
-                    modifier = Modifier.weight(0.5f).padding(start = 5.dp)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-            ) {
-                DropDownPicker().ItemsDropdown(
-                    label = "End day",
-                    list = days,
-                    selected = selectedEndDay,
-                    onSelected = { selectedEndDay = it },
-                    modifier = Modifier.weight(0.5f)
-                )
-                DropDownPicker().ItemsDropdown(
-                    label = "End month",
-                    list = months,
-                    selected = selectedEndMonth,
-                    onSelected = { selectedEndMonth = it },
-                    modifier = Modifier.weight(0.5f).padding(start = 5.dp)
-                )
+            Row (modifier = Modifier
+                .padding(top = 20.dp, start = 5.dp, end = 5.dp))
+            {
+                Card ()
+                 {
+                    Row(modifier = Modifier.padding(5.dp))
+                    {
+                        DropDownPicker().ItemsDropdown(
+                            label = "Start day",
+                            list = days,
+                            selected = selectedStartDay,
+                            onSelected = { selectedStartDay = it },
+                            modifier = Modifier.weight(0.5f)
+                        )
+                        DropDownPicker().ItemsDropdown(
+                            label = "End day",
+                            list = days,
+                            selected = selectedEndDay,
+                            onSelected = { selectedEndDay = it },
+                            modifier = Modifier.weight(0.5f).padding(start = 5.dp)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .padding(
+                                top = 10.dp, start = 5.dp,
+                                end = 5.dp, bottom = 10.dp)
+                    ) {
+                        DropDownPicker().ItemsDropdown(
+                            label = "Start month",
+                            list = months,
+                            selected = selectedStartMonth,
+                            onSelected = { selectedStartMonth = it },
+                            modifier = Modifier.weight(0.5f)
+                        )
+                        DropDownPicker().ItemsDropdown(
+                            label = "End month",
+                            list = months,
+                            selected = selectedEndMonth,
+                            onSelected = { selectedEndMonth = it },
+                            modifier = Modifier.weight(0.5f).padding(start = 5.dp)
+                        )
+                    }
+                }
             }
             Row(
                 modifier = Modifier

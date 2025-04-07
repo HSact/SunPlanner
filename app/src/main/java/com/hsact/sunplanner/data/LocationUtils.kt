@@ -14,9 +14,7 @@ object LocationUtils {
             city.country
         ).joinToString(", ")
     }
-    fun prepareDate(year: Int, date: LocalDate): String {
-        val month = date.monthValue.toString().padStart(2, '0')
-        val day = date.dayOfMonth.toString().padStart(2, '0')
+    fun prepareDate(year: Int, month: String, day: Int): String {
         return "$year-$month-$day"
     }
 }
