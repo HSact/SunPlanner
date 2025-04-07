@@ -13,16 +13,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import java.time.LocalDate
 
-class YearDropDownPicker {
-    private val years = (1940 until LocalDate.now().year).toList().reversed()
+class DropDownPicker {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun YearDropdown(
+    fun <T> YearDropdown(
         label: String,
-        selectedYear: Int,
-        onYearSelected: (Int) -> Unit,
+        list: List<T>,
+        selectedYear: T,
+        onYearSelected: (T) -> Unit,
         modifier: Modifier = Modifier
     ) {
         var expanded by remember { mutableStateOf(false) }
@@ -46,11 +45,11 @@ class YearDropDownPicker {
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                years.forEach { year ->
+                list.forEach { item ->
                     DropdownMenuItem(
-                        text = { Text(year.toString()) },
+                        text = { Text(item.toString()) },
                         onClick = {
-                            onYearSelected(year)
+                            onYearSelected(item)
                             expanded = false
                         }
                     )

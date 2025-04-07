@@ -2,7 +2,6 @@ package com.hsact.sunplanner.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
 import com.hsact.sunplanner.network.RetrofitInstance
@@ -15,8 +14,8 @@ class MainViewModel : ViewModel() {
     private val repository =
         WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
-    private val _searchDataUI = MutableStateFlow(MainUIData())
-    val searchDataUI: StateFlow<MainUIData> get() = _searchDataUI
+    private val _searchDataUI = MutableStateFlow(MainUIState())
+    val searchDataUI: StateFlow<MainUIState> get() = _searchDataUI
 
     fun saveLocationToVM(city: Location) {
         _searchDataUI.value = _searchDataUI.value.copy(location = city)

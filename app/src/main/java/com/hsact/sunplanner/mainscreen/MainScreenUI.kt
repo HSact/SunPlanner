@@ -22,12 +22,14 @@ import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.mainscreen.searchUiKit.SearchUI
-import com.hsact.sunplanner.mainscreen.searchUiKit.YearDropDownPicker
+import com.hsact.sunplanner.mainscreen.searchUiKit.DropDownPicker
+import java.time.LocalDate
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen(modifier: Modifier = Modifier) {
+        val years = (1940 until LocalDate.now().year).toList().reversed()
         var cityName by remember { mutableStateOf("") }
         var startYear by remember { mutableIntStateOf(0) }
         var endYear by remember { mutableIntStateOf(0) }
@@ -67,14 +69,16 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     .padding(top = 10.dp)
                     .fillMaxWidth()
             ) {
-                YearDropDownPicker().YearDropdown(
+                DropDownPicker().YearDropdown(
                     label = "Start year",
+                    list = years,
                     selectedYear = selectedStartYear,
                     onYearSelected = { selectedStartYear = it },
                     modifier = Modifier.weight(0.5f)
                 )
-                YearDropDownPicker().YearDropdown(
+                DropDownPicker().YearDropdown(
                     label = "End year",
+                    list = years,
                     selectedYear = selectedEndYear,
                     onYearSelected = { selectedEndYear = it },
                     modifier = Modifier.weight(0.5f).padding(start = 5.dp)

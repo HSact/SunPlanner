@@ -3,7 +3,7 @@ package com.hsact.sunplanner.mainscreen
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 
-data class MainUIData (
+data class MainUIState (
     val cityName: String = "",
     var cities: List<Location> = emptyList(),
     val location: Location? = null,
