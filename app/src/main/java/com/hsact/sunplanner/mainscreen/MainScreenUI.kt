@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -24,19 +23,30 @@ import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.mainscreen.searchUiKit.SearchUI
 import com.hsact.sunplanner.mainscreen.searchUiKit.DropDownPicker
 import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen(modifier: Modifier = Modifier) {
         val years = (1940 until LocalDate.now().year).toList().reversed()
+        val months: List<String> = List(12) {
+            LocalDate.of(0, it + 1, 1).month.getDisplayName(TextStyle.FULL, Locale.getDefault()) }
+        val days = (1..28).toList()
         var cityName by remember { mutableStateOf("") }
         var startYear by remember { mutableIntStateOf(0) }
         var endYear by remember { mutableIntStateOf(0) }
+        var startMonth by remember { mutableStateOf("") }
+        var endMonth by remember { mutableStateOf("") }
+        var startDay by remember { mutableIntStateOf(0) }
+        var endDay by remember { mutableIntStateOf(0) }
         var selectedStartYear by remember { mutableIntStateOf(startYear) }
         var selectedEndYear by remember { mutableIntStateOf(endYear) }
-        var startDate by remember { mutableStateOf("") }
-        var endDate by remember { mutableStateOf("") }
+        var selectedStartMonth by remember { mutableStateOf(startMonth) }
+        var selectedEndMonth by remember { mutableStateOf(endMonth) }
+        var selectedStartDay by remember { mutableIntStateOf(startDay) }
+        var selectedEndDay by remember { mutableIntStateOf(endDay) }
         var isSearchExpanded by remember { mutableStateOf(false) }
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         val searchUI = SearchUI()
@@ -69,18 +79,18 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     .padding(top = 10.dp)
                     .fillMaxWidth()
             ) {
-                DropDownPicker().YearDropdown(
+                DropDownPicker().ItemsDropdown(
                     label = "Start year",
                     list = years,
-                    selectedYear = selectedStartYear,
-                    onYearSelected = { selectedStartYear = it },
+                    selected = selectedStartYear,
+                    onSelected = { selectedStartYear = it },
                     modifier = Modifier.weight(0.5f)
                 )
-                DropDownPicker().YearDropdown(
+                DropDownPicker().ItemsDropdown(
                     label = "End year",
                     list = years,
-                    selectedYear = selectedEndYear,
-                    onYearSelected = { selectedEndYear = it },
+                    selected = selectedEndYear,
+                    onSelected = { selectedEndYear = it },
                     modifier = Modifier.weight(0.5f).padding(start = 5.dp)
                 )
             }
@@ -88,20 +98,38 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 modifier = Modifier
                     .padding(top = 10.dp)
             ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f),
-                    value = startDate,
-                    onValueChange = { startDate = it },
-                    label = { Text("Start date") }
+                DropDownPicker().ItemsDropdown(
+                    label = "Start day",
+                    list = days,
+                    selected = selectedStartDay,
+                    onSelected = { selectedStartDay = it },
+                    modifier = Modifier.weight(0.5f)
                 )
-                OutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 10.dp),
-                    value = endDate,
-                    onValueChange = { endDate = it },
-                    label = { Text("End date") }
+                DropDownPicker().ItemsDropdown(
+                    label = "Start month",
+                    list = months,
+                    selected = selectedStartMonth,
+                    onSelected = { selectedStartMonth = it },
+                    modifier = Modifier.weight(0.5f).padding(start = 5.dp)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+            ) {
+                DropDownPicker().ItemsDropdown(
+                    label = "End day",
+                    list = days,
+                    selected = selectedEndDay,
+                    onSelected = { selectedEndDay = it },
+                    modifier = Modifier.weight(0.5f)
+                )
+                DropDownPicker().ItemsDropdown(
+                    label = "End month",
+                    list = months,
+                    selected = selectedEndMonth,
+                    onSelected = { selectedEndMonth = it },
+                    modifier = Modifier.weight(0.5f).padding(start = 5.dp)
                 )
             }
             Row(

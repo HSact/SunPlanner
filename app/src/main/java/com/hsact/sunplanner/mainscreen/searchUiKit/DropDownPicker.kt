@@ -17,11 +17,11 @@ import androidx.compose.ui.Modifier
 class DropDownPicker {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun <T> YearDropdown(
+    fun <T> ItemsDropdown(
         label: String,
         list: List<T>,
-        selectedYear: T,
-        onYearSelected: (T) -> Unit,
+        selected: T,
+        onSelected: (T) -> Unit,
         modifier: Modifier = Modifier
     ) {
         var expanded by remember { mutableStateOf(false) }
@@ -31,7 +31,7 @@ class DropDownPicker {
             onExpandedChange = { expanded = it }
         ) {
             OutlinedTextField(
-                value = if (selectedYear!=0) selectedYear.toString() else "",
+                value = if (selected!=0) selected.toString() else "",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text(label) },
@@ -49,7 +49,7 @@ class DropDownPicker {
                     DropdownMenuItem(
                         text = { Text(item.toString()) },
                         onClick = {
-                            onYearSelected(item)
+                            onSelected(item)
                             expanded = false
                         }
                     )
