@@ -11,7 +11,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,13 +36,10 @@ class MainScreenUI(val viewModel: MainViewModel) {
     @Composable
     fun MainScreen(modifier: Modifier = Modifier) {
         var cityName by remember { mutableStateOf("") }
-        val years = (1940 until LocalDate.now().year).toList()
-        var expandedStartYear by remember { mutableStateOf(false) }
-        var expandedEndYear by remember { mutableStateOf(false) }
-        var startYear by remember { mutableStateOf("") }
-        var endYear by remember { mutableStateOf("") }
-        var selectedStartYear by remember { mutableStateOf(startYear) }
-        var selectedEndYear by remember { mutableStateOf(endYear) }
+        var startYear by remember { mutableIntStateOf(0) }
+        var endYear by remember { mutableIntStateOf(0) }
+        var selectedStartYear by remember { mutableIntStateOf(startYear) }
+        var selectedEndYear by remember { mutableIntStateOf(endYear) }
         var startDate by remember { mutableStateOf("") }
         var endDate by remember { mutableStateOf("") }
         var isSearchExpanded by remember { mutableStateOf(false) }
@@ -73,40 +72,22 @@ class MainScreenUI(val viewModel: MainViewModel) {
             Row(
                 modifier = Modifier
                     .padding(top = 10.dp)
+                    .fillMaxWidth()
             ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .weight(1f),
-                    value = startYear,
-                    onValueChange = { startYear = it },
-                    label = { Text("Start year") },
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown Icon"
-                        )
-                    }
+                YearDropdown(
+                    label = "Start year",
+                    selectedYear = selectedStartYear,
+                    onYearSelected = { selectedStartYear = it },
+                    modifier = Modifier.weight(0.5f)
                 )
-                ExposedDropdownMenuBox(
-                    expanded = expandedStartYear,
-                    onExpandedChange = { expandedStartYear = it }
-                ) { //TODO: fix dropdown menu
-                    /*ExposedDropdownMenu(
-                        expanded = expandedStartYear,
-                        onDismissRequest = { expandedStartYear = false }
-                    ) {
-                        years.forEach { year ->
-                            DropdownMenuItem(onClick = {
-                                selectedStartYear = startYear.toString()
-                                expandedStartYear = false
-                            }) {
-                                Text(text = startYear.toString())
-                            }
-                        }
-                    }*/
-                }
-                OutlinedTextField(
+                YearDropdown(
+                    label = "End year",
+                    selectedYear = selectedEndYear,
+                    onYearSelected = { selectedEndYear = it },
+                    modifier = Modifier.weight(0.5f).padding(start = 10.dp)
+                )
+
+                /*OutlinedTextField(
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 10.dp),
@@ -120,7 +101,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             contentDescription = "Dropdown Icon"
                         )
                     }
-                )
+                )*/
             }
             Row(
                 modifier = Modifier
@@ -147,18 +128,61 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     .padding(top = 10.dp)
             ) {
                 Button(
-                    onClick = {viewModel.prepareParamsForRequest()},
+                    onClick = { viewModel.prepareParamsForRequest() },
                     modifier = Modifier
                         .weight(1f)
                 ) {
                     Text("Search")
                 }
             }
-            Row (modifier.fillMaxWidth() )
+            Row(modifier.fillMaxWidth())
             {
                 Text("Weather: ${searchDataUI.weatherData.toString()}")
             }
             //Cards with weather data
+        }
+    }
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun YearDropdown(
+        label: String,
+        selectedYear: Int,
+        onYearSelected: (Int) -> Unit,
+        modifier: Modifier = Modifier
+    ) {
+        val years = (1940 until LocalDate.now().year).toList().reversed()
+        var expanded by remember { mutableStateOf(false) }
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedTextField(
+                value = if (selectedYear!=0) selectedYear.toString() else "",
+                onValueChange = {},
+                readOnly = true,
+                label = { Text(label) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = modifier
+                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                years.forEach { year ->
+                    DropdownMenuItem(
+                        text = { Text(year.toString()) },
+                        onClick = {
+                            onYearSelected(year)
+                            expanded = false
+                        }
+                    )
+                }
+            }
         }
     }
 
