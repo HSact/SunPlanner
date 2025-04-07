@@ -74,7 +74,6 @@ class MainViewModel : ViewModel() {
             if (location != null) {
                 fetchWeather(params)
             } else {
-                //_uiState.value = "Город не найден"
                 println("Error fetching coordinates")
             }
         }
