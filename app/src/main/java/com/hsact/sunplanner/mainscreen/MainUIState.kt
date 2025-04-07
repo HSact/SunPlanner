@@ -6,9 +6,10 @@ import com.hsact.sunplanner.data.responses.WeatherResponse
 data class MainUIState (
     val cityName: String = "",
     var cities: List<Location> = emptyList(),
+    var dates: DateAdapter = DateAdapter(),
     val location: Location? = null,
-    val startYear: Int = 0,
-    val endYear: Int = 0,
+    var startYear: Int = 0,
+    var endYear: Int = 0,
     val years: Int = endYear - startYear,
     val startDate: String = "",
     val endDate: String = "",

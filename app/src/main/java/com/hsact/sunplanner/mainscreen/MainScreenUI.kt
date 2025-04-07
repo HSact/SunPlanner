@@ -84,14 +84,16 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     label = "Start year",
                     list = years,
                     selected = selectedStartYear,
-                    onSelected = { selectedStartYear = it },
+                    onSelected = { selectedStartYear = it
+                                 viewModel.saveDateFieldToVM(field = DateField.START_YEAR, it)},
                     modifier = Modifier.weight(0.5f)
                 )
                 DropDownPicker().ItemsDropdown(
                     label = "End year",
                     list = years,
                     selected = selectedEndYear,
-                    onSelected = { selectedEndYear = it },
+                    onSelected = { selectedEndYear = it
+                                 viewModel.saveDateFieldToVM(field = DateField.END_YEAR, it)},
                     modifier = Modifier.weight(0.5f).padding(start = 5.dp)
                 )
             }
@@ -106,14 +108,16 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             label = "Start day",
                             list = days,
                             selected = selectedStartDay,
-                            onSelected = { selectedStartDay = it },
+                            onSelected = { selectedStartDay = it
+                                         viewModel.saveDateFieldToVM(field = DateField.START_DAY, it)},
                             modifier = Modifier.weight(0.5f)
                         )
                         DropDownPicker().ItemsDropdown(
                             label = "End day",
                             list = days,
                             selected = selectedEndDay,
-                            onSelected = { selectedEndDay = it },
+                            onSelected = { selectedEndDay = it
+                                         viewModel.saveDateFieldToVM(field = DateField.END_DAY, it)},
                             modifier = Modifier.weight(0.5f).padding(start = 5.dp)
                         )
                     }
@@ -127,14 +131,16 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             label = "Start month",
                             list = months,
                             selected = selectedStartMonth,
-                            onSelected = { selectedStartMonth = it },
+                            onSelected = { selectedStartMonth = it
+                                         viewModel.saveDateFieldToVM(field = DateField.START_MONTH, it)},
                             modifier = Modifier.weight(0.5f)
                         )
                         DropDownPicker().ItemsDropdown(
                             label = "End month",
                             list = months,
                             selected = selectedEndMonth,
-                            onSelected = { selectedEndMonth = it },
+                            onSelected = { selectedEndMonth = it
+                                         viewModel.saveDateFieldToVM(field = DateField.END_MONTH, it)},
                             modifier = Modifier.weight(0.5f).padding(start = 5.dp)
                         )
                     }

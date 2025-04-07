@@ -14,7 +14,4 @@ object LocationUtils {
             city.country
         ).joinToString(", ")
     }
-    fun prepareDate(year: Int, month: String, day: Int): String {
-        return "$year-$month-$day"
-    }
 }
