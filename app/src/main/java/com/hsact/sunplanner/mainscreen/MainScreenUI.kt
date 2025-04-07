@@ -155,6 +155,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
         val years = (1940 until LocalDate.now().year).toList().reversed()
         var expanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
+            modifier = modifier,
             expanded = expanded,
             onExpandedChange = { expanded = it }
         ) {
