@@ -10,8 +10,7 @@ data class MainUIState (
     val location: Location? = null,
     var startYear: Int = 0,
     var endYear: Int = 0,
-    val years: Int = endYear - startYear,
     val startDate: String = "",
     val endDate: String = "",
-    val weatherData: WeatherResponse? = null
+    var weatherData: List <WeatherResponse> = emptyList()
 )

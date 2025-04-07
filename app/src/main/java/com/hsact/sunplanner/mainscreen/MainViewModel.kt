@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 enum class DateField {
     START_YEAR, END_YEAR, START_MONTH, END_MONTH, START_DAY, END_DAY
 }
+
 class MainViewModel : ViewModel() {
     private val repository =
         WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
@@ -23,6 +24,7 @@ class MainViewModel : ViewModel() {
     fun saveLocationToVM(city: Location) {
         _searchDataUI.value = _searchDataUI.value.copy(location = city)
     }
+
     /*fun saveStartYearToVM(year: Int) {
         _searchDataUI.value.dates = _searchDataUI.value.dates.copy(startYear = year)
     }
@@ -56,12 +58,23 @@ class MainViewModel : ViewModel() {
                 if (day != null) _searchDataUI.value.dates.copy(endDay = day) else _searchDataUI.value.dates
             }
         }
-        _searchDataUI.value = _searchDataUI.value.copy(startDate =  //TODO: rewrite
-            prepareDate(_searchDataUI.value.dates.startYear, _searchDataUI.value.dates.startMonth, _searchDataUI.value.dates.startDay))
-        _searchDataUI.value = _searchDataUI.value.copy(endDate =
-            prepareDate(_searchDataUI.value.dates.endYear, _searchDataUI.value.dates.endMonth, _searchDataUI.value.dates.endDay))
+        _searchDataUI.value = _searchDataUI.value.copy(
+            startDate =  //TODO: rewrite
+                prepareDate(
+                    _searchDataUI.value.dates.startMonth,
+                    _searchDataUI.value.dates.startDay
+                )
+        )
+        _searchDataUI.value = _searchDataUI.value.copy(
+            endDate =
+                prepareDate(
+                    _searchDataUI.value.dates.endMonth,
+                    _searchDataUI.value.dates.endDay
+                )
+        )
     }
-    private fun prepareDate(year: Int, month: String, day: Int): String {
+
+    private fun prepareDate(month: String, day: Int): String {
         val monthNumber = when (month) {
             "January" -> "01"
             "February" -> "02"
@@ -75,19 +88,28 @@ class MainViewModel : ViewModel() {
             "October" -> "10"
             "November" -> "11"
             "December" -> "12"
-            else -> "00" //throw IllegalArgumentException("Invalid month name")
+            else -> "00"
         }
         val dayFormatted = day.toString().padStart(2, '0')
-        return "$year-$monthNumber-$dayFormatted"
+        return "$monthNumber-$dayFormatted"
     }
 
     fun prepareParamsForRequest() { //TODO: rewrite
-        val params = WeatherRequestParams()
-        params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
-        params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
-        params.startDate = _searchDataUI.value.startDate
-        params.endDate = _searchDataUI.value.endDate
-        fetchWeather(params)
+        val paramsList = mutableListOf<WeatherRequestParams>()
+        var count = _searchDataUI.value.dates.startYear
+        while (count <= _searchDataUI.value.dates.endYear) {
+            var params = WeatherRequestParams()
+            params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
+            params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
+            params.startDate = count.toString() + "-" + _searchDataUI.value.startDate
+            params.endDate = count.toString() + "-" + _searchDataUI.value.endDate
+            paramsList.add(params)
+            count++
+        }
+        for (param in paramsList) {
+            fetchWeather(param)
+        }
+        //fetchWeather(params)
     }
 
     fun fetchCityList(cityName: String) {
@@ -113,7 +135,8 @@ class MainViewModel : ViewModel() {
                     endDate = params.endDate
                 )
                 println(response)
-                _searchDataUI.value = _searchDataUI.value.copy(weatherData = response)
+                _searchDataUI.value = _searchDataUI.value.copy(
+                    weatherData = _searchDataUI.value.weatherData + response)
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
             }
