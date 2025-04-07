@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.mainscreen.searchUiKit.SearchUI
+import com.hsact.sunplanner.mainscreen.searchUiKit.YearDropDownPicker
 import java.time.LocalDate
 
 class MainScreenUI(val viewModel: MainViewModel) {
@@ -74,13 +75,13 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     .padding(top = 10.dp)
                     .fillMaxWidth()
             ) {
-                YearDropdown(
+                YearDropDownPicker().YearDropdown(
                     label = "Start year",
                     selectedYear = selectedStartYear,
                     onYearSelected = { selectedStartYear = it },
                     modifier = Modifier.weight(0.5f)
                 )
-                YearDropdown(
+                YearDropDownPicker().YearDropdown(
                     label = "End year",
                     selectedYear = selectedEndYear,
                     onYearSelected = { selectedEndYear = it },
@@ -140,50 +141,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 Text("Weather: ${searchDataUI.weatherData.toString()}")
             }
             //Cards with weather data
-        }
-    }
-
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun YearDropdown(
-        label: String,
-        selectedYear: Int,
-        onYearSelected: (Int) -> Unit,
-        modifier: Modifier = Modifier
-    ) {
-        val years = (1940 until LocalDate.now().year).toList().reversed()
-        var expanded by remember { mutableStateOf(false) }
-        ExposedDropdownMenuBox(
-            modifier = modifier,
-            expanded = expanded,
-            onExpandedChange = { expanded = it }
-        ) {
-            OutlinedTextField(
-                value = if (selectedYear!=0) selectedYear.toString() else "",
-                onValueChange = {},
-                readOnly = true,
-                label = { Text(label) },
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                },
-                modifier = modifier
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
-            )
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                years.forEach { year ->
-                    DropdownMenuItem(
-                        text = { Text(year.toString()) },
-                        onClick = {
-                            onYearSelected(year)
-                            expanded = false
-                        }
-                    )
-                }
-            }
         }
     }
 
