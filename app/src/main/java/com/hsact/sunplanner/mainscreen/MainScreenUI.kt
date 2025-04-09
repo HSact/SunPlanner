@@ -34,7 +34,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
         val years = (1940 until LocalDate.now().year).toList().reversed()
         val months: List<String> = List(12) {
             LocalDate.of(0, it + 1, 1).month.getDisplayName(TextStyle.FULL, Locale.getDefault()) }
-        val days = (1..28).toList()
+        val startDays = (1..28).toList()
+        val endDays = (1..28).toList()
         var cityName by remember { mutableStateOf("") }
         var startYear by remember { mutableIntStateOf(LocalDate.now().year-10) }
         var endYear by remember { mutableIntStateOf(LocalDate.now().year-1) }
@@ -106,7 +107,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     {
                         DropDownPicker().ItemsDropdown(
                             label = "Start day",
-                            list = days,
+                            list = startDays,
                             selected = selectedStartDay,
                             onSelected = { selectedStartDay = it
                                          viewModel.saveDateFieldToVM(field = DateField.START_DAY, it)},
@@ -114,7 +115,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         )
                         DropDownPicker().ItemsDropdown(
                             label = "End day",
-                            list = days,
+                            list = endDays,
                             selected = selectedEndDay,
                             onSelected = { selectedEndDay = it
                                          viewModel.saveDateFieldToVM(field = DateField.END_DAY, it)},
@@ -160,7 +161,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
             }
             Row(modifier.fillMaxWidth())
             {
-                Text("Weather: ${searchDataUI.weatherData.toString()}")
+                Text("Weather: ${searchDataUI.weatherData}")
             }
             //Cards with weather data
         }
