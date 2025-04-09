@@ -28,25 +28,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen(modifier: Modifier = Modifier) {
-        //val years = (1940 until LocalDate.now().year).toList().reversed()
-        /*val months: List<String> = List(12) {
-            LocalDate.of(0, it + 1, 1).month.getDisplayName(TextStyle.FULL, Locale.getDefault())
-        }*/
-        /*val startDays = (1..28).toList()
-        val endDays = (1..28).toList()*/
         var cityName by remember { mutableStateOf("") }
-        /*var startYear by remember { mutableIntStateOf(LocalDate.now().year - 10) }
-        var endYear by remember { mutableIntStateOf(LocalDate.now().year - 1) }
-        var startMonth by remember { mutableStateOf("") }
-        var endMonth by remember { mutableStateOf("") }
-        var startDay by remember { mutableIntStateOf(0) }
-        var endDay by remember { mutableIntStateOf(0) }
-        var selectedStartYear by remember { mutableIntStateOf(startYear) }
-        var selectedEndYear by remember { mutableIntStateOf(endYear) }
-        var selectedStartMonth by remember { mutableStateOf(startMonth) }
-        var selectedEndMonth by remember { mutableStateOf(endMonth) }
-        var selectedStartDay by remember { mutableIntStateOf(startDay) }
-        var selectedEndDay by remember { mutableIntStateOf(endDay) }*/
         var isSearchExpanded by remember { mutableStateOf(false) }
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         val searchUI = SearchUI()
