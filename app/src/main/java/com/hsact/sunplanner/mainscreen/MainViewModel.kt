@@ -11,10 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-enum class DateField {
-    START_YEAR, END_YEAR, START_MONTH, END_MONTH, START_DAY, END_DAY
-}
-
 class MainViewModel : ViewModel() {
     private val repository =
         WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
@@ -32,53 +28,6 @@ class MainViewModel : ViewModel() {
     fun saveEndYearToVM(year: Int) {
         _searchDataUI.value.dates = _searchDataUI.value.dates.copy(endYear = year)
     }*/
-    fun saveDateFieldToVM(field: DateField, value: Any) {
-        _searchDataUI.value.dates = when (field) {
-            DateField.START_YEAR -> {
-                val year = value as? Int ?: value.toString().toIntOrNull()
-                if (year != null) _searchDataUI.value.dates.copy(startYear = year) else _searchDataUI.value.dates
-            }
-
-            DateField.END_YEAR -> {
-                val year = value as? Int ?: value.toString().toIntOrNull()
-                if (year != null) _searchDataUI.value.dates.copy(endYear = year) else _searchDataUI.value.dates
-            }
-
-            DateField.START_MONTH -> {
-                val month = value as? String ?: value.toString()
-                _searchDataUI.value.dates.copy(startMonth = month)
-            }
-
-            DateField.END_MONTH -> {
-                val month = value as? String ?: value.toString()
-                _searchDataUI.value.dates.copy(endMonth = month)
-            }
-
-            DateField.START_DAY -> {
-                val day = value as? Int ?: value.toString().toIntOrNull()
-                if (day != null) _searchDataUI.value.dates.copy(startDay = day) else _searchDataUI.value.dates
-            }
-
-            DateField.END_DAY -> {
-                val day = value as? Int ?: value.toString().toIntOrNull()
-                if (day != null) _searchDataUI.value.dates.copy(endDay = day) else _searchDataUI.value.dates
-            }
-        }
-        _searchDataUI.value = _searchDataUI.value.copy(
-            startDate =
-                prepareDate(
-                    _searchDataUI.value.dates.startMonth,
-                    _searchDataUI.value.dates.startDay
-                )
-        )
-        _searchDataUI.value = _searchDataUI.value.copy(
-            endDate =
-                prepareDate(
-                    _searchDataUI.value.dates.endMonth,
-                    _searchDataUI.value.dates.endDay
-                )
-        )
-    }
 
     fun updateStartYear(year: Int) {
         val old = _searchDataUI.value.startLD
@@ -145,13 +94,20 @@ class MainViewModel : ViewModel() {
     }
 
     fun prepareParamsForRequest() { //TODO: rewrite
-        var params = WeatherRequestParams()
-        params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
-        params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
-        params.startDate =
-            _searchDataUI.value.dates.startYear.toString() + "-" + _searchDataUI.value.startDate
-        params.endDate =
-            _searchDataUI.value.dates.endYear.toString() + "-" + _searchDataUI.value.endDate
+        val location = _searchDataUI.value.location
+        val startDate = _searchDataUI.value.startLD
+        val endDate = _searchDataUI.value.endLD
+
+        if (location == null || startDate > endDate) {
+            // TODO: Show error message
+            return
+        }
+        val params = WeatherRequestParams().apply {
+            latitude = location.latitude
+            longitude = location.longitude
+            this.startDate = startDate.toString() // YYYY-MM-DD
+            this.endDate = endDate.toString()
+        }
         fetchWeather(params)
     }
 
