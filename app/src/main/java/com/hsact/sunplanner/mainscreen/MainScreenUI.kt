@@ -36,8 +36,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
             LocalDate.of(0, it + 1, 1).month.getDisplayName(TextStyle.FULL, Locale.getDefault()) }
         val days = (1..28).toList()
         var cityName by remember { mutableStateOf("") }
-        var startYear by remember { mutableIntStateOf(0) }
-        var endYear by remember { mutableIntStateOf(0) }
+        var startYear by remember { mutableIntStateOf(LocalDate.now().year-10) }
+        var endYear by remember { mutableIntStateOf(LocalDate.now().year-1) }
         var startMonth by remember { mutableStateOf("") }
         var endMonth by remember { mutableStateOf("") }
         var startDay by remember { mutableIntStateOf(0) }
