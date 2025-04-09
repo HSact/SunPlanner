@@ -13,7 +13,7 @@ data class MainUIState (
     var endYear: Int = 0,
     val startDate: String = "",
     val endDate: String = "",
-    var startLD: LocalDate = LocalDate.now().minusYears(10),
+    var startLD: LocalDate = LocalDate.now().minusYears(1),
     var endLD: LocalDate = LocalDate.now().minusYears(1),
     var weatherData: WeatherResponse? = null
 )

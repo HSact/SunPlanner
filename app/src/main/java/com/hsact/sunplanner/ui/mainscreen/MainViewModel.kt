@@ -22,13 +22,6 @@ class MainViewModel : ViewModel() {
         _searchDataUI.value = _searchDataUI.value.copy(location = city)
     }
 
-    /*fun saveStartYearToVM(year: Int) {
-        _searchDataUI.value.dates = _searchDataUI.value.dates.copy(startYear = year)
-    }
-    fun saveEndYearToVM(year: Int) {
-        _searchDataUI.value.dates = _searchDataUI.value.dates.copy(endYear = year)
-    }*/
-
     fun updateStartYear(year: Int) {
         val old = _searchDataUI.value.startLD
         val newDate = old.withYear(year).coerceDay()
@@ -51,13 +44,13 @@ class MainViewModel : ViewModel() {
     fun updateEndYear(year: Int) {
         val old = _searchDataUI.value.endLD
         val newDate = old.withYear(year).coerceDay()
-        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+        _searchDataUI.value = _searchDataUI.value.copy(endLD = newDate)
     }
 
     fun updateEndMonth(month: Int) {
         val old = _searchDataUI.value.endLD
         val newDate = old.withMonth(month).coerceDay()
-        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+        _searchDataUI.value = _searchDataUI.value.copy(endLD = newDate)
     }
 
     fun updateEndDay(day: Int) {
@@ -65,7 +58,7 @@ class MainViewModel : ViewModel() {
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
         val newDate = old.withDayOfMonth(validDay)
-        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+        _searchDataUI.value = _searchDataUI.value.copy(endLD = newDate)
     }
 
     fun LocalDate.coerceDay(): LocalDate {
