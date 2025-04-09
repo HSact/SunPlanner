@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.mainscreen
+package com.hsact.sunplanner.ui.mainscreen
 
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse

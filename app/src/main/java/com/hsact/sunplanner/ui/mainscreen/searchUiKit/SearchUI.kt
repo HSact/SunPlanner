@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.mainscreen.searchUiKit
+package com.hsact.sunplanner.ui.mainscreen.searchUiKit
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.LocationUtils
 import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.mainscreen.MainViewModel
+import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 
 class SearchUI {
     private val minCityLetters = 2

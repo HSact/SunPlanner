@@ -11,8 +11,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
-import com.hsact.sunplanner.mainscreen.MainScreenUI
-import com.hsact.sunplanner.mainscreen.MainViewModel
+import com.hsact.sunplanner.ui.mainscreen.MainScreenUI
+import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()

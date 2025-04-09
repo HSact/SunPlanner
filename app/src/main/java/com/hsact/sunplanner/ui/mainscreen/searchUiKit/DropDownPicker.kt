@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.mainscreen.searchUiKit
+package com.hsact.sunplanner.ui.mainscreen.searchUiKit
 
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api

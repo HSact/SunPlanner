@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.mainscreen
+package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

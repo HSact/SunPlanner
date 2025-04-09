@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.mainscreen
+package com.hsact.sunplanner.ui.mainscreen
 
 data class DateAdapter(
     var startDay: Int = 0,

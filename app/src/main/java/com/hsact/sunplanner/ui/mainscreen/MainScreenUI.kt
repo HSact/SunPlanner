@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.mainscreen
+package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,11 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.LocationUtils
-import com.hsact.sunplanner.mainscreen.searchUiKit.SearchUI
-import com.hsact.sunplanner.mainscreen.searchUiKit.DropDownPicker
+import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
+import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
