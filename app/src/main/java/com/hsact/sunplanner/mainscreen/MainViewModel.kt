@@ -9,6 +9,7 @@ import com.hsact.sunplanner.network.WeatherRequestParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 enum class DateField {
     START_YEAR, END_YEAR, START_MONTH, END_MONTH, START_DAY, END_DAY
@@ -37,29 +38,34 @@ class MainViewModel : ViewModel() {
                 val year = value as? Int ?: value.toString().toIntOrNull()
                 if (year != null) _searchDataUI.value.dates.copy(startYear = year) else _searchDataUI.value.dates
             }
+
             DateField.END_YEAR -> {
                 val year = value as? Int ?: value.toString().toIntOrNull()
                 if (year != null) _searchDataUI.value.dates.copy(endYear = year) else _searchDataUI.value.dates
             }
+
             DateField.START_MONTH -> {
                 val month = value as? String ?: value.toString()
                 _searchDataUI.value.dates.copy(startMonth = month)
             }
+
             DateField.END_MONTH -> {
                 val month = value as? String ?: value.toString()
                 _searchDataUI.value.dates.copy(endMonth = month)
             }
+
             DateField.START_DAY -> {
                 val day = value as? Int ?: value.toString().toIntOrNull()
                 if (day != null) _searchDataUI.value.dates.copy(startDay = day) else _searchDataUI.value.dates
             }
+
             DateField.END_DAY -> {
                 val day = value as? Int ?: value.toString().toIntOrNull()
                 if (day != null) _searchDataUI.value.dates.copy(endDay = day) else _searchDataUI.value.dates
             }
         }
         _searchDataUI.value = _searchDataUI.value.copy(
-            startDate =  //TODO: rewrite
+            startDate =
                 prepareDate(
                     _searchDataUI.value.dates.startMonth,
                     _searchDataUI.value.dates.startDay
@@ -72,6 +78,50 @@ class MainViewModel : ViewModel() {
                     _searchDataUI.value.dates.endDay
                 )
         )
+    }
+
+    fun updateStartYear(year: Int) {
+        val old = _searchDataUI.value.startLD
+        val newDate = old.withYear(year).coerceDay()
+        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+    }
+
+    fun updateStartMonth(month: Int) {
+        val old = _searchDataUI.value.startLD
+        val newDate = old.withMonth(month).coerceDay()
+        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+    }
+
+    fun updateStartDay(day: Int) {
+        val old = _searchDataUI.value.startLD
+        val maxDay = old.lengthOfMonth()
+        val validDay = day.coerceIn(1, maxDay)
+        val newDate = old.withDayOfMonth(validDay)
+        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+    }
+    fun updateEndYear(year: Int) {
+        val old = _searchDataUI.value.endLD
+        val newDate = old.withYear(year).coerceDay()
+        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+    }
+
+    fun updateEndMonth(month: Int) {
+        val old = _searchDataUI.value.endLD
+        val newDate = old.withMonth(month).coerceDay()
+        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+    }
+
+    fun updateEndDay(day: Int) {
+        val old = _searchDataUI.value.endLD
+        val maxDay = old.lengthOfMonth()
+        val validDay = day.coerceIn(1, maxDay)
+        val newDate = old.withDayOfMonth(validDay)
+        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+    }
+
+    fun LocalDate.coerceDay(): LocalDate {
+        val maxDay = this.lengthOfMonth()
+        return if (this.dayOfMonth > maxDay) this.withDayOfMonth(maxDay) else this
     }
 
     private fun prepareDate(month: String, day: Int): String {
@@ -95,21 +145,14 @@ class MainViewModel : ViewModel() {
     }
 
     fun prepareParamsForRequest() { //TODO: rewrite
-        val paramsList = mutableListOf<WeatherRequestParams>()
-        var count = _searchDataUI.value.dates.startYear
-        while (count <= _searchDataUI.value.dates.endYear) {
-            var params = WeatherRequestParams()
-            params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
-            params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
-            params.startDate = count.toString() + "-" + _searchDataUI.value.startDate
-            params.endDate = count.toString() + "-" + _searchDataUI.value.endDate
-            paramsList.add(params)
-            count++
-        }
-        for (param in paramsList) {
-            fetchWeather(param)
-        }
-        //fetchWeather(params)
+        var params = WeatherRequestParams()
+        params.latitude = _searchDataUI.value.location?.latitude ?: 0.0
+        params.longitude = _searchDataUI.value.location?.longitude ?: 0.0
+        params.startDate =
+            _searchDataUI.value.dates.startYear.toString() + "-" + _searchDataUI.value.startDate
+        params.endDate =
+            _searchDataUI.value.dates.endYear.toString() + "-" + _searchDataUI.value.endDate
+        fetchWeather(params)
     }
 
     fun fetchCityList(cityName: String) {
@@ -136,7 +179,8 @@ class MainViewModel : ViewModel() {
                 )
                 println(response)
                 _searchDataUI.value = _searchDataUI.value.copy(
-                    weatherData = _searchDataUI.value.weatherData + response)
+                    weatherData = response
+                )
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
             }

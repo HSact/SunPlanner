@@ -2,6 +2,7 @@ package com.hsact.sunplanner.mainscreen
 
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import java.time.LocalDate
 
 data class MainUIState (
     val cityName: String = "",
@@ -12,5 +13,7 @@ data class MainUIState (
     var endYear: Int = 0,
     val startDate: String = "",
     val endDate: String = "",
-    var weatherData: List <WeatherResponse> = emptyList()
+    var startLD: LocalDate = LocalDate.now().minusYears(10),
+    var endLD: LocalDate = LocalDate.now().minusYears(1),
+    var weatherData: WeatherResponse? = null
 )
