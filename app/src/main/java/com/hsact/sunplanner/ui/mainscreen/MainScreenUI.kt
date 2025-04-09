@@ -53,12 +53,12 @@ class MainScreenUI(val viewModel: MainViewModel) {
         var query by remember { mutableStateOf("") }
 
         val date1 = searchDataUI.startLD
-        val years1 = (date1.year - 80..date1.year).toList().reversed()
+        val years1 = (1940 .. LocalDate.now().minusYears(1).year).toList().reversed()
         val months1 = (1..12).toList()
         val days1 = (1..date1.lengthOfMonth()).toList()
 
         val date2 = searchDataUI.endLD
-        val years2 = (date2.year - 80..date2.year).toList().reversed()
+        val years2 = (1940..LocalDate.now().minusYears(1).year).toList().reversed()
         val months2 = (1..12).toList()
         val days2 = (1..date2.lengthOfMonth()).toList()
 
@@ -92,7 +92,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 DropDownPicker().ItemsDropdown(
                     label = "Start year",
                     list = years1,
-                    selected = date1.year-9,
+                    selected = date1.year,
                     onSelected = {
                         //date1.year = it
                         //viewModel.saveDateFieldToVM(field = DateField.START_YEAR, it)},

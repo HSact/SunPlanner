@@ -136,7 +136,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
+    /*fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
         viewModelScope.launch {
             val location = repository.getCoordinatesByCity(
                 cityName = cityName
@@ -152,5 +152,5 @@ class MainViewModel : ViewModel() {
                 println("Error fetching coordinates")
             }
         }
-    }
+    }*/
 }
