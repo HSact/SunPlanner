@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -53,9 +54,12 @@ class MainScreenUI(val viewModel: MainViewModel) {
         Column(
             modifier = modifier
                 .fillMaxSize()
-                //.verticalScroll(scrollState)
+                .verticalScroll(scrollState)
         ) {
-            Row {
+            Row(
+                modifier = Modifier
+                    .heightIn(max = 1000.dp)
+            ) {
                 searchUI.SearchCityBar(
                     viewModel = viewModel,
                     query = query,
