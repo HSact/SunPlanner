@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -68,31 +69,37 @@ class SearchUI {
         {
             SearchBar(
                 inputField = {
-                    TextField(
-                        value = query,
-                        onValueChange = {
-                            onQueryChange(it)
-                            onSearchExpandedChange(it.isNotEmpty() || isFocused)
-                            if (it.length >= minCityLetters) {
-                                viewModel.fetchCityList(it)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                            .focusRequester(focusRequester),
-                        shape = searchBarShape,
-                        placeholder = { Text("City/Town") },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search"
-                            )
-                        },
-                        colors = TextFieldDefaults.colors(
-                            unfocusedIndicatorColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent
-                        ),
-                        interactionSource = interactionSource
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        TextField(
+                            value = query,
+                            onValueChange = {
+                                onQueryChange(it)
+                                onSearchExpandedChange(it.isNotEmpty() || isFocused)
+                                if (it.length >= minCityLetters) {
+                                    viewModel.fetchCityList(it)
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester),
+                            shape = searchBarShape,
+                            placeholder = { Text("City/Town") },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    contentDescription = "Search"
+                                )
+                            },
+                            colors = TextFieldDefaults.colors(
+                                unfocusedIndicatorColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent
+                            ),
+                            interactionSource = interactionSource
+                        )
+                    }
                 },
                 expanded = isSearchExpanded,
                 onExpandedChange = onSearchExpandedChange,
@@ -103,19 +110,29 @@ class SearchUI {
                 //tonalElevation = 0.dp,
                 //shadowElevation = 0.dp
             ) {
-                Column {
-                    CityList(viewModel, onCitySelected, onSearchExpandedChange)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Column {
+                        CityList(viewModel, onCitySelected, onSearchExpandedChange)
+                    }
                 }
             }
         }
     }
 
     @Composable
-    private fun CityList(viewModel: MainViewModel, onCitySelected: (Location) -> Unit,
-                         onSearchExpandedChange: (Boolean) -> Unit) {
+    private fun CityList(
+        viewModel: MainViewModel, onCitySelected: (Location) -> Unit,
+        onSearchExpandedChange: (Boolean) -> Unit
+    ) {
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         if (searchDataUI.cities.isNotEmpty()) {
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 items(searchDataUI.cities) { city ->
                     CityCard(city, onCityClick = onCitySelected, onSearchExpandedChange)
                 }
@@ -128,8 +145,10 @@ class SearchUI {
     }
 
     @Composable
-    private fun CityCard(city: Location, onCityClick: (Location) -> Unit,
-                         onSearchExpandedChange: (Boolean) -> Unit) {
+    private fun CityCard(
+        city: Location, onCityClick: (Location) -> Unit,
+        onSearchExpandedChange: (Boolean) -> Unit
+    ) {
         val keyboardController = LocalSoftwareKeyboardController.current
         Card(
             modifier = Modifier

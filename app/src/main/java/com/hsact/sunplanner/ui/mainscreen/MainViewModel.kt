@@ -61,7 +61,7 @@ class MainViewModel : ViewModel() {
         _searchDataUI.value = _searchDataUI.value.copy(endLD = newDate)
     }
 
-    fun LocalDate.coerceDay(): LocalDate {
+    private fun LocalDate.coerceDay(): LocalDate {
         val maxDay = this.lengthOfMonth()
         return if (this.dayOfMonth > maxDay) this.withDayOfMonth(maxDay) else this
     }
