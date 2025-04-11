@@ -38,13 +38,15 @@ class MainScreenUI(val viewModel: MainViewModel) {
         var query by remember { mutableStateOf("") }
 
         val date1 = searchDataUI.startLD
-        val years1 = (1940 .. LocalDate.now().minusYears(1).year).toList().reversed()
-        val months1 = (1..12).toList()
+        var years1 by remember { mutableStateOf((1940 .. LocalDate.now().minusYears(1).year).toList().reversed()) }
+        val months1 by remember {mutableStateOf((1..12).toList())}
+        //val days1 by remember {mutableStateOf( (1..date1.lengthOfMonth()).toList())}
         val days1 = (1..date1.lengthOfMonth()).toList()
 
         val date2 = searchDataUI.endLD
-        val years2 = (1940..LocalDate.now().minusYears(1).year).toList().reversed()
-        val months2 = (1..12).toList()
+        val years2 by remember { mutableStateOf((1940 .. LocalDate.now().minusYears(1).year).toList().reversed()) }
+        val months2 by remember {mutableStateOf((1..12).toList())}
+        //val days2 by remember {mutableStateOf( (1..date2.lengthOfMonth()).toList())}
         val days2 = (1..date2.lengthOfMonth()).toList()
 
         //viewModel.fetchWeatherByCity("Moscow", "01.01.2024", "02.01.2024")

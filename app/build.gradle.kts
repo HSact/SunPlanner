@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.moshi.adapters)
+    implementation("io.github.ehsannarmani:compose-charts:0.1.2")
     kapt(libs.moshi.kotlin.codegen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

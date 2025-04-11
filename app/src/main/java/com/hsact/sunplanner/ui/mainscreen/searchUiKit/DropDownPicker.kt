@@ -20,7 +20,7 @@ class DropDownPicker {
     fun <T> ItemsDropdown(
         label: String,
         list: List<T>,
-        selected: T,
+        selected: T?,
         onSelected: (T) -> Unit,
         modifier: Modifier = Modifier
     ) {
@@ -31,7 +31,7 @@ class DropDownPicker {
             onExpandedChange = { expanded = it }
         ) {
             OutlinedTextField(
-                value = if (selected!=0) selected.toString() else "",
+                value = selected?.toString() ?: "",
                 onValueChange = {},
                 readOnly = true,
                 label = { Text(label) },
