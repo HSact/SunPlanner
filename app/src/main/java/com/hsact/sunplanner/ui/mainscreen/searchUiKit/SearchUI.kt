@@ -36,7 +36,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import com.hsact.sunplanner.data.LocationUtils
+import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 

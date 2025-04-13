@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
+import com.hsact.sunplanner.data.utils.WeatherUtils
 import com.hsact.sunplanner.network.RetrofitInstance
 import com.hsact.sunplanner.network.WeatherRequestParams
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -127,9 +128,22 @@ class MainViewModel : ViewModel() {
                     endDate = params.endDate
                 )
                 println(response)
-                _searchDataUI.value = _searchDataUI.value.copy(
-                    weatherData = response
+                val filteredDaily = WeatherUtils.filterDailyWeatherByDateRange(
+                    response.daily,
+                    _searchDataUI.value.startLD,
+                    _searchDataUI.value.endLD
                 )
+                if (filteredDaily != null) {
+                    val responseFiltered = response.copy(daily = filteredDaily)
+                    _searchDataUI.value = _searchDataUI.value.copy(
+                        weatherData = responseFiltered
+                    )
+                    println(responseFiltered)
+                }
+                else {
+                    _searchDataUI.value = _searchDataUI.value.copy(
+                        weatherData = response)
+                }
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
             }

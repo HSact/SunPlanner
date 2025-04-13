@@ -1,7 +1,6 @@
-package com.hsact.sunplanner.data
+package com.hsact.sunplanner.data.utils
 
 import com.hsact.sunplanner.data.responses.Location
-import java.time.LocalDate
 
 object LocationUtils {
     fun buildCityFullName(city: Location): String {

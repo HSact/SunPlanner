@@ -37,7 +37,7 @@ import java.time.LocalDate
 
 class WeatherGraphCard {
     @Composable
-    fun TemperatureCard(chartData: StateFlow<List<Double>>, goalData: StateFlow<Double>) {
+    fun WeatherCard(chartData: StateFlow<List<Double>>, goalData: StateFlow<Double>) {
         val chartState by chartData.collectAsStateWithLifecycle()
         val goal by goalData.collectAsState()
         val daysInMonth = LocalDate.now().lengthOfMonth()
@@ -131,6 +131,6 @@ class WeatherGraphCard {
                 )
             )
         }
-        TemperatureCard(previewData, MutableStateFlow(0.0))
+        WeatherCard(previewData, MutableStateFlow(0.0))
     }
 }

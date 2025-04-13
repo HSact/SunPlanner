@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
-import com.hsact.sunplanner.data.LocationUtils
+import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.ui.mainscreen.card.WeatherGraphCard
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
