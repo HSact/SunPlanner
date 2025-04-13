@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
-import com.hsact.sunplanner.data.utils.WeatherUtils
+import com.hsact.sunplanner.domain.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.network.RetrofitInstance
 import com.hsact.sunplanner.network.WeatherRequestParams
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class MainViewModel : ViewModel() {
+class MainViewModel () : ViewModel() {
     private val repository =
         WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
@@ -118,7 +118,7 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    private fun fetchWeather(params: WeatherRequestParams) {
+    /*private fun fetchWeather(params: WeatherRequestParams) {
         viewModelScope.launch {
             try {
                 val response = repository.getWeather(
@@ -148,7 +148,23 @@ class MainViewModel : ViewModel() {
                 println("Error fetching weather: ${e.message}")
             }
         }
+    }*/
+    private fun fetchWeather(params: WeatherRequestParams) {
+        viewModelScope.launch {
+            try {
+                val result = FetchFilteredWeatherUseCase(repository).execute(
+                    params,
+                    _searchDataUI.value.startLD,
+                    _searchDataUI.value.endLD
+                )
+                _searchDataUI.value = _searchDataUI.value.copy(weatherData = result)
+                println(result)
+            } catch (e: Exception) {
+                println("Error fetching weather: ${e.message}")
+            }
+        }
     }
+
 
     /*fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
         viewModelScope.launch {
