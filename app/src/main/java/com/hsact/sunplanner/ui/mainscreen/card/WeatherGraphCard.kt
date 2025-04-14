@@ -29,6 +29,7 @@ import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
+import ir.ehsannarmani.compose_charts.models.LabelProperties
 import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.ViewRange
 import ir.ehsannarmani.compose_charts.models.ZeroLineProperties
@@ -50,8 +51,13 @@ class WeatherGraphCard {
 
         val colorGraphLine = Color(0xFFFBD323)
 
-        val labelHelperProperties = LabelHelperProperties(
+        val labelProperties = LabelProperties(
             enabled = true,
+            textStyle = textStyle
+        )
+
+        val labelHelperProperties = LabelHelperProperties(
+            enabled = false,
             textStyle = textStyle
         )
 
@@ -99,15 +105,15 @@ class WeatherGraphCard {
                         gridProperties = gridProperties,
                         zeroLineProperties = ZeroLineProperties(
                             enabled = false,
-                            //color = SolidColor(Color(0xFFFFFFFF)),
                         ),
                         indicatorProperties = indicatorProperties,
                         labelHelperProperties = labelHelperProperties,
+                        labelProperties = labelProperties,
                         minValue = min,
-                        maxValue = max * 1.0,
+                        maxValue = max,
                         modifier = Modifier
                             .heightIn(max = 300.dp)
-                            .padding(top = 10.dp)
+                            .padding(top = 50.dp)
                     )
                 }
             }
