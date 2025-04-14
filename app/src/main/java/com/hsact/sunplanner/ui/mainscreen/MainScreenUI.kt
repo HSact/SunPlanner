@@ -2,11 +2,15 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -70,20 +74,29 @@ class MainScreenUI(val viewModel: MainViewModel) {
         val scrollState = rememberScrollState()
 
         Scaffold(
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .fillMaxSize(),
             topBar = {
-                TopAppBar(
-                    title = {
-                        Text("Sun Planner", style = MaterialTheme.typography.titleLarge)
-                    },
-                    scrollBehavior = scrollBehavior
-                )
+                if (!isSearchExpanded) {
+                    TopAppBar(
+                        title = {
+                            Text("Sun Planner", style = MaterialTheme.typography.titleLarge)
+                        },
+                        scrollBehavior = scrollBehavior
+                    )
+                }
             }
         ) { innerPadding ->
             Column(
                 modifier = modifier
                     //.fillMaxSize()
-                    .padding(innerPadding)
+                    //.padding(innerPadding)
+                    .padding(
+                        if (isSearchExpanded) PaddingValues(0.dp)
+                        else innerPadding
+                    )
+                    //.padding(WindowInsets.statusBars.asPaddingValues())
                     .verticalScroll(scrollState)
             ) {
                 Row(
