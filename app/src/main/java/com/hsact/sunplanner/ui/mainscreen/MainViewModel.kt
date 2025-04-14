@@ -133,6 +133,7 @@ class MainViewModel () : ViewModel() {
                 _searchDataUI.value = _searchDataUI.value.copy(weatherData = result)
                 println(result)
                 searchDataUI.value.maxTemperature = CreateWeatherGraphLineUseCase().invoke("Max", result.daily.maxTemperature, Color(0xFFFF0000))
+                searchDataUI.value.minTemperature = CreateWeatherGraphLineUseCase().invoke("Min", result.daily.minTemperature, Color(0xFF0000FF))
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
             }

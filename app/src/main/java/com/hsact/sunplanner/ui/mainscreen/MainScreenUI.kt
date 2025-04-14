@@ -196,7 +196,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
             if (searchDataUI.maxTemperature != null) {
                 WeatherGraphLineCard().WeatherCard(
                     "Temperature",
-                    listOf(searchDataUI.maxTemperature!!)
+                    listOf(searchDataUI.maxTemperature!!, searchDataUI.minTemperature!!)
                 )
             }
         }

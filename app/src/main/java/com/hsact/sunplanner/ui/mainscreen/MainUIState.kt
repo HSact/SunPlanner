@@ -17,5 +17,6 @@ data class MainUIState (
     var startLD: LocalDate = LocalDate.now().minusYears(10),
     var endLD: LocalDate = LocalDate.now().minusYears(1),
     var weatherData: WeatherResponse? = null,
-    var maxTemperature: Line? = null
+    var maxTemperature: Line? = null,
+    var minTemperature: Line? = null
 )
