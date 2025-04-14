@@ -3,6 +3,7 @@ package com.hsact.sunplanner.ui.mainscreen.card
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -64,49 +65,51 @@ class WeatherGraphCard {
         val viewRange = ViewRange(0, LocalDate.now().dayOfMonth - 1)
 
         Card {
-            CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
-                Text(
-                    text = header,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
-                LineChart(
-                    data = remember {
-                        listOf(
-                            Line(
-                                label = header,
-                                values = trimmedChartState,
-                                color = SolidColor(colorGraphLine),
-                                firstGradientFillColor = colorGraphLine.copy(alpha = .5f),
-                                secondGradientFillColor = Color.Transparent,
-                                strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-                                gradientAnimationDelay = 1000,
-                                drawStyle = ir.ehsannarmani.compose_charts.models.DrawStyle.Stroke(
-                                    width = 2.dp
-                                ),
-                                viewRange = viewRange
+            Box(modifier = Modifier.padding(10.dp)) {
+                CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
+                    Text(
+                        text = header,
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                    LineChart(
+                        data = remember {
+                            listOf(
+                                Line(
+                                    label = header,
+                                    values = trimmedChartState,
+                                    color = SolidColor(colorGraphLine),
+                                    firstGradientFillColor = colorGraphLine.copy(alpha = .5f),
+                                    secondGradientFillColor = Color.Transparent,
+                                    strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
+                                    gradientAnimationDelay = 1000,
+                                    drawStyle = ir.ehsannarmani.compose_charts.models.DrawStyle.Stroke(
+                                        width = 2.dp
+                                    ),
+                                    viewRange = viewRange
+                                )
                             )
-                        )
-                    },
-                    animationMode = ir.ehsannarmani.compose_charts.models.AnimationMode.Together(
-                        delayBuilder = {
-                            it * 500L
-                        }),
-                    gridProperties = gridProperties,
-                    zeroLineProperties = ZeroLineProperties(
-                        enabled = false,
-                        //color = SolidColor(Color(0xFFFFFFFF)),
-                    ),
-                    indicatorProperties = indicatorProperties,
-                    labelHelperProperties = labelHelperProperties,
-                    minValue = min,
-                    maxValue = max * 1.0,
-                    modifier = Modifier
-                        .heightIn(max = 300.dp)
-                        .padding(top = 50.dp)
-                )
+                        },
+                        animationMode = ir.ehsannarmani.compose_charts.models.AnimationMode.Together(
+                            delayBuilder = {
+                                it * 500L
+                            }),
+                        gridProperties = gridProperties,
+                        zeroLineProperties = ZeroLineProperties(
+                            enabled = false,
+                            //color = SolidColor(Color(0xFFFFFFFF)),
+                        ),
+                        indicatorProperties = indicatorProperties,
+                        labelHelperProperties = labelHelperProperties,
+                        minValue = min,
+                        maxValue = max * 1.0,
+                        modifier = Modifier
+                            .heightIn(max = 300.dp)
+                            .padding(top = 10.dp)
+                    )
+                }
             }
         }
     }
