@@ -37,9 +37,8 @@ import java.time.LocalDate
 
 class WeatherGraphCard {
     @Composable
-    fun WeatherCard(chartData: StateFlow<List<Double>>, goalData: StateFlow<Double>) {
+    fun WeatherCard(chartData: StateFlow<List<Double>>) {
         val chartState by chartData.collectAsStateWithLifecycle()
-        val goal by goalData.collectAsState()
         val daysInMonth = LocalDate.now().lengthOfMonth()
         val trimmedChartState = chartState.take(daysInMonth)
         var max = chartState.maxOrNull() ?: 0.0
@@ -49,10 +48,6 @@ class WeatherGraphCard {
         else TextStyle(color = Color.Black)
 
         val colorGraphLine = Color(0xFFFBD323)
-
-        if (max < goal) {
-            max = goal
-        }
 
         val labelHelperProperties = LabelHelperProperties(
             enabled = true,
@@ -92,11 +87,6 @@ class WeatherGraphCard {
                                     width = 2.dp
                                 ),
                                 viewRange = viewRange
-                            ),
-                            Line(
-                                label = "Name2",
-                                values = List(daysInMonth) { goal },
-                                color = SolidColor(Color.Red),
                             )
                         )
                     },
@@ -131,6 +121,6 @@ class WeatherGraphCard {
                 )
             )
         }
-        WeatherCard(previewData, MutableStateFlow(0.0))
+        WeatherCard(previewData)
     }
 }
