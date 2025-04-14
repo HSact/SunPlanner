@@ -19,11 +19,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.utils.LocationUtils
-import com.hsact.sunplanner.ui.mainscreen.card.WeatherGraphCard
+import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
+import com.hsact.sunplanner.ui.mainscreen.card.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
@@ -191,7 +193,12 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 Text("Weather: ${searchDataUI.weatherData}")
             }
             //Cards with weather data
-            WeatherGraphCard().CardPreview()
+            if (searchDataUI.maxTemperature != null) {
+                WeatherGraphLineCard().WeatherCard(
+                    "Temperature",
+                    listOf(searchDataUI.maxTemperature!!)
+                )
+            }
         }
     }
 }

@@ -2,6 +2,7 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import ir.ehsannarmani.compose_charts.models.Line
 import java.time.LocalDate
 
 data class MainUIState (
@@ -15,5 +16,6 @@ data class MainUIState (
     val endDate: String = "",
     var startLD: LocalDate = LocalDate.now().minusYears(10),
     var endLD: LocalDate = LocalDate.now().minusYears(1),
-    var weatherData: WeatherResponse? = null
+    var weatherData: WeatherResponse? = null,
+    var maxTemperature: Line? = null
 )

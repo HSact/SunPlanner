@@ -1,10 +1,14 @@
 package com.hsact.sunplanner.ui.mainscreen
 
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
-import com.hsact.sunplanner.domain.FetchFilteredWeatherUseCase
+import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
+import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.network.RetrofitInstance
 import com.hsact.sunplanner.network.WeatherRequestParams
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -118,37 +122,6 @@ class MainViewModel () : ViewModel() {
         }
     }
 
-    /*private fun fetchWeather(params: WeatherRequestParams) {
-        viewModelScope.launch {
-            try {
-                val response = repository.getWeather(
-                    latitude = params.latitude,
-                    longitude = params.longitude,
-                    startDate = params.startDate,
-                    endDate = params.endDate
-                )
-                println(response)
-                val filteredDaily = WeatherUtils.filterDailyWeatherByDateRange(
-                    response.daily,
-                    _searchDataUI.value.startLD,
-                    _searchDataUI.value.endLD
-                )
-                if (filteredDaily != null) {
-                    val responseFiltered = response.copy(daily = filteredDaily)
-                    _searchDataUI.value = _searchDataUI.value.copy(
-                        weatherData = responseFiltered
-                    )
-                    println(responseFiltered)
-                }
-                else {
-                    _searchDataUI.value = _searchDataUI.value.copy(
-                        weatherData = response)
-                }
-            } catch (e: Exception) {
-                println("Error fetching weather: ${e.message}")
-            }
-        }
-    }*/
     private fun fetchWeather(params: WeatherRequestParams) {
         viewModelScope.launch {
             try {
@@ -159,6 +132,7 @@ class MainViewModel () : ViewModel() {
                 )
                 _searchDataUI.value = _searchDataUI.value.copy(weatherData = result)
                 println(result)
+                searchDataUI.value.maxTemperature = CreateWeatherGraphLineUseCase().invoke("Max", result.daily.maxTemperature, Color(0xFFFF0000))
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
             }
