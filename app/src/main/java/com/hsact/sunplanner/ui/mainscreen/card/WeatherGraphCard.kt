@@ -37,12 +37,12 @@ import java.time.LocalDate
 
 class WeatherGraphCard {
     @Composable
-    fun WeatherCard(chartData: StateFlow<List<Double>>) {
+    fun WeatherCard(chartData: StateFlow<List<Double>>, header: String) {
         val chartState by chartData.collectAsStateWithLifecycle()
         val daysInMonth = LocalDate.now().lengthOfMonth()
         val trimmedChartState = chartState.take(daysInMonth)
-        var max = chartState.maxOrNull() ?: 0.0
-        val min = chartState.minOrNull()?.takeIf { it <= 0.0 } ?: 0.0
+        val max = chartState.maxOrNull() ?: 0.0
+        val min = chartState.minOrNull()?: 0.0
         val isDarkTheme = isSystemInDarkTheme()
         val textStyle: TextStyle = if (isDarkTheme) TextStyle(color = Color.White)
         else TextStyle(color = Color.Black)
@@ -66,7 +66,7 @@ class WeatherGraphCard {
         Card {
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                 Text(
-                    text = "Name",
+                    text = header,
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -76,7 +76,7 @@ class WeatherGraphCard {
                     data = remember {
                         listOf(
                             Line(
-                                label = "Name1",
+                                label = header,
                                 values = trimmedChartState,
                                 color = SolidColor(colorGraphLine),
                                 firstGradientFillColor = colorGraphLine.copy(alpha = .5f),
@@ -121,6 +121,6 @@ class WeatherGraphCard {
                 )
             )
         }
-        WeatherCard(previewData)
+        WeatherCard(previewData, "Header")
     }
 }
