@@ -19,7 +19,7 @@ class WeatherRepository(private val service: OpenMeteoService, private val geolo
     }
     suspend fun getCitiesList(cityName: String): List<Location>? {
         return try {
-            val response = geolocationService.getCityCoordinates(cityName)
+            val response = geolocationService.getCityCoordinates(cityName, language = "em")
             response.results
         } catch (e: Exception) {
             println("Error fetching list of cities: ${e.message}")

@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
-class MainViewModel () : ViewModel() {
+class MainViewModel() : ViewModel() {
     private val repository =
         WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
@@ -46,6 +46,7 @@ class MainViewModel () : ViewModel() {
         val newDate = old.withDayOfMonth(validDay)
         _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
     }
+
     fun updateEndYear(year: Int) {
         val old = _searchDataUI.value.endLD
         val newDate = old.withYear(year).coerceDay()
@@ -93,6 +94,7 @@ class MainViewModel () : ViewModel() {
     fun updateError(error: String) {
         _searchDataUI.value = _searchDataUI.value.copy(error = error)
     }
+
     fun cleanError() {
         _searchDataUI.value = _searchDataUI.value.copy(error = "")
     }
@@ -122,9 +124,13 @@ class MainViewModel () : ViewModel() {
     fun fetchCityList(cityName: String) {
         var cities: List<Location>? = null
         viewModelScope.launch {
-            cities = repository.getCitiesList(
-                cityName = cityName
-            )
+            try {
+                cities = repository.getCitiesList(
+                    cityName = cityName
+                )
+            } catch (e: Exception) {
+                updateError("Error fetching cities: ${e.message}")
+            }
             if (cities != null) {
                 _searchDataUI.value = _searchDataUI.value.copy(cities = cities!!)
                 println(cities)
@@ -146,12 +152,17 @@ class MainViewModel () : ViewModel() {
                 println(aggregated)
                 val maxTemps = aggregated.map { it.avgMaxTemp }
                 val minTemps = aggregated.map { it.avgMinTemp }
-                val sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-                searchDataUI.value.maxTemperature = CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF0000))
-                searchDataUI.value.minTemperature = CreateWeatherGraphLineUseCase().invoke("Min", minTemps, Color(0xFF0000FF))
-                searchDataUI.value.sunDuration = CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF00))
+                val sunshine =
+                    aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+                searchDataUI.value.maxTemperature =
+                    CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF0000))
+                searchDataUI.value.minTemperature =
+                    CreateWeatherGraphLineUseCase().invoke("Min", minTemps, Color(0xFF0000FF))
+                searchDataUI.value.sunDuration =
+                    CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF00))
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
+                updateError("Error fetching weather: ${e.message}")
             }
         }
     }

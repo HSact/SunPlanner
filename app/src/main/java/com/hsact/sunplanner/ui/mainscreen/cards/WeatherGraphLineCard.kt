@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui.mainscreen.card
+package com.hsact.sunplanner.ui.mainscreen.cards
 
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
