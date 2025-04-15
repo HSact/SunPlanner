@@ -32,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.utils.LocationUtils
+import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphBarsLineCard
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
@@ -239,6 +240,16 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             WeatherGraphLineCard().WeatherCard(
                                 "Sunshine hours",
                                 listOf(searchDataUI.sunDuration!!)
+                            )
+                        }
+                    }
+                    Row(modifier.fillMaxWidth())
+                    {
+                        //Text("Weather: ${searchDataUI.weatherData}")
+                        if (searchDataUI.precipitation != null) {
+                            WeatherGraphBarsLineCard().WeatherCard(
+                                "Sunshine hours",
+                                listOf(searchDataUI.precipitation!!)
                             )
                         }
                     }

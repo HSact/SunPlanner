@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
+import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.network.RetrofitInstance
@@ -99,7 +100,7 @@ class MainViewModel() : ViewModel() {
         _searchDataUI.value = _searchDataUI.value.copy(error = "")
     }
 
-    fun prepareParamsForRequest() { //TODO: rewrite
+    fun prepareParamsForRequest() {
         val location = _searchDataUI.value.location
         val startDate = _searchDataUI.value.startLD
         val endDate = _searchDataUI.value.endLD
@@ -160,6 +161,11 @@ class MainViewModel() : ViewModel() {
                     CreateWeatherGraphLineUseCase().invoke("Min", minTemps, Color(0xFF0000FF))
                 searchDataUI.value.sunDuration =
                     CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF00))
+                searchDataUI.value.precipitation =
+                    CreateWeatherGraphBarsUseCase().invoke(
+                        "Precipitation",
+                        aggregated.map { it.avgPrecipitation },
+                        Color(0xFF0000FF))
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
                 updateError("Error fetching weather: ${e.message}")
