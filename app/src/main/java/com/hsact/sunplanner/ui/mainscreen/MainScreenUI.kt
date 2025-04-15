@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -59,8 +58,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
             )
         }
         val months1 by remember { mutableStateOf((1..12).toList()) }
-        //val days1 by remember {mutableStateOf( (1..date1.lengthOfMonth()).toList())}
-        val days1 = (1..date1.lengthOfMonth()).toList()
+        val days1 = remember (date1) {(1..date1.lengthOfMonth()).toList()}
 
         val date2 = searchDataUI.endLD
         val years2 by remember {
@@ -69,8 +67,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
             )
         }
         val months2 by remember { mutableStateOf((1..12).toList()) }
-        //val days2 by remember {mutableStateOf( (1..date2.lengthOfMonth()).toList())}
-        val days2 = (1..date2.lengthOfMonth()).toList()
+        val days2 = remember (date2) {(1..date2.lengthOfMonth()).toList()}
 
         //viewModel.fetchWeatherByCity("Moscow", "01.01.2024", "02.01.2024")
         //viewModel.fetchCityList(cityName)
@@ -98,7 +95,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 modifier = modifier
                     .fillMaxSize()
                     .padding(
-                        top = if (isSearchExpanded) 0.dp else WindowInsets.statusBars.asPaddingValues().calculateTopPadding()+5.dp,
+                        top = if (isSearchExpanded) 0.dp else innerPadding.calculateTopPadding(),
                         bottom = innerPadding.calculateBottomPadding()
                     )
                     .verticalScroll(scrollState)
@@ -132,8 +129,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             list = years1,
                             selected = date1.year,
                             onSelected = {
-                                //date1.year = it
-                                //viewModel.saveDateFieldToVM(field = DateField.START_YEAR, it)},
                                 viewModel.updateStartYear(it)
                             },
                             modifier = Modifier.weight(0.5f)
@@ -143,8 +138,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             list = years2,
                             selected = date2.year,
                             onSelected = {
-                                //selectedEndYear = it
-                                //viewModel.saveDateFieldToVM(field = DateField.END_YEAR, it)
                                 viewModel.updateEndYear(it)
                             },
                             modifier = Modifier
@@ -170,8 +163,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                     list = months1,
                                     selected = date1.monthValue,
                                     onSelected = {
-                                        //selectedStartMonth = it
-                                        //viewModel.saveDateFieldToVM(field = DateField.START_MONTH, it)
                                         viewModel.updateStartMonth(it)
                                     },
                                     modifier = Modifier.weight(0.5f)
@@ -181,8 +172,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                     list = months2,
                                     selected = date2.monthValue,
                                     onSelected = {
-                                        //selectedEndMonth = it
-                                        //viewModel.saveDateFieldToVM(field = DateField.END_MONTH, it)
                                         viewModel.updateEndMonth(it)
                                     },
                                     modifier = Modifier
@@ -197,8 +186,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                     list = days1,
                                     selected = date1.dayOfMonth,
                                     onSelected = {
-                                        //selectedStartDay = it
-                                        //viewModel.saveDateFieldToVM(field = DateField.START_DAY, it)
                                         viewModel.updateStartDay(it)
                                     },
                                     modifier = Modifier.weight(0.5f)
@@ -208,8 +195,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                     list = days2,
                                     selected = date2.dayOfMonth,
                                     onSelected = {
-                                        //selectedEndDay = it
-                                        //viewModel.saveDateFieldToVM(field = DateField.END_DAY, it)
                                         viewModel.updateEndDay(it)
                                     },
                                     modifier = Modifier
@@ -235,7 +220,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     {
                         Text("Weather: ${searchDataUI.weatherData}")
                     }
-                    //Cards with weather data
                     if (searchDataUI.maxTemperature != null) {
                         WeatherGraphLineCard().WeatherCard(
                             "Temperature",
