@@ -218,14 +218,30 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     }
                     Row(modifier.fillMaxWidth())
                     {
-                        Text("Weather: ${searchDataUI.weatherData}")
+                        //Text("Weather: ${searchDataUI.weatherData}")
+                        if (searchDataUI.maxTemperature != null) {
+                            WeatherGraphLineCard().WeatherCard(
+                                "Temperature",
+                                listOf(searchDataUI.maxTemperature!!, searchDataUI.minTemperature!!)
+                            )
+                        }
                     }
-                    if (searchDataUI.maxTemperature != null) {
+                    Row(modifier.fillMaxWidth())
+                    {
+                        //Text("Weather: ${searchDataUI.weatherData}")
+                        if (searchDataUI.sunDuration != null) {
+                            WeatherGraphLineCard().WeatherCard(
+                                "Sunshine hours",
+                                listOf(searchDataUI.sunDuration!!)
+                            )
+                        }
+                    }
+                    /*if (searchDataUI.maxTemperature != null) {
                         WeatherGraphLineCard().WeatherCard(
                             "Temperature",
                             listOf(searchDataUI.maxTemperature!!, searchDataUI.minTemperature!!)
                         )
-                    }
+                    }*/
                 }
             }
         }

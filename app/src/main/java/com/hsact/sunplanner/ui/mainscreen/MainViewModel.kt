@@ -1,12 +1,11 @@
 package com.hsact.sunplanner.ui.mainscreen
 
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
+import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.network.RetrofitInstance
@@ -15,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import kotlin.math.roundToInt
 
 class MainViewModel () : ViewModel() {
     private val repository =
@@ -125,15 +125,21 @@ class MainViewModel () : ViewModel() {
     private fun fetchWeather(params: WeatherRequestParams) {
         viewModelScope.launch {
             try {
-                val result = FetchFilteredWeatherUseCase(repository).execute(
+                val filteredWeather = FetchFilteredWeatherUseCase(repository).execute(
                     params,
                     _searchDataUI.value.startLD,
                     _searchDataUI.value.endLD
                 )
-                _searchDataUI.value = _searchDataUI.value.copy(weatherData = result)
-                println(result)
-                searchDataUI.value.maxTemperature = CreateWeatherGraphLineUseCase().invoke("Max", result.daily.maxTemperature, Color(0xFFFF0000))
-                searchDataUI.value.minTemperature = CreateWeatherGraphLineUseCase().invoke("Min", result.daily.minTemperature, Color(0xFF0000FF))
+                val aggregated = AggregateWeatherByDateUseCase().execute(filteredWeather.daily)
+                _searchDataUI.value = _searchDataUI.value.copy(weatherData = filteredWeather)
+                println(filteredWeather)
+                println(aggregated)
+                val maxTemps = aggregated.map { it.avgMaxTemp }
+                val minTemps = aggregated.map { it.avgMinTemp }
+                val sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+                searchDataUI.value.maxTemperature = CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF0000))
+                searchDataUI.value.minTemperature = CreateWeatherGraphLineUseCase().invoke("Min", minTemps, Color(0xFF0000FF))
+                searchDataUI.value.sunDuration = CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF00))
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
             }

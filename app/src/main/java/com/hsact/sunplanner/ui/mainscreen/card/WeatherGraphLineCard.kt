@@ -35,6 +35,12 @@ class WeatherGraphLineCard {
         header: String,
         lineList: List<Line>
     ) {
+        val allValues = lineList.flatMap { it.values }
+        val max = allValues.maxOrNull() ?: 0.0
+        val min = allValues.minOrNull() ?: 0.0
+
+        val hasAnyLabel = lineList.any { it.label.isNotBlank() }
+
         val isDarkTheme = isSystemInDarkTheme()
         val textStyle = if (isDarkTheme) TextStyle(color = Color.White)
         else TextStyle(color = Color.Black)
@@ -45,7 +51,7 @@ class WeatherGraphLineCard {
         )
 
         val labelHelperProperties = LabelHelperProperties(
-            enabled = true,
+            enabled = hasAnyLabel,
             textStyle = textStyle
         )
 
@@ -55,10 +61,6 @@ class WeatherGraphLineCard {
             enabled = true,
             textStyle = textStyle,
         )
-
-        val allValues = lineList.flatMap { it.values }
-        val max = allValues.maxOrNull() ?: 0.0
-        val min = allValues.minOrNull() ?: 0.0
 
         Card {
             Box(modifier = Modifier.padding(10.dp)) {
