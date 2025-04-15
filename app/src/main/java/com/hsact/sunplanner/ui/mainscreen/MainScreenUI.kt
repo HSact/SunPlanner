@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
         var cityName by remember { mutableStateOf("") }
         var isSearchExpanded by remember { mutableStateOf(false) }
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+        val scrollState = rememberScrollState()
+        val canScroll = remember { mutableStateOf(false) }
         val searchDataUI by viewModel.searchDataUI.collectAsState()
         val searchUI = SearchUI()
         var query by remember { mutableStateOf("") }
@@ -71,11 +74,14 @@ class MainScreenUI(val viewModel: MainViewModel) {
 
         //viewModel.fetchWeatherByCity("Moscow", "01.01.2024", "02.01.2024")
         //viewModel.fetchCityList(cityName)
-        val scrollState = rememberScrollState()
+
+        LaunchedEffect(scrollState.maxValue) {
+            canScroll.value = scrollState.maxValue > 0
+        }
 
         Scaffold(
             modifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .then(if (canScroll.value) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier)
                 .fillMaxSize(),
             topBar = {
                 if (!isSearchExpanded) {
@@ -83,20 +89,18 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         title = {
                             Text("Sun Planner", style = MaterialTheme.typography.titleLarge)
                         },
-                        scrollBehavior = scrollBehavior
+                        scrollBehavior = if (canScroll.value) scrollBehavior else null
                     )
                 }
             }
         ) { innerPadding ->
             Column(
                 modifier = modifier
-                    //.fillMaxSize()
-                    //.padding(innerPadding)
+                    .fillMaxSize()
                     .padding(
-                        if (isSearchExpanded) PaddingValues(0.dp)
-                        else innerPadding
+                        top = if (isSearchExpanded) 0.dp else WindowInsets.statusBars.asPaddingValues().calculateTopPadding()+5.dp,
+                        bottom = innerPadding.calculateBottomPadding()
                     )
-                    //.padding(WindowInsets.statusBars.asPaddingValues())
                     .verticalScroll(scrollState)
             ) {
                 Row(
