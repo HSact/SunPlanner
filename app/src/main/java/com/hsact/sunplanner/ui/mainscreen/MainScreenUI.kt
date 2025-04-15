@@ -1,5 +1,6 @@
 package com.hsact.sunplanner.ui.mainscreen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
@@ -71,9 +73,16 @@ class MainScreenUI(val viewModel: MainViewModel) {
 
         //viewModel.fetchWeatherByCity("Moscow", "01.01.2024", "02.01.2024")
         //viewModel.fetchCityList(cityName)
+        val context = LocalContext.current
 
         LaunchedEffect(scrollState.maxValue) {
             canScroll.value = scrollState.maxValue > 0
+        }
+        LaunchedEffect(searchDataUI.error) {
+            if (searchDataUI.error.isNotEmpty()) {
+                Toast.makeText(context, searchDataUI.error, Toast.LENGTH_SHORT).show()
+                viewModel.cleanError()
+            }
         }
 
         Scaffold(

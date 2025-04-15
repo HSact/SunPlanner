@@ -6,6 +6,7 @@ import ir.ehsannarmani.compose_charts.models.Line
 import java.time.LocalDate
 
 data class MainUIState (
+    var error : String = "",
     val cityName: String = "",
     var cities: List<Location> = emptyList(),
     var dates: DateAdapter = DateAdapter(),

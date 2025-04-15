@@ -71,7 +71,7 @@ class MainViewModel () : ViewModel() {
         return if (this.dayOfMonth > maxDay) this.withDayOfMonth(maxDay) else this
     }
 
-    private fun prepareDate(month: String, day: Int): String {
+    /*private fun prepareDate(month: String, day: Int): String {
         val monthNumber = when (month) {
             "January" -> "01"
             "February" -> "02"
@@ -89,6 +89,12 @@ class MainViewModel () : ViewModel() {
         }
         val dayFormatted = day.toString().padStart(2, '0')
         return "$monthNumber-$dayFormatted"
+    }*/
+    fun updateError(error: String) {
+        _searchDataUI.value = _searchDataUI.value.copy(error = error)
+    }
+    fun cleanError() {
+        _searchDataUI.value = _searchDataUI.value.copy(error = "")
     }
 
     fun prepareParamsForRequest() { //TODO: rewrite
@@ -96,8 +102,12 @@ class MainViewModel () : ViewModel() {
         val startDate = _searchDataUI.value.startLD
         val endDate = _searchDataUI.value.endLD
 
-        if (location == null || startDate > endDate) {
-            // TODO: Show error message
+        if (location == null) {
+            updateError("Location is empty")
+            return
+        }
+        if (startDate > endDate) {
+            updateError("Invalid date range")
             return
         }
         val params = WeatherRequestParams().apply {
@@ -145,23 +155,4 @@ class MainViewModel () : ViewModel() {
             }
         }
     }
-
-
-    /*fun fetchWeatherByCity(cityName: String, startDate: String, endDate: String) {
-        viewModelScope.launch {
-            val location = repository.getCoordinatesByCity(
-                cityName = cityName
-            )
-            val params = WeatherRequestParams()
-            params.latitude = location?.latitude ?: 0.0
-            params.longitude = location?.longitude ?: 0.0
-            params.startDate = startDate
-            params.endDate = endDate
-            if (location != null) {
-                fetchWeather(params)
-            } else {
-                println("Error fetching coordinates")
-            }
-        }
-    }*/
 }
