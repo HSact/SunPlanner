@@ -23,8 +23,7 @@ class CreateWeatherGraphBarsUseCase {
             val labelText = if (useYearsAsLabels) {
                 (startDate.year + index).toString()
             } else {
-                val currentDate = startDate.plusDays(index.toLong())
-                currentDate.dayOfMonth.toString()
+                startDate.plusDays(index.toLong()).dayOfMonth.toString()
             }
             Bars.Data(
                 label = labelText,

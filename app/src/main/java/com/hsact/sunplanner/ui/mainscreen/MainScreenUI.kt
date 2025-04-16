@@ -112,9 +112,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 Row(
                     modifier = if (isSearchExpanded) Modifier
                         .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
-                        else Modifier
-                            .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
-                            .padding(start = 10.dp, end = 10.dp)
+                    else Modifier
+                        .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
+                        .padding(start = 10.dp, end = 10.dp)
                 ) {
                     searchUI.SearchCityBar(
                         viewModel = viewModel,
@@ -163,8 +163,10 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     ) {
                         Card()
                         {
-                            Row ( modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center
+                            )
                             {
                                 Text("Dates range", modifier = Modifier.padding(top = 5.dp))
                             }
@@ -223,7 +225,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     }
                     Row(
                         modifier = Modifier
-                            .padding(top = 10.dp , start = 10.dp, end = 10.dp)
+                            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
                     ) {
                         Button(
                             onClick = { viewModel.prepareParamsForRequest() },
@@ -249,7 +251,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             )
                         }
 
-                        Row(modifier.fillMaxWidth().padding(top = 20.dp))
+                        Row(modifier
+                            .fillMaxWidth()
+                            .padding(top = 20.dp))
                         {
                             //Text("Weather: ${searchDataUI.weatherData}")
                             WeatherGraphLineCard().WeatherCard(
@@ -257,14 +261,18 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 listOf(
                                     mainDataUI.maxTemperature!!,
                                     mainDataUI.minTemperature!!
-                                )
+                                ),
+                                mainDataUI.confirmedStartLD,
+                                mainDataUI.confirmedEndLD
                             )
                         }
                         Row(modifier.fillMaxWidth())
                         {
                             WeatherGraphLineCard().WeatherCard(
                                 "Sunshine hours",
-                                listOf(mainDataUI.sunDuration!!)
+                                listOf(mainDataUI.sunDuration!!),
+                                mainDataUI.confirmedStartLD,
+                                mainDataUI.confirmedEndLD
                             )
                         }
                         Row(modifier.fillMaxWidth())

@@ -25,26 +25,30 @@ import androidx.compose.ui.unit.dp
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
+import ir.ehsannarmani.compose_charts.models.IndicatorCount
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.LabelProperties
 import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.ZeroLineProperties
+import java.time.LocalDate
 
 class WeatherGraphLineCard {
     @Composable
     fun WeatherCard(
         header: String,
-        lineList: List<Line>
+        lineList: List<Line>,
+        startDate: LocalDate,
+        endDate: LocalDate
     ) {
-        /*val allValues = lineList.flatMap { it.values }
-        val max = allValues.maxOrNull() ?: 0.0
-        val min = allValues.minOrNull() ?: 0.0*/
         val (min, max) = remember(lineList) {
             val allValues = lineList.flatMap { it.values }
             val max = allValues.maxOrNull() ?: 0.0
             val min = allValues.minOrNull() ?: 0.0
             min to max
         }
+        val useYearsAsLabels =
+            startDate.dayOfMonth == endDate.dayOfMonth &&
+                    startDate.month == endDate.month
 
         val hasAnyLabel = remember(lineList) {
             lineList.any { it.label.isNotBlank() }
@@ -58,7 +62,10 @@ class WeatherGraphLineCard {
 
         val labelProperties = LabelProperties(
             enabled = true,
-            textStyle = textStyle
+            textStyle = textStyle,
+            labels = if (useYearsAsLabels) (startDate.year..endDate.year).map { it.toString() }
+            else (startDate.dayOfMonth..endDate.dayOfMonth).map { it.toString() },
+            rotation = LabelProperties.Rotation(degree = 0f)
         )
 
         val labelHelperProperties = LabelHelperProperties(
@@ -73,7 +80,7 @@ class WeatherGraphLineCard {
             textStyle = textStyle,
         )
 
-        Card (modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
+        Card(modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
             Box(modifier = Modifier.padding(10.dp)) {
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     Text(
@@ -105,7 +112,6 @@ class WeatherGraphLineCard {
         }
     }
 
-
     @Preview(showBackground = true)
     @Composable
     fun CardPreview() {
@@ -119,6 +125,11 @@ class WeatherGraphLineCard {
             gradientAnimationDelay = 1000,
             drawStyle = ir.ehsannarmani.compose_charts.models.DrawStyle.Stroke(width = 2.dp)
         )
-        WeatherCard(lineList = listOf(previewLine), header = "Temperature")
+        WeatherCard(
+            lineList = listOf(previewLine),
+            header = "Temperature",
+            startDate = LocalDate.now().minusDays(14),
+            endDate = LocalDate.now()
+        )
     }
 }
