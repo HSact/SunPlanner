@@ -151,10 +151,19 @@ class MainViewModel() : ViewModel() {
                 _searchDataUI.value = _searchDataUI.value.copy(weatherData = filteredWeather)
                 println(filteredWeather)
                 println(aggregated)
-                val maxTemps = aggregated.map { it.avgMaxTemp }
-                val minTemps = aggregated.map { it.avgMinTemp }
-                val sunshine =
-                    aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+                var maxTemps = _searchDataUI.value.weatherData!!.daily.maxTemperature
+                var minTemps = _searchDataUI.value.weatherData!!.daily.minTemperature
+                var sunshine = _searchDataUI.value.weatherData!!.daily.sunshineDuration
+                    .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
+                var precipitation = _searchDataUI.value.weatherData!!.daily.precipitationSum
+
+                if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
+                    _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue) {
+                    maxTemps = aggregated.map { it.avgMaxTemp }
+                    minTemps = aggregated.map { it.avgMinTemp }
+                    sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+                    precipitation = aggregated.map { it.avgPrecipitation }
+                }
                 searchDataUI.value.maxTemperature =
                     CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF0000))
                 searchDataUI.value.minTemperature =
@@ -162,10 +171,7 @@ class MainViewModel() : ViewModel() {
                 searchDataUI.value.sunDuration =
                     CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF00))
                 searchDataUI.value.precipitation =
-                    CreateWeatherGraphBarsUseCase().invoke(
-                        "Precipitation",
-                        aggregated.map { it.avgPrecipitation },
-                        Color(0xFF0000FF))
+                    CreateWeatherGraphBarsUseCase().invoke("Precipitations", precipitation, Color(0xFF0000FF))
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
                 updateError("Error fetching weather: ${e.message}")

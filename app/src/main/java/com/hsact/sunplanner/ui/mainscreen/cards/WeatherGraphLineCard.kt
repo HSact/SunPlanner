@@ -62,7 +62,7 @@ class WeatherGraphLineCard {
             textStyle = textStyle,
         )
 
-        Card {
+        Card (modifier = Modifier.padding(top = 20.dp)) {
             Box(modifier = Modifier.padding(10.dp)) {
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     Text(

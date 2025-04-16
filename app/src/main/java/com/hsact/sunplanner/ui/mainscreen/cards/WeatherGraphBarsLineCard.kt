@@ -23,7 +23,6 @@ class WeatherGraphBarsLineCard {
     ) {
         val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
         val max = allValues.maxOrNull() ?: 0.0
-        val min = allValues.minOrNull() ?: 0.0
 
         val hasAnyLabel = barGroups.any { it.label.isNotBlank() }
 
@@ -47,7 +46,7 @@ class WeatherGraphBarsLineCard {
             textStyle = textStyle,
         )
 
-        Card {
+        Card (modifier = Modifier.padding(top = 20.dp)) {
             Box(modifier = Modifier.padding(10.dp)) {
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     Text(
@@ -67,7 +66,7 @@ class WeatherGraphBarsLineCard {
                         indicatorProperties = indicatorProperties,
                         labelHelperProperties = labelHelperProperties,
                         labelProperties = labelProperties,
-                        minValue = min,
+                        minValue = 0.0,
                         maxValue = max,
                         modifier = Modifier
                             .heightIn(max = 300.dp)
