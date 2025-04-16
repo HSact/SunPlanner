@@ -153,7 +153,7 @@ class SearchUI {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 5.dp)
+                .padding(start = 5.dp, end = 5.dp, bottom = 5.dp)
                 .clickable {
                     keyboardController?.hide()
                     focusManager.clearFocus(force = true)
