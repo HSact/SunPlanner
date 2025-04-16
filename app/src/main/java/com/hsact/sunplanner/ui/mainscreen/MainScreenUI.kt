@@ -248,7 +248,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         //Text("Weather: ${searchDataUI.weatherData}")
                         if (searchDataUI.precipitation != null) {
                             WeatherGraphBarsLineCard().WeatherCard(
-                                "Sunshine hours",
+                                "Precipitation mm",
                                 listOf(searchDataUI.precipitation!!)
                             )
                         }
