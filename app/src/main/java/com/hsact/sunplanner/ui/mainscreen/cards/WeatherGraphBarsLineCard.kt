@@ -46,7 +46,7 @@ class WeatherGraphBarsLineCard {
             textStyle = textStyle,
         )
 
-        Card (modifier = Modifier.padding(top = 20.dp)) {
+        Card (modifier = Modifier.padding(top = 20.dp, start = 10.dp, end = 10.dp)) {
             Box(modifier = Modifier.padding(10.dp)) {
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     Text(

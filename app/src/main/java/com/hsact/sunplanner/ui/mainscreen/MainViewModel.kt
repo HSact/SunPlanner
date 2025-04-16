@@ -156,11 +156,15 @@ class MainViewModel() : ViewModel() {
 
                 if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
                     _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue) {
+                    _searchDataUI.value = _searchDataUI.value.copy(isOneDay = false)
                     val aggregated = AggregateWeatherByDateUseCase().execute(filteredWeather.daily)
                     maxTemps = aggregated.map { it.avgMaxTemp }
                     minTemps = aggregated.map { it.avgMinTemp }
                     sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
                     precipitation = aggregated.map { it.avgPrecipitation }
+                }
+                else {
+                    _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
                 }
                 searchDataUI.value.maxTemperature =
                     CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF5555))
