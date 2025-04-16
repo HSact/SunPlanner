@@ -43,7 +43,8 @@ class WeatherGraphBarsLineCard {
 
         val labelProperties = LabelProperties(
             enabled = true,
-            textStyle = textStyle
+            textStyle = textStyle,
+            rotation = LabelProperties.Rotation(degree = 0f)
         )
 
         val labelHelperProperties = LabelHelperProperties(

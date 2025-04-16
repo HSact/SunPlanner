@@ -4,17 +4,30 @@ import androidx.compose.animation.core.tween
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import ir.ehsannarmani.compose_charts.models.Bars
+import java.time.LocalDate
 
 class CreateWeatherGraphBarsUseCase {
     operator fun invoke(
         label: String,
         values: List<Double>,
+        startDate: LocalDate,
+        endDate: LocalDate,
         color: Color
     ): Bars {
         val brush = SolidColor(color)
+        val useYearsAsLabels =
+            startDate.dayOfMonth == endDate.dayOfMonth &&
+                startDate.month == endDate.month
 
-        val dataList = values.map { value ->
+        val dataList = values.mapIndexed { index, value ->
+            val labelText = if (useYearsAsLabels) {
+                (startDate.year + index).toString()
+            } else {
+                val currentDate = startDate.plusDays(index.toLong())
+                currentDate.dayOfMonth.toString()
+            }
             Bars.Data(
+                label = labelText,
                 value = value,
                 color = brush,
                 animationSpec = tween(durationMillis = 1000),

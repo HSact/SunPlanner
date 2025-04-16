@@ -178,7 +178,7 @@ class MainViewModel() : ViewModel() {
                 searchDataUI.value.sunDuration =
                     CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF50))
                 searchDataUI.value.precipitation =
-                    CreateWeatherGraphBarsUseCase().invoke("", precipitation, Color(0xFF5555FF))
+                    CreateWeatherGraphBarsUseCase().invoke("", precipitation, _searchDataUI.value.startLD, _searchDataUI.value.endLD, Color(0xFF5555FF))
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
                 updateError("Error fetching weather: ${e.message}")
