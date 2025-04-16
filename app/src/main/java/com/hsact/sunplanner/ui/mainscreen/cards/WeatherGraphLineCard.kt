@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,15 +36,25 @@ class WeatherGraphLineCard {
         header: String,
         lineList: List<Line>
     ) {
-        val allValues = lineList.flatMap { it.values }
+        /*val allValues = lineList.flatMap { it.values }
         val max = allValues.maxOrNull() ?: 0.0
-        val min = allValues.minOrNull() ?: 0.0
+        val min = allValues.minOrNull() ?: 0.0*/
+        val (min, max) = remember(lineList) {
+            val allValues = lineList.flatMap { it.values }
+            val max = allValues.maxOrNull() ?: 0.0
+            val min = allValues.minOrNull() ?: 0.0
+            min to max
+        }
 
-        val hasAnyLabel = lineList.any { it.label.isNotBlank() }
+        val hasAnyLabel = remember(lineList) {
+            lineList.any { it.label.isNotBlank() }
+        }
 
         val isDarkTheme = isSystemInDarkTheme()
-        val textStyle = if (isDarkTheme) TextStyle(color = Color.White)
-        else TextStyle(color = Color.Black)
+        val textStyle = remember(isDarkTheme) {
+            if (isDarkTheme) TextStyle(color = Color.White)
+            else TextStyle(color = Color.Black)
+        }
 
         val labelProperties = LabelProperties(
             enabled = true,
@@ -62,7 +73,7 @@ class WeatherGraphLineCard {
             textStyle = textStyle,
         )
 
-        Card (modifier = Modifier.padding(top = 20.dp, start = 10.dp, end = 10.dp)) {
+        Card (modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
             Box(modifier = Modifier.padding(10.dp)) {
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     Text(

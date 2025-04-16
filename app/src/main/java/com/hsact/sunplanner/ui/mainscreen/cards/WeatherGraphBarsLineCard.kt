@@ -1,10 +1,12 @@
 package com.hsact.sunplanner.ui.mainscreen.cards
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -16,18 +18,28 @@ import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.models.*
 
 class WeatherGraphBarsLineCard {
+    @SuppressLint("UnusedBoxWithConstraintsScope")
     @Composable
     fun WeatherCard(
         header: String,
         barGroups: List<Bars>
     ) {
-        val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
-        val max = allValues.maxOrNull() ?: 0.0
+        //val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
+        //val max = allValues.maxOrNull() ?: 0.0
+        val max = remember (barGroups) {
+            val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
+            allValues.maxOrNull() ?: 0.0
+        }
 
-        val hasAnyLabel = barGroups.any { it.label.isNotBlank() }
+        val hasAnyLabel = remember(barGroups) {
+            barGroups.any { it.label.isNotBlank() }
+        }
 
         val isDarkTheme = isSystemInDarkTheme()
-        val textStyle = if (isDarkTheme) TextStyle(color = Color.White) else TextStyle(color = Color.Black)
+        val textStyle = remember(isDarkTheme) {
+            if (isDarkTheme) TextStyle(color = Color.White)
+            else TextStyle(color = Color.Black)
+        }
 
         val labelProperties = LabelProperties(
             enabled = true,
@@ -46,8 +58,19 @@ class WeatherGraphBarsLineCard {
             textStyle = textStyle,
         )
 
-        Card (modifier = Modifier.padding(top = 20.dp, start = 10.dp, end = 10.dp)) {
-            Box(modifier = Modifier.padding(10.dp)) {
+        Card (modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
+            BoxWithConstraints(modifier = Modifier.padding(10.dp)) {
+                val maxWidthDp = maxWidth
+                val groupCount = barGroups.size.coerceAtLeast(1)
+
+                val totalAvailableWidth = maxWidthDp * 0.8f
+                val barThickness = (totalAvailableWidth / (groupCount * 1.5f)).coerceAtMost(24.dp)
+                val spacing = barThickness * 0.5f
+                val barProperties = BarProperties(
+                    thickness = barThickness,
+                    spacing = spacing,
+                    cornerRadius = Bars.Data.Radius.Rectangle(topRight = 5.dp, topLeft = 5.dp),
+                )
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                     Text(
                         text = header,
@@ -59,6 +82,7 @@ class WeatherGraphBarsLineCard {
 
                     ColumnChart(
                         data = barGroups,
+                        barProperties = barProperties,
                         animationMode = AnimationMode.Together(
                             delayBuilder = { it * 500L }
                         ),

@@ -39,8 +39,6 @@ import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -251,7 +249,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             )
                         }
 
-                        Row(modifier.fillMaxWidth())
+                        Row(modifier.fillMaxWidth().padding(top = 20.dp))
                         {
                             //Text("Weather: ${searchDataUI.weatherData}")
                             WeatherGraphLineCard().WeatherCard(
