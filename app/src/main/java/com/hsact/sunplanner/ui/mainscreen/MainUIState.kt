@@ -19,6 +19,8 @@ data class MainUIState (
     val endDate: String = "",
     var startLD: LocalDate = LocalDate.now().minusYears(10),
     var endLD: LocalDate = LocalDate.now().minusYears(1),
+    var confirmedStartLD: LocalDate = LocalDate.now().minusYears(10),
+    var confirmedEndLD: LocalDate = LocalDate.now().minusYears(1),
     var weatherData: WeatherResponse? = null,
     var maxTemperature: Line? = null,
     var minTemperature: Line? = null,

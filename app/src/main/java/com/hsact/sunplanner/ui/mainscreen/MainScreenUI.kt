@@ -1,6 +1,7 @@
 package com.hsact.sunplanner.ui.mainscreen
 
 import android.widget.Toast
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphBarsLineCard
@@ -37,6 +39,8 @@ import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
+import java.time.format.TextStyle
+import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -47,27 +51,27 @@ class MainScreenUI(val viewModel: MainViewModel) {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val scrollState = rememberScrollState()
         val canScroll = remember { mutableStateOf(false) }
-        val searchDataUI by viewModel.searchDataUI.collectAsState()
+        val mainDataUI by viewModel.searchDataUI.collectAsState()
         val searchUI = SearchUI()
         var query by remember { mutableStateOf("") }
 
-        val date1 = searchDataUI.startLD
+        val date1 = mainDataUI.startLD
         var years1 by remember {
             mutableStateOf(
                 (1940..LocalDate.now().minusYears(1).year).toList().reversed()
             )
         }
         val months1 by remember { mutableStateOf((1..12).toList()) }
-        val days1 = remember (date1) {(1..date1.lengthOfMonth()).toList()}
+        val days1 = remember(date1) { (1..date1.lengthOfMonth()).toList() }
 
-        val date2 = searchDataUI.endLD
+        val date2 = mainDataUI.endLD
         val years2 by remember {
             mutableStateOf(
                 (1940..LocalDate.now().minusYears(1).year).toList().reversed()
             )
         }
         val months2 by remember { mutableStateOf((1..12).toList()) }
-        val days2 = remember (date2) {(1..date2.lengthOfMonth()).toList()}
+        val days2 = remember(date2) { (1..date2.lengthOfMonth()).toList() }
 
         //viewModel.fetchWeatherByCity("Moscow", "01.01.2024", "02.01.2024")
         //viewModel.fetchCityList(cityName)
@@ -76,9 +80,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
         LaunchedEffect(scrollState.maxValue) {
             canScroll.value = scrollState.maxValue > 0
         }
-        LaunchedEffect(searchDataUI.error) {
-            if (searchDataUI.error.isNotEmpty()) {
-                Toast.makeText(context, searchDataUI.error, Toast.LENGTH_SHORT).show()
+        LaunchedEffect(mainDataUI.error) {
+            if (mainDataUI.error.isNotEmpty()) {
+                Toast.makeText(context, mainDataUI.error, Toast.LENGTH_SHORT).show()
                 viewModel.cleanError()
             }
         }
@@ -108,8 +112,11 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     .verticalScroll(scrollState)
             ) {
                 Row(
-                    modifier = Modifier
+                    modifier = if (isSearchExpanded) Modifier
                         .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
+                        else Modifier
+                            .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
+                            .padding(start = 10.dp, end = 10.dp)
                 ) {
                     searchUI.SearchCityBar(
                         viewModel = viewModel,
@@ -128,7 +135,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 if (!isSearchExpanded) {
                     Row(
                         modifier = Modifier
-                            .padding(top = 10.dp)
+                            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
                             .fillMaxWidth()
                     ) {
                         DropDownPicker().ItemsDropdown(
@@ -154,15 +161,20 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     }
                     Row(
                         modifier = Modifier
-                            .padding(top = 20.dp, start = 5.dp, end = 5.dp)
+                            .padding(top = 20.dp, start = 10.dp, end = 10.dp)
                     ) {
                         Card()
                         {
+                            Row ( modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center)
+                            {
+                                Text("Dates range", modifier = Modifier.padding(top = 5.dp))
+                            }
                             Row(
                                 modifier = Modifier
                                     .padding(
-                                        top = 10.dp, start = 5.dp,
-                                        end = 5.dp, bottom = 10.dp
+                                        top = 10.dp, start = 10.dp,
+                                        end = 10.dp, bottom = 10.dp
                                     )
                             ) {
                                 DropDownPicker().ItemsDropdown(
@@ -186,7 +198,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         .padding(start = 5.dp)
                                 )
                             }
-                            Row(modifier = Modifier.padding(5.dp))
+                            Row(modifier = Modifier.padding(10.dp))
                             {
                                 DropDownPicker().ItemsDropdown(
                                     label = "Start day",
@@ -213,7 +225,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     }
                     Row(
                         modifier = Modifier
-                            .padding(top = 10.dp)
+                            .padding(top = 10.dp , start = 10.dp, end = 10.dp)
                     ) {
                         Button(
                             onClick = { viewModel.prepareParamsForRequest() },
@@ -223,47 +235,60 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             Text("Search")
                         }
                     }
-                    Row(modifier.fillMaxWidth())
-                    {
-                        //Text("Weather: ${searchDataUI.weatherData}")
-                        if (searchDataUI.maxTemperature != null) {
+                    if (mainDataUI.weatherData != null) {
+                        Row(
+                            modifier
+                                .fillMaxWidth()
+                                .padding(top = 10.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = DateUtils.formatDateRange(
+                                    startDate = mainDataUI.confirmedStartLD,
+                                    endDate = mainDataUI.confirmedEndLD,
+                                    isOneDay = mainDataUI.isOneDay
+                                ),
+                            )
+                        }
+
+                        Row(modifier.fillMaxWidth())
+                        {
+                            //Text("Weather: ${searchDataUI.weatherData}")
                             WeatherGraphLineCard().WeatherCard(
                                 "Temperature",
-                                listOf(searchDataUI.maxTemperature!!, searchDataUI.minTemperature!!)
+                                listOf(
+                                    mainDataUI.maxTemperature!!,
+                                    mainDataUI.minTemperature!!
+                                )
                             )
                         }
-                    }
-                    Row(modifier.fillMaxWidth())
-                    {
-                        //Text("Weather: ${searchDataUI.weatherData}")
-                        if (searchDataUI.sunDuration != null) {
+                        Row(modifier.fillMaxWidth())
+                        {
                             WeatherGraphLineCard().WeatherCard(
                                 "Sunshine hours",
-                                listOf(searchDataUI.sunDuration!!)
+                                listOf(mainDataUI.sunDuration!!)
                             )
                         }
-                    }
-                    Row(modifier.fillMaxWidth())
-                    {
-                        //Text("Weather: ${searchDataUI.weatherData}")
-                        if (searchDataUI.precipitation != null) {
+                        Row(modifier.fillMaxWidth())
+                        {
                             WeatherGraphBarsLineCard().WeatherCard(
                                 "Precipitation mm",
-                                listOf(searchDataUI.precipitation!!)
+                                listOf(mainDataUI.precipitation!!)
                             )
                         }
-                    }
-                    /*if (searchDataUI.maxTemperature != null) {
-                        WeatherGraphLineCard().WeatherCard(
-                            "Temperature",
-                            listOf(searchDataUI.maxTemperature!!, searchDataUI.minTemperature!!)
-                        )
+                        /*if (searchDataUI.maxTemperature != null) {
+                    WeatherGraphLineCard().WeatherCard(
+                        "Temperature",
+                        listOf(searchDataUI.maxTemperature!!, searchDataUI.minTemperature!!)
+                    )
                     }*/
+                    }
                 }
             }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {

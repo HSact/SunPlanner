@@ -99,6 +99,10 @@ class MainViewModel() : ViewModel() {
     fun cleanError() {
         _searchDataUI.value = _searchDataUI.value.copy(error = "")
     }
+    fun updateConfirmedLD(start: LocalDate, end: LocalDate) {
+        _searchDataUI.value = _searchDataUI.value.copy(confirmedStartLD = start, confirmedEndLD = end)
+    }
+
 
     fun prepareParamsForRequest() {
         val location = _searchDataUI.value.location
@@ -140,6 +144,7 @@ class MainViewModel() : ViewModel() {
     }
 
     private fun fetchWeather(params: WeatherRequestParams) {
+        updateConfirmedLD(_searchDataUI.value.startLD, _searchDataUI.value.endLD)
         viewModelScope.launch {
             try {
                 val filteredWeather = FetchFilteredWeatherUseCase(repository).execute(
