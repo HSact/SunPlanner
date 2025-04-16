@@ -279,7 +279,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         {
                             WeatherGraphBarsLineCard().WeatherCard(
                                 "Precipitation mm",
-                                listOf(mainDataUI.precipitation!!)
+                                listOf(mainDataUI.precipitation!!),
+                                mainDataUI.confirmedStartLD,
+                                mainDataUI.confirmedEndLD
                             )
                         }
                         /*if (searchDataUI.maxTemperature != null) {

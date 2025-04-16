@@ -16,13 +16,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.models.*
+import java.time.LocalDate
 
 class WeatherGraphBarsLineCard {
     @SuppressLint("UnusedBoxWithConstraintsScope")
     @Composable
     fun WeatherCard(
         header: String,
-        barGroups: List<Bars>
+        barGroups: List<Bars>,
+        startDate: LocalDate,
+        endDate: LocalDate
     ) {
         //val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
         //val max = allValues.maxOrNull() ?: 0.0
@@ -30,6 +33,9 @@ class WeatherGraphBarsLineCard {
             val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
             allValues.maxOrNull() ?: 0.0
         }
+        val useYearsAsLabels =
+            startDate.dayOfMonth == endDate.dayOfMonth &&
+                    startDate.month == endDate.month
 
         val hasAnyLabel = remember(barGroups) {
             barGroups.any { it.label.isNotBlank() }
@@ -44,6 +50,8 @@ class WeatherGraphBarsLineCard {
         val labelProperties = LabelProperties(
             enabled = true,
             textStyle = textStyle,
+            labels = if (useYearsAsLabels) (startDate.year..endDate.year).map { "'${it % 100}"}
+            else (startDate.dayOfMonth..endDate.dayOfMonth).map { it.toString() },
             rotation = LabelProperties.Rotation(degree = 0f)
         )
 
@@ -118,7 +126,9 @@ class WeatherGraphBarsLineCard {
 
         WeatherCard(
             header = "Average Temperature",
-            barGroups = listOf(previewBars)
+            barGroups = listOf(previewBars),
+            startDate = LocalDate.now().minusDays(10),
+            endDate = LocalDate.now()
         )
     }
 }

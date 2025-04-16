@@ -15,18 +15,18 @@ class CreateWeatherGraphBarsUseCase {
         color: Color
     ): Bars {
         val brush = SolidColor(color)
-        val useYearsAsLabels =
+        val useYearsAsLabels = //TODO: Clean up
             startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
 
         val dataList = values.mapIndexed { index, value ->
-            val labelText = if (useYearsAsLabels) {
+            /*val labelText = if (useYearsAsLabels) {
                 (startDate.year + index).toString()
             } else {
                 startDate.plusDays(index.toLong()).dayOfMonth.toString()
-            }
+            }*/
             Bars.Data(
-                label = labelText,
+                //label = labelText,
                 value = value,
                 color = brush,
                 animationSpec = tween(durationMillis = 1000),
