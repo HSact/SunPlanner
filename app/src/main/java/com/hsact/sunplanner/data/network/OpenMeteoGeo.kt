@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.network
+package com.hsact.sunplanner.data.network
 
 import com.hsact.sunplanner.data.responses.LocationResponse
 import retrofit2.http.GET

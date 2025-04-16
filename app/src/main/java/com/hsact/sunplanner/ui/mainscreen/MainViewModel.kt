@@ -9,8 +9,8 @@ import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
-import com.hsact.sunplanner.network.RetrofitInstance
-import com.hsact.sunplanner.network.WeatherRequestParams
+import com.hsact.sunplanner.data.network.RetrofitInstance
+import com.hsact.sunplanner.data.network.WeatherRequestParams
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

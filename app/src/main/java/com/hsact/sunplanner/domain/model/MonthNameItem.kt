@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.data
+package com.hsact.sunplanner.domain.model
 
 data class MonthNameItem(
     val value: Int,

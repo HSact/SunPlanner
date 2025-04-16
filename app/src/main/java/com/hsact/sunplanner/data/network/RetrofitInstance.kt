@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.network
+package com.hsact.sunplanner.data.network
 
 import com.squareup.moshi.Moshi
 import retrofit2.Retrofit

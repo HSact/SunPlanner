@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.network
+package com.hsact.sunplanner.data.network
 
 data class WeatherRequestParams(
     var latitude: Double = 0.0,
