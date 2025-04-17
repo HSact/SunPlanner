@@ -30,6 +30,7 @@ object DateUtils {
         startDate: LocalDate,
         endDate: LocalDate
     ): List<String> {
+        val singleYearEndDate = endDate.minusYears((endDate.year-startDate.year).toLong())
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
         return if (useYearsAsLabels) {
@@ -38,7 +39,7 @@ object DateUtils {
             }
         } else {
             generateSequence(startDate) { it.plusDays(1) }
-                .takeWhile { !it.isAfter(endDate) }
+                .takeWhile { !it.isAfter(singleYearEndDate) }
                 .map { it.dayOfMonth.toString() }
                 .toList()
         }
