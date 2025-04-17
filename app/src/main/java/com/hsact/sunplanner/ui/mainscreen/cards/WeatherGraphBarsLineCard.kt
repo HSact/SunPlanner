@@ -70,12 +70,11 @@ class WeatherGraphBarsLineCard {
 
         Card (modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
             BoxWithConstraints(modifier = Modifier.padding(10.dp)) {
-                val maxWidthDp = maxWidth
-                val groupCount = barGroups.size.coerceAtLeast(1)
 
-                val totalAvailableWidth = maxWidthDp * 0.8f
-                val barThickness = (totalAvailableWidth / (groupCount * 1.5f)).coerceAtMost(24.dp)
-                val spacing = barThickness * 0.5f
+                val totalBars = barGroups[0].values.size
+                val spacing = 2.dp
+                val totalSpacing = spacing * (totalBars - 1)
+                val barThickness = (maxWidth - (15*2).dp - totalSpacing) / totalBars
                 val barProperties = BarProperties(
                     thickness = barThickness,
                     spacing = spacing,
