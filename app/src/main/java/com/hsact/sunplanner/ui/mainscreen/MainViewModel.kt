@@ -117,6 +117,10 @@ class MainViewModel() : ViewModel() {
             updateError("Invalid date range")
             return
         }
+        if (endDate.year - startDate.year > 20) {
+            updateError("Years range is too big (max 20)")
+            return
+        }
         val params = WeatherRequestParams().apply {
             latitude = location.latitude
             longitude = location.longitude
