@@ -28,15 +28,10 @@ class WeatherGraphBarsLineCard {
         startDate: LocalDate,
         endDate: LocalDate
     ) {
-        //val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
-        //val max = allValues.maxOrNull() ?: 0.0
         val max = remember(barGroups) {
             val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
             allValues.maxOrNull() ?: 0.0
         }
-        /*val useYearsAsLabels =
-            startDate.dayOfMonth == endDate.dayOfMonth &&
-                    startDate.month == endDate.month*/
 
         val hasAnyLabel = remember(barGroups) {
             barGroups.any { it.label.isNotBlank() }
@@ -52,14 +47,6 @@ class WeatherGraphBarsLineCard {
             enabled = true,
             textStyle = textStyle,
             labels = DateUtils.labelsForCard(startDate, endDate),
-                    /*if (useYearsAsLabels) (startDate.year..endDate.year).map
-            { "'${(it % 100).toString().padStart(2, '0')}" }
-            else {
-                generateSequence(startDate) { it.plusDays(1) }
-                    .takeWhile { !it.isAfter(endDate) }
-                    .map { it.dayOfMonth.toString() }
-                    .toList()
-            },*/
             rotation = LabelProperties.Rotation(degree = 0f)
         )
 
@@ -100,7 +87,7 @@ class WeatherGraphBarsLineCard {
                         data = barGroups,
                         barProperties = barProperties,
                         animationMode = AnimationMode.Together(
-                            delayBuilder = { it * 500L }
+                            delayBuilder = { it * 100L }
                         ),
                         gridProperties = gridProperties,
                         indicatorProperties = indicatorProperties,
