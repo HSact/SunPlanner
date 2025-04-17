@@ -103,31 +103,39 @@ class MainViewModel() : ViewModel() {
         _searchDataUI.value = _searchDataUI.value.copy(confirmedStartLD = start, confirmedEndLD = end)
     }
 
+    fun onSearchClick () {
+        val params = prepareParamsForRequest()
+        if (params != null) {
+            _searchDataUI.value = _searchDataUI.value.copy(isLoading = true)
+            fetchWeather(params)
+        }
+    }
 
-    fun prepareParamsForRequest() {
+
+    fun prepareParamsForRequest(): WeatherRequestParams? {
         val location = _searchDataUI.value.location
         val startDate = _searchDataUI.value.startLD
         val endDate = _searchDataUI.value.endLD
 
         if (location == null) {
             updateError("Location is empty")
-            return
+            return null
         }
         if (startDate > endDate) {
             updateError("Invalid date range")
-            return
+            return null
         }
         if (endDate.year - startDate.year > 20) {
             updateError("Years range is too big (max 20)")
-            return
+            return null
         }
-        val params = WeatherRequestParams().apply {
+        return WeatherRequestParams().apply {
             latitude = location.latitude
             longitude = location.longitude
             this.startDate = startDate.toString() // YYYY-MM-DD
             this.endDate = endDate.toString()
         }
-        fetchWeather(params)
+        //fetchWeather(params)
     }
 
     fun fetchCityList(cityName: String) {
@@ -187,6 +195,7 @@ class MainViewModel() : ViewModel() {
                 println("Error fetching weather: ${e.message}")
                 updateError("Error fetching weather: ${e.message}")
             }
+            _searchDataUI.value = _searchDataUI.value.copy(isLoading = false)
         }
     }
 }

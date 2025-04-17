@@ -8,6 +8,7 @@ import java.time.LocalDate
 
 data class MainUIState (
     var error : String = "",
+    var isLoading: Boolean = false,
     var isOneDay: Boolean = true,
     val cityName: String = "",
     var cities: List<Location> = emptyList(),

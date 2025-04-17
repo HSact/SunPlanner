@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -261,14 +263,29 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             .padding(top = 10.dp, start = 10.dp, end = 10.dp)
                     ) {
                         Button(
-                            onClick = { viewModel.prepareParamsForRequest() },
+                            onClick = { viewModel.onSearchClick() },
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(1f),
+                            enabled = !mainDataUI.isLoading
                         ) {
                             Text("Search")
                         }
                     }
-                    if (mainDataUI.weatherData != null) {
+                    if (mainDataUI.isLoading) {
+                        Row(
+                            modifier
+                                .fillMaxWidth()
+                                .padding(top = 50.dp),
+                            horizontalArrangement = Arrangement.Center)
+                        {
+                            CircularProgressIndicator(
+                                modifier = Modifier.width(64.dp),
+                                color = MaterialTheme.colorScheme.secondary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        }
+                    }
+                    if (mainDataUI.weatherData != null && !mainDataUI.isLoading) {
                         Row(
                             modifier
                                 .fillMaxWidth()
@@ -316,6 +333,10 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 mainDataUI.confirmedStartLD,
                                 mainDataUI.confirmedEndLD
                             )
+                        }
+                        Row(modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp))
+                        {
+                            Text("Data by Open-Meteo (CC BY 4.0)")
                         }
                         /*if (searchDataUI.maxTemperature != null) {
                     WeatherGraphLineCard().WeatherCard(
