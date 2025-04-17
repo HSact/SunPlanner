@@ -106,7 +106,6 @@ class MainViewModel() : ViewModel() {
     fun onSearchClick () {
         val params = prepareParamsForRequest()
         if (params != null) {
-            _searchDataUI.value = _searchDataUI.value.copy(isLoading = true)
             fetchWeather(params)
         }
     }
@@ -157,6 +156,7 @@ class MainViewModel() : ViewModel() {
 
     private fun fetchWeather(params: WeatherRequestParams) {
         updateConfirmedLD(_searchDataUI.value.startLD, _searchDataUI.value.endLD)
+        _searchDataUI.value = _searchDataUI.value.copy(isLoading = true)
         viewModelScope.launch {
             try {
                 val filteredWeather = FetchFilteredWeatherUseCase(repository).execute(

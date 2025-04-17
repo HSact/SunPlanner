@@ -152,7 +152,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             onSelected = {
                                 viewModel.updateStartYear(it)
                             },
-                            modifier = Modifier.weight(0.5f)
+                            modifier = Modifier
+                                .weight(0.5f)
+                                .padding(end = 3.dp)
                         )
                         DropDownPicker().ItemsDropdown(
                             label = "End year",
@@ -163,7 +165,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(start = 5.dp)
+                                .padding(start = 3.dp)
                         )
                     }
                     Row(
@@ -174,8 +176,10 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp)
-                                .border(1.dp,  color = MaterialTheme.colorScheme.outline,
-                                    RoundedCornerShape(10.dp))
+                                .border(
+                                    1.dp, color = MaterialTheme.colorScheme.outline,
+                                    RoundedCornerShape(10.dp)
+                                )
                         ) {
                             Column(
                                 modifier = Modifier
@@ -189,19 +193,14 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         .background(MaterialTheme.colorScheme.background)
                                         .padding(horizontal = 8.dp)
                                 ) {
-                                    Card(modifier = Modifier
-                                        //.padding(top = 5.dp)
-                                        .zIndex(1f)
-                                        .offset(y = (-12).dp)
-                                        .background(MaterialTheme.colorScheme.background),
-                                        ) {
-                                        Text(
-                                            modifier = Modifier.background(MaterialTheme.colorScheme.background),
-                                            text = "Dates range",
-                                            style = MaterialTheme.typography.labelLarge,
-                                            color = MaterialTheme.colorScheme.onBackground
-                                        )
-                                    }
+                                    Text(
+                                        modifier = Modifier
+                                            .background(MaterialTheme.colorScheme.background)
+                                            .offset(y = (-12).dp),
+                                        text = "Dates range",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
                                 }
                                 Row(
                                     modifier = Modifier
@@ -217,7 +216,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         onSelected = {
                                             viewModel.updateStartMonth(it)
                                         },
-                                        modifier = Modifier.weight(0.5f)
+                                        modifier = Modifier
+                                            .weight(0.5f)
+                                            .padding(end = 3.dp)
                                     )
                                     DropDownPicker().ItemsDropdown(
                                         label = "End month",
@@ -228,7 +229,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         },
                                         modifier = Modifier
                                             .weight(0.5f)
-                                            .padding(start = 5.dp)
+                                            .padding(start = 3.dp)
                                     )
                                 }
                                 Row(modifier = Modifier.padding(10.dp))
@@ -240,7 +241,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         onSelected = {
                                             viewModel.updateStartDay(it)
                                         },
-                                        modifier = Modifier.weight(0.5f)
+                                        modifier = Modifier
+                                            .weight(0.5f)
+                                            .padding(end = 3.dp)
                                     )
                                     DropDownPicker().ItemsDropdown(
                                         label = "End day",
@@ -251,7 +254,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         },
                                         modifier = Modifier
                                             .weight(0.5f)
-                                            .padding(start = 5.dp)
+                                            .padding(start = 3.dp)
                                     )
                                 }
                             }
@@ -275,7 +278,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             modifier
                                 .fillMaxWidth()
                                 .padding(top = 50.dp),
-                            horizontalArrangement = Arrangement.Center)
+                            horizontalArrangement = Arrangement.Center
+                        )
                         {
                             CircularProgressIndicator(
                                 modifier = Modifier.width(64.dp),
@@ -300,9 +304,11 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             )
                         }
 
-                        Row(modifier
-                            .fillMaxWidth()
-                            .padding(top = 20.dp))
+                        Row(
+                            modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp)
+                        )
                         {
                             //Text("Weather: ${searchDataUI.weatherData}")
                             WeatherGraphLineCard().WeatherCard(
@@ -333,7 +339,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 mainDataUI.confirmedEndLD
                             )
                         }
-                        Row(modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp))
+                        Row(modifier
+                            .fillMaxWidth()
+                            .padding(start = 10.dp, end = 10.dp))
                         {
                             Text("Data by Open-Meteo (CC BY 4.0)")
                         }
