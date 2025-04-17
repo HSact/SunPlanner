@@ -30,18 +30,23 @@ object DateUtils {
         startDate: LocalDate,
         endDate: LocalDate
     ): List<String> {
-        val singleYearEndDate = endDate.minusYears((endDate.year-startDate.year).toLong())
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
-        return if (useYearsAsLabels) {
+
+        val rawLabels = if (useYearsAsLabels) {
             (startDate.year..endDate.year).map {
                 "'${(it % 100).toString().padStart(2, '0')}"
             }
         } else {
+            val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
             generateSequence(startDate) { it.plusDays(1) }
                 .takeWhile { !it.isAfter(singleYearEndDate) }
                 .map { it.dayOfMonth.toString() }
                 .toList()
         }
+        if (rawLabels.size <= 20) return rawLabels
+        val step = (rawLabels.size / 20.0).toInt().coerceAtLeast(1) + 1
+        val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
+        return filteredLabels
     }
 }
