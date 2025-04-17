@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -338,12 +337,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         {
                             Text("Data by Open-Meteo (CC BY 4.0)")
                         }
-                        /*if (searchDataUI.maxTemperature != null) {
-                    WeatherGraphLineCard().WeatherCard(
-                        "Temperature",
-                        listOf(searchDataUI.maxTemperature!!, searchDataUI.minTemperature!!)
-                    )
-                    }*/
                     }
                 }
             }
