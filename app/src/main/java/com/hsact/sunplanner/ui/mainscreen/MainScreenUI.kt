@@ -170,92 +170,109 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     }
                     Row(
                         modifier = Modifier
-                            .padding(top = 20.dp, start = 10.dp, end = 10.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 20.dp)
-                                .border(
-                                    1.dp, color = MaterialTheme.colorScheme.outline,
-                                    RoundedCornerShape(10.dp)
-                                )
-                        ) {
-                            Column(
+                            .fillMaxWidth()
+                            .padding(top = 10.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+                    {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Dates range",
                                 modifier = Modifier
-                                    .fillMaxWidth()
+                                    .align(Alignment.TopCenter)
+                                    .offset(y = 8.dp)
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(horizontal = 8.dp)
+                                    .zIndex(1f),
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .padding(top = 20.dp, start = 10.dp, end = 10.dp)
+                                    .border(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.outline,
+                                        RoundedCornerShape(10.dp)
+                                    )
+                                    .padding(
+                                        top = 10.dp,
+                                        start = 5.dp,
+                                        end = 5.dp,
+                                        bottom = 5.dp
+                                    )
+                                    .align(Alignment.TopCenter)
+                                    .zIndex(0f)
                             ) {
-                                Box(
+                                Column(
                                     modifier = Modifier
-                                        .padding(top = 2.dp)
-                                        .align(Alignment.CenterHorizontally)
-                                        //.offset(y = (-12).dp)
-                                        .background(MaterialTheme.colorScheme.background)
-                                        .padding(horizontal = 8.dp)
+                                        .fillMaxWidth()
                                 ) {
-                                    Text(
+                                    Box(
                                         modifier = Modifier
+                                            .padding(top = 2.dp)
+                                            .align(Alignment.CenterHorizontally)
+                                            //.offset(y = (-12).dp)
                                             .background(MaterialTheme.colorScheme.background)
-                                            .offset(y = (-12).dp),
-                                        text = "Dates range",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = MaterialTheme.colorScheme.onBackground
-                                    )
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 10.dp, start = 10.dp,
-                                            end = 10.dp, bottom = 10.dp
+                                            .padding(horizontal = 8.dp)
+                                    ) {
+
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(
+                                                top = 10.dp, start = 10.dp,
+                                                end = 10.dp, bottom = 10.dp
+                                            )
+                                    ) {
+                                        DropDownPicker().ItemsDropdown(
+                                            label = "Start month",
+                                            list = months1,
+                                            selected = date1.monthValue,
+                                            onSelected = {
+                                                viewModel.updateStartMonth(it)
+                                            },
+                                            modifier = Modifier
+                                                .weight(0.5f)
+                                                .padding(end = 3.dp)
                                         )
-                                ) {
-                                    DropDownPicker().ItemsDropdown(
-                                        label = "Start month",
-                                        list = months1,
-                                        selected = date1.monthValue,
-                                        onSelected = {
-                                            viewModel.updateStartMonth(it)
-                                        },
-                                        modifier = Modifier
-                                            .weight(0.5f)
-                                            .padding(end = 3.dp)
-                                    )
-                                    DropDownPicker().ItemsDropdown(
-                                        label = "End month",
-                                        list = months2,
-                                        selected = date2.monthValue,
-                                        onSelected = {
-                                            viewModel.updateEndMonth(it)
-                                        },
-                                        modifier = Modifier
-                                            .weight(0.5f)
-                                            .padding(start = 3.dp)
-                                    )
-                                }
-                                Row(modifier = Modifier.padding(10.dp))
-                                {
-                                    DropDownPicker().ItemsDropdown(
-                                        label = "Start day",
-                                        list = days1,
-                                        selected = date1.dayOfMonth,
-                                        onSelected = {
-                                            viewModel.updateStartDay(it)
-                                        },
-                                        modifier = Modifier
-                                            .weight(0.5f)
-                                            .padding(end = 3.dp)
-                                    )
-                                    DropDownPicker().ItemsDropdown(
-                                        label = "End day",
-                                        list = days2,
-                                        selected = date2.dayOfMonth,
-                                        onSelected = {
-                                            viewModel.updateEndDay(it)
-                                        },
-                                        modifier = Modifier
-                                            .weight(0.5f)
-                                            .padding(start = 3.dp)
-                                    )
+                                        DropDownPicker().ItemsDropdown(
+                                            label = "End month",
+                                            list = months2,
+                                            selected = date2.monthValue,
+                                            onSelected = {
+                                                viewModel.updateEndMonth(it)
+                                            },
+                                            modifier = Modifier
+                                                .weight(0.5f)
+                                                .padding(start = 3.dp)
+                                        )
+                                    }
+                                    Row(modifier = Modifier.padding(10.dp))
+                                    {
+                                        DropDownPicker().ItemsDropdown(
+                                            label = "Start day",
+                                            list = days1,
+                                            selected = date1.dayOfMonth,
+                                            onSelected = {
+                                                viewModel.updateStartDay(it)
+                                            },
+                                            modifier = Modifier
+                                                .weight(0.5f)
+                                                .padding(end = 3.dp)
+                                        )
+                                        DropDownPicker().ItemsDropdown(
+                                            label = "End day",
+                                            list = days2,
+                                            selected = date2.dayOfMonth,
+                                            onSelected = {
+                                                viewModel.updateEndDay(it)
+                                            },
+                                            modifier = Modifier
+                                                .weight(0.5f)
+                                                .padding(start = 3.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -339,9 +356,11 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 mainDataUI.confirmedEndLD
                             )
                         }
-                        Row(modifier
-                            .fillMaxWidth()
-                            .padding(start = 10.dp, end = 10.dp))
+                        Row(
+                            modifier
+                                .fillMaxWidth()
+                                .padding(start = 10.dp, end = 10.dp)
+                        )
                         {
                             Text("Data by Open-Meteo (CC BY 4.0)")
                         }
