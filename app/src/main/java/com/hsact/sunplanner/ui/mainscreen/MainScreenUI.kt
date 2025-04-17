@@ -17,7 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -79,9 +78,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
         }
         val months2 by remember { mutableStateOf((1..12).toList()) }
         val days2 = remember(date2) { (1..date2.lengthOfMonth()).toList() }
-
-        //viewModel.fetchWeatherByCity("Moscow", "01.01.2024", "02.01.2024")
-        //viewModel.fetchCityList(cityName)
         val context = LocalContext.current
 
         LaunchedEffect(scrollState.maxValue) {
@@ -212,7 +208,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         modifier = Modifier
                                             .padding(top = 2.dp)
                                             .align(Alignment.CenterHorizontally)
-                                            //.offset(y = (-12).dp)
                                             .background(MaterialTheme.colorScheme.background)
                                             .padding(horizontal = 8.dp)
                                     ) {
@@ -296,8 +291,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 .fillMaxWidth()
                                 .padding(top = 50.dp),
                             horizontalArrangement = Arrangement.Center
-                        )
-                        {
+                        ) {
                             CircularProgressIndicator(
                                 modifier = Modifier.width(64.dp),
                                 color = MaterialTheme.colorScheme.secondary,
@@ -325,8 +319,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp)
-                        )
-                        {
+                        ) {
                             //Text("Weather: ${searchDataUI.weatherData}")
                             WeatherGraphLineCard().WeatherCard(
                                 "Temperature",
@@ -360,8 +353,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                             modifier
                                 .fillMaxWidth()
                                 .padding(start = 10.dp, end = 10.dp)
-                        )
-                        {
+                        ) {
                             Text("Data by Open-Meteo (CC BY 4.0)")
                         }
                     }
