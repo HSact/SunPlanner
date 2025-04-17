@@ -62,7 +62,8 @@ class WeatherGraphLineCard {
         val labelProperties = LabelProperties(
             enabled = true,
             textStyle = textStyle,
-            labels = if (useYearsAsLabels) (startDate.year..endDate.year).map { "'${it % 100}"}
+            labels = if (useYearsAsLabels) (startDate.year..endDate.year).map
+            { "'${(it % 100).toString().padStart(2, '0')}" }
                 else (startDate.dayOfMonth..endDate.dayOfMonth).map { it.toString() },
             rotation = LabelProperties.Rotation(degree = 0f)
         )
