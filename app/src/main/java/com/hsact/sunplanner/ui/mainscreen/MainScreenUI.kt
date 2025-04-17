@@ -1,14 +1,19 @@
 package com.hsact.sunplanner.ui.mainscreen
 
 import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -25,12 +30,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.utils.LocationUtils
@@ -161,65 +169,90 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         modifier = Modifier
                             .padding(top = 20.dp, start = 10.dp, end = 10.dp)
                     ) {
-                        Card()
-                        {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
-                            )
-                            {
-                                Text("Dates range", modifier = Modifier.padding(top = 5.dp))
-                            }
-                            Row(
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp)
+                                .border(1.dp,  color = MaterialTheme.colorScheme.outline,
+                                    RoundedCornerShape(10.dp))
+                        ) {
+                            Column(
                                 modifier = Modifier
-                                    .padding(
-                                        top = 10.dp, start = 10.dp,
-                                        end = 10.dp, bottom = 10.dp
-                                    )
+                                    .fillMaxWidth()
                             ) {
-                                DropDownPicker().ItemsDropdown(
-                                    label = "Start month",
-                                    list = months1,
-                                    selected = date1.monthValue,
-                                    onSelected = {
-                                        viewModel.updateStartMonth(it)
-                                    },
-                                    modifier = Modifier.weight(0.5f)
-                                )
-                                DropDownPicker().ItemsDropdown(
-                                    label = "End month",
-                                    list = months2,
-                                    selected = date2.monthValue,
-                                    onSelected = {
-                                        viewModel.updateEndMonth(it)
-                                    },
+                                Box(
                                     modifier = Modifier
-                                        .weight(0.5f)
-                                        .padding(start = 5.dp)
-                                )
-                            }
-                            Row(modifier = Modifier.padding(10.dp))
-                            {
-                                DropDownPicker().ItemsDropdown(
-                                    label = "Start day",
-                                    list = days1,
-                                    selected = date1.dayOfMonth,
-                                    onSelected = {
-                                        viewModel.updateStartDay(it)
-                                    },
-                                    modifier = Modifier.weight(0.5f)
-                                )
-                                DropDownPicker().ItemsDropdown(
-                                    label = "End day",
-                                    list = days2,
-                                    selected = date2.dayOfMonth,
-                                    onSelected = {
-                                        viewModel.updateEndDay(it)
-                                    },
+                                        .padding(top = 2.dp)
+                                        .align(Alignment.CenterHorizontally)
+                                        //.offset(y = (-12).dp)
+                                        .background(MaterialTheme.colorScheme.background)
+                                        .padding(horizontal = 8.dp)
+                                ) {
+                                    Card(modifier = Modifier
+                                        //.padding(top = 5.dp)
+                                        .zIndex(1f)
+                                        .offset(y = (-12).dp)
+                                        .background(MaterialTheme.colorScheme.background),
+                                        ) {
+                                        Text(
+                                            modifier = Modifier.background(MaterialTheme.colorScheme.background),
+                                            text = "Dates range",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = MaterialTheme.colorScheme.onBackground
+                                        )
+                                    }
+                                }
+                                Row(
                                     modifier = Modifier
-                                        .weight(0.5f)
-                                        .padding(start = 5.dp)
-                                )
+                                        .padding(
+                                            top = 10.dp, start = 10.dp,
+                                            end = 10.dp, bottom = 10.dp
+                                        )
+                                ) {
+                                    DropDownPicker().ItemsDropdown(
+                                        label = "Start month",
+                                        list = months1,
+                                        selected = date1.monthValue,
+                                        onSelected = {
+                                            viewModel.updateStartMonth(it)
+                                        },
+                                        modifier = Modifier.weight(0.5f)
+                                    )
+                                    DropDownPicker().ItemsDropdown(
+                                        label = "End month",
+                                        list = months2,
+                                        selected = date2.monthValue,
+                                        onSelected = {
+                                            viewModel.updateEndMonth(it)
+                                        },
+                                        modifier = Modifier
+                                            .weight(0.5f)
+                                            .padding(start = 5.dp)
+                                    )
+                                }
+                                Row(modifier = Modifier.padding(10.dp))
+                                {
+                                    DropDownPicker().ItemsDropdown(
+                                        label = "Start day",
+                                        list = days1,
+                                        selected = date1.dayOfMonth,
+                                        onSelected = {
+                                            viewModel.updateStartDay(it)
+                                        },
+                                        modifier = Modifier.weight(0.5f)
+                                    )
+                                    DropDownPicker().ItemsDropdown(
+                                        label = "End day",
+                                        list = days2,
+                                        selected = date2.dayOfMonth,
+                                        onSelected = {
+                                            viewModel.updateEndDay(it)
+                                        },
+                                        modifier = Modifier
+                                            .weight(0.5f)
+                                            .padding(start = 5.dp)
+                                    )
+                                }
                             }
                         }
                     }
