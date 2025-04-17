@@ -25,4 +25,22 @@ object DateUtils {
             "${startDate.dayOfMonth} $monthName1 - ${endDate.dayOfMonth} $monthName2 average in ${startDate.year}-${endDate.year} values"
         }
     }
+
+    fun labelsForCard(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<String> {
+        val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
+                startDate.month == endDate.month
+        return if (useYearsAsLabels) {
+            (startDate.year..endDate.year).map {
+                "'${(it % 100).toString().padStart(2, '0')}"
+            }
+        } else {
+            generateSequence(startDate) { it.plusDays(1) }
+                .takeWhile { !it.isAfter(endDate) }
+                .map { it.dayOfMonth.toString() }
+                .toList()
+        }
+    }
 }
