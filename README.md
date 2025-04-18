@@ -10,7 +10,7 @@ Weather data by [Open Weather](https://openweathermap.org/)
 
 📌 Main Features:
 
-✅ Retrieve weather data for a selected period: temperature, precipitation, and other parameters.  
+✅ Retrieve weather data for a day or a selected period: temperature, precipitation, and other parameters.  
 ✅ Calculate average temperature and precipitation by day and year.  
 ✅ User-friendly interface for entering city and date ranges.  
 ✅ Support for various time intervals for flexible analysis.  
@@ -48,7 +48,7 @@ SunPlanner — это приложение для планирования и а
 
 📌 Основные возможности:
 
-✅ Получение данных о погоде за выбранный период: температура, осадки и другие параметры.  
+✅ Получение данных о погоде за выбранный день или период: температура, осадки и другие параметры.  
 ✅ Средние значения температуры и осадков по дням и годам.  
 ✅ Интуитивно понятный интерфейс для ввода города и дат.  
 ✅ Поддержка различных временных интервалов для анализа.  
