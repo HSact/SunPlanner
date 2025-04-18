@@ -2,6 +2,7 @@
 
 
 SunPlanner is an app for planning and analyzing weather conditions that helps you choose the best time for a vacation or an important event.
+
 Weather data by [Open Weather](https://openweathermap.org/) 
 ---
 
