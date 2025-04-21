@@ -11,7 +11,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.ui.mainscreen.MainScreenUI
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+//@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
 
