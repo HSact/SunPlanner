@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -57,7 +57,7 @@ dependencies {
     implementation(libs.moshi.adapters)
     implementation(libs.compose.charts)
     implementation(libs.androidx.core.splashscreen)
-    kapt(libs.moshi.kotlin.codegen)
+    ksp(libs.moshi.kotlin.codegen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
