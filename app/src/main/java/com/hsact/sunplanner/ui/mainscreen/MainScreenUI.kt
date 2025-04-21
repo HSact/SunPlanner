@@ -81,7 +81,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
         val context = LocalContext.current
 
         LaunchedEffect(scrollState.maxValue) {
-            canScroll.value = scrollState.maxValue > 0 && !mainDataUI.isLoading //TODO: check if it works
+            canScroll.value = scrollState.maxValue > 0 && !mainDataUI.isLoading
         }
         LaunchedEffect(mainDataUI.error) {
             if (mainDataUI.error.isNotEmpty()) {
