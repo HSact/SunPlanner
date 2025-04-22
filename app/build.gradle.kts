@@ -5,6 +5,9 @@ plugins {
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.hilt.gradle)
 }
+hilt {
+    enableAggregatingTask = false
+}
 
 android {
     namespace = "com.hsact.sunplanner"
