@@ -5,8 +5,10 @@ import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.WeatherUtils
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import java.time.LocalDate
+import javax.inject.Inject
 
-class FetchFilteredWeatherUseCase(private val repository: WeatherRepository) {
+class FetchFilteredWeatherUseCase @Inject constructor(
+    private val repository: WeatherRepository) {
     suspend fun execute(
         params: WeatherRequestParams,
         startLD: LocalDate,

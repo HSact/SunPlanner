@@ -11,13 +11,18 @@ import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.RetrofitInstance
 import com.hsact.sunplanner.data.network.WeatherRequestParams
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
-class MainViewModel() : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase
+) : ViewModel() {
     private val repository =
         WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
 
@@ -159,7 +164,7 @@ class MainViewModel() : ViewModel() {
         _searchDataUI.value = _searchDataUI.value.copy(isLoading = true)
         viewModelScope.launch {
             try {
-                val filteredWeather = FetchFilteredWeatherUseCase(repository).execute(
+                val filteredWeather = fetchFilteredWeatherUseCase.execute( //FetchFilteredWeatherUseCase(repository).execute(
                     params,
                     _searchDataUI.value.startLD,
                     _searchDataUI.value.endLD

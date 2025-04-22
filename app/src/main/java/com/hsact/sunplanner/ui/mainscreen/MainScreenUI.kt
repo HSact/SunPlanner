@@ -363,11 +363,11 @@ class MainScreenUI(val viewModel: MainViewModel) {
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
     val viewModel = MainViewModel()
     SunPlannerTheme {
         MainScreenUI(viewModel = viewModel).MainScreen()
     }
-}
+}*/
