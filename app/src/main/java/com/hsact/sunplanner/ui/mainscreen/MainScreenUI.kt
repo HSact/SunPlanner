@@ -366,7 +366,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
 /*@Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    val viewModel = MainViewModel()
+    val fakeUseCase = null
+    val viewModel = MainViewModel(fakeUseCase!!)
     SunPlannerTheme {
         MainScreenUI(viewModel = viewModel).MainScreen()
     }

@@ -5,11 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
+import com.hsact.sunplanner.data.network.OpenMeteoGeo
+import com.hsact.sunplanner.data.network.OpenMeteoService
 import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
-import com.hsact.sunplanner.data.network.RetrofitInstance
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,10 +22,12 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase
+    private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
+    weatherService: OpenMeteoService,
+    geolocationService: OpenMeteoGeo
 ) : ViewModel() {
     private val repository =
-        WeatherRepository(RetrofitInstance.WeatherApi, RetrofitInstance.GeolocationApi)
+        WeatherRepository(weatherService, geolocationService)
 
     private val _searchDataUI = MutableStateFlow(MainUIState())
     val searchDataUI: StateFlow<MainUIState> get() = _searchDataUI
@@ -109,6 +112,18 @@ class MainViewModel @Inject constructor(
     }
 
     fun onSearchClick () {
+        if (_searchDataUI.value.location == null) {
+            updateError("Location is empty")
+            return
+        }
+        if (_searchDataUI.value.startLD > _searchDataUI.value.endLD) {
+            updateError("Invalid date range")
+            return
+        }
+        if (_searchDataUI.value.endLD.year - _searchDataUI.value.startLD.year > 20) {
+            updateError("Years range is too big (max 20)")
+            return
+        }
         val params = prepareParamsForRequest()
         if (params != null) {
             fetchWeather(params)
@@ -117,22 +132,10 @@ class MainViewModel @Inject constructor(
 
 
     fun prepareParamsForRequest(): WeatherRequestParams? {
-        val location = _searchDataUI.value.location
+        val location = _searchDataUI.value.location?: return null
         val startDate = _searchDataUI.value.startLD
         val endDate = _searchDataUI.value.endLD
 
-        if (location == null) {
-            updateError("Location is empty")
-            return null
-        }
-        if (startDate > endDate) {
-            updateError("Invalid date range")
-            return null
-        }
-        if (endDate.year - startDate.year > 20) {
-            updateError("Years range is too big (max 20)")
-            return null
-        }
         return WeatherRequestParams().apply {
             latitude = location.latitude
             longitude = location.longitude
@@ -164,7 +167,7 @@ class MainViewModel @Inject constructor(
         _searchDataUI.value = _searchDataUI.value.copy(isLoading = true)
         viewModelScope.launch {
             try {
-                val filteredWeather = fetchFilteredWeatherUseCase.execute( //FetchFilteredWeatherUseCase(repository).execute(
+                val filteredWeather = fetchFilteredWeatherUseCase.execute(
                     params,
                     _searchDataUI.value.startLD,
                     _searchDataUI.value.endLD
