@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.hilt)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.datastore.preferences)
     ksp(libs.moshi.kotlin.codegen)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
