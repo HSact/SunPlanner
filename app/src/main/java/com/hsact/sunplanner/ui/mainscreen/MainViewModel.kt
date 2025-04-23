@@ -23,15 +23,12 @@ import kotlin.math.roundToInt
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val repository: WeatherRepository,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
     private val createWeatherGraphLineUseCase: CreateWeatherGraphLineUseCase,
-    private val createWeatherGraphBarsUseCase: CreateWeatherGraphBarsUseCase,
-    weatherService: OpenMeteoService,
-    geolocationService: OpenMeteoGeo
+    private val createWeatherGraphBarsUseCase: CreateWeatherGraphBarsUseCase
 ) : ViewModel() {
-    private val repository =
-        WeatherRepository(weatherService, geolocationService)
 
     private val _searchDataUI = MutableStateFlow(MainUIState())
     val searchDataUI: StateFlow<MainUIState> get() = _searchDataUI
