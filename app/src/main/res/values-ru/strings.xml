@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">SunPlanner</string>
+    <string name="search_hint">Локация</string>
+    <string name="no_cities">Ничего не найдено.</string>
+    <string name="enter_city_hint">Введите минимум 2 буквы</string>
+    <string name="start_year">Год начала</string>
+    <string name="end_year">Год окончания</string>
+    <string name="search">Найти</string>
+    <string name="dates_range">Диапазон дат</string>
+    <string name="start_month">Месяц начала</string>
+    <string name="end_month">Месяц окончания</string>
+    <string name="start_day">День начала</string>
+    <string name="end_day">День окончания</string>
+    <string name="min">Минимум</string>
+    <string name="max">Максимум</string>
+    <string name="single_day_range">%1$d %2$s за %3$d–%4$d годы</string>
+    <string name="date_range">%1$d %2$s – %3$d %4$s в среднем за %5$d–%6$d годы</string>
+    <string name="temperature">Температура</string>
+    <string name="sunshine_hours">Солнечные часы</string>
+    <string name="precipitation">Осадки (мм)</string>
+    <string name="data_source">Данные: Open-Meteo (CC BY 4.0)</string>
+</resources>

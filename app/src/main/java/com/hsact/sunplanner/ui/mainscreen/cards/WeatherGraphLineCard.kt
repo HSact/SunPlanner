@@ -38,12 +38,14 @@ class WeatherGraphLineCard {
         header: String,
         lineList: List<Line>,
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        minIsZero: Boolean = false
     ) {
+
         val (min, max) = remember(lineList) {
             val allValues = lineList.flatMap { it.values }
             val max = allValues.maxOrNull() ?: 0.0
-            val min = allValues.minOrNull() ?: 0.0
+            val min = if (minIsZero) 0.0 else allValues.minOrNull() ?: 0.0
             min to max
         }
         /*val useYearsAsLabels =
