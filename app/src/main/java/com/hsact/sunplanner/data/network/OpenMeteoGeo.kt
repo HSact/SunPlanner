@@ -9,7 +9,6 @@ interface OpenMeteoGeo {
     suspend fun getCityCoordinates(
         @Query("name") cityName: String,
         @Query("count") count: Int = 10,
-        @Query("language") language: String = "en",
-        //@Query("format") format: String = "json"
+        @Query("language") language: String = "en"
     ): LocationResponse
 }

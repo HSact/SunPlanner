@@ -20,9 +20,9 @@ class WeatherRepository @Inject constructor(
             null
         }
     }
-    suspend fun getCitiesList(cityName: String): List<Location>? {
+    suspend fun getCitiesList(cityName: String, language: String): List<Location>? {
         return try {
-            val response = geolocationService.getCityCoordinates(cityName, language = "em")
+            val response = geolocationService.getCityCoordinates(cityName, language = language)
             response.results
         } catch (e: Exception) {
             println("Error fetching list of cities: ${e.message}")

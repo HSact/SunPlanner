@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
@@ -136,7 +137,8 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 cities = repository.getCitiesList(
-                    cityName = cityName
+                    cityName = cityName,
+                    language = Locale.getDefault().language,
                 )
             } catch (e: Exception) {
                 //updateError("Error fetching cities: ${e.message}")
