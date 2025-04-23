@@ -4,8 +4,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import ir.ehsannarmani.compose_charts.models.Bars
+import javax.inject.Inject
 
-class CreateWeatherGraphBarsUseCase {
+class CreateWeatherGraphBarsUseCase @Inject constructor() {
     operator fun invoke(
         label: String,
         values: List<Double>,

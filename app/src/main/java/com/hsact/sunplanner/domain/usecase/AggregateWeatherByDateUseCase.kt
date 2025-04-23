@@ -4,9 +4,10 @@ import com.hsact.sunplanner.data.responses.DailyWeather
 import com.hsact.sunplanner.domain.model.DailyAggregatedData
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
-class AggregateWeatherByDateUseCase {
+class AggregateWeatherByDateUseCase @Inject constructor() {
     fun execute(daily: DailyWeather): List<DailyAggregatedData> {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 

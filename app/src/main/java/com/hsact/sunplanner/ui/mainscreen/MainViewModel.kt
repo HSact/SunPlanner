@@ -24,7 +24,9 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
-    //private val
+    private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
+    private val createWeatherGraphLineUseCase: CreateWeatherGraphLineUseCase,
+    private val createWeatherGraphBarsUseCase: CreateWeatherGraphBarsUseCase,
     weatherService: OpenMeteoService,
     geolocationService: OpenMeteoGeo
 ) : ViewModel() {
@@ -176,7 +178,6 @@ class MainViewModel @Inject constructor(
                 )
                 saveWeatherData(filteredWeather)
             } catch (e: Exception) {
-                println("Error fetching weather: ${e.message}")
                 updateError("Error fetching weather: ${e.message}")
             }
             _searchDataUI.value = _searchDataUI.value.copy(isLoading = false)
@@ -194,7 +195,7 @@ class MainViewModel @Inject constructor(
         if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
             _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue) {
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = false)
-            val aggregated = AggregateWeatherByDateUseCase().execute(data.daily)
+            val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
             maxTemps = aggregated.map { it.avgMaxTemp }
             minTemps = aggregated.map { it.avgMinTemp }
             sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
@@ -204,12 +205,12 @@ class MainViewModel @Inject constructor(
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
         searchDataUI.value.maxTemperature =
-            CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF5555))
+            createWeatherGraphLineUseCase.invoke("Max", maxTemps, Color(0xFFFF5555))
         searchDataUI.value.minTemperature =
-            CreateWeatherGraphLineUseCase().invoke("Min", minTemps, Color(0xFF4646FF))
+            createWeatherGraphLineUseCase.invoke("Min", minTemps, Color(0xFF4646FF))
         searchDataUI.value.sunDuration =
-            CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF50))
+            createWeatherGraphLineUseCase.invoke("", sunshine, Color(0xFFFFFF50))
         searchDataUI.value.precipitation =
-            CreateWeatherGraphBarsUseCase().invoke("", precipitation, Color(0xFF5555FF))
+            createWeatherGraphBarsUseCase.invoke("", precipitation, Color(0xFF5555FF))
     }
 }
