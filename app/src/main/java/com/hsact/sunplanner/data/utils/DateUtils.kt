@@ -9,12 +9,13 @@ object DateUtils {
         startDate: LocalDate,
         endDate: LocalDate,
         isOneDay: Boolean,
+        locale: Locale = Locale.getDefault(),
         singleDaySting: String = "",
         dateRangeString: String = ""
     ): String {
         return if (isOneDay) {
             val monthName = startDate.month
-                .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                .getDisplayName(TextStyle.FULL, locale)
                 .replaceFirstChar { it.uppercase() }
             String.format(
                 singleDaySting,
@@ -25,10 +26,10 @@ object DateUtils {
             )
         } else {
             val monthName1 = startDate.month
-                .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                .getDisplayName(TextStyle.FULL, locale)
                 .replaceFirstChar { it.uppercase() }
             val monthName2 = endDate.month
-                .getDisplayName(TextStyle.FULL, Locale.getDefault())
+                .getDisplayName(TextStyle.FULL, locale)
                 .replaceFirstChar { it.uppercase() }
             String.format(
                 dateRangeString,

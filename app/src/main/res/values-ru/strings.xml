@@ -19,4 +19,9 @@
     <string name="sunshine_hours">Солнечные часы</string>
     <string name="precipitation">Осадки (мм)</string>
     <string name="data_source">Данные: Open-Meteo (CC BY 4.0)</string>
+    <string name="error_location_empty">Локация не указана</string>
+    <string name="error_invalid_date_range">Неправильный диапазон дат</string>
+    <string name="error_years_range_too_big">Диапазон лет слишком большой (max 20)</string>
+    <string name="error_fetching_cities">Ощибка получения списка городов: %1$s</string>
+    <string name="error_fetching_weather">Ощибка получения погоды: %1$s</string>
 </resources>

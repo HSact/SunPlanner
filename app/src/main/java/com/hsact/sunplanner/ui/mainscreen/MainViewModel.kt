@@ -10,6 +10,7 @@ import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
 import com.hsact.sunplanner.ui.theme.precipitationBarColor
@@ -25,6 +26,7 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: WeatherRepository,
+    private val stringProvider: StringProvider,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
     private val createWeatherGraphLineUseCase: CreateWeatherGraphLineUseCase,
@@ -96,15 +98,18 @@ class MainViewModel @Inject constructor(
 
     fun onSearchClick () {
         if (_searchDataUI.value.location == null) {
-            updateError("Location is empty")
+            //updateError("Location is empty")
+            updateError(stringProvider.locationEmpty())
             return
         }
         if (_searchDataUI.value.startLD > _searchDataUI.value.endLD) {
-            updateError("Invalid date range")
+            //updateError("Invalid date range")
+            updateError(stringProvider.invalidDateRange())
             return
         }
         if (_searchDataUI.value.endLD.year - _searchDataUI.value.startLD.year > 20) {
-            updateError("Years range is too big (max 20)")
+            //updateError("Years range is too big (max 20)")
+            updateError(stringProvider.yearsRangeTooBig())
             return
         }
         val params = prepareParamsForRequest()
@@ -112,7 +117,6 @@ class MainViewModel @Inject constructor(
             fetchWeather(params)
         }
     }
-
 
     fun prepareParamsForRequest(): WeatherRequestParams? {
         val location = _searchDataUI.value.location?: return null
@@ -135,7 +139,8 @@ class MainViewModel @Inject constructor(
                     cityName = cityName
                 )
             } catch (e: Exception) {
-                updateError("Error fetching cities: ${e.message}")
+                //updateError("Error fetching cities: ${e.message}")
+                updateError(stringProvider.fetchCitiesError(e))
             }
             if (cities != null) {
                 _searchDataUI.value = _searchDataUI.value.copy(cities = cities!!)
@@ -156,7 +161,8 @@ class MainViewModel @Inject constructor(
                 )
                 saveWeatherData(filteredWeather)
             } catch (e: Exception) {
-                updateError("Error fetching weather: ${e.message}")
+                //updateError("Error fetching weather: ${e.message}")
+                updateError(stringProvider.fetchWeatherError(e))
             }
             _searchDataUI.value = _searchDataUI.value.copy(isLoading = false)
         }
@@ -183,9 +189,9 @@ class MainViewModel @Inject constructor(
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
         searchDataUI.value.maxTemperature =
-            createWeatherGraphLineUseCase.invoke("Max", maxTemps, maxTempLineColor)
+            createWeatherGraphLineUseCase.invoke(stringProvider.max(), maxTemps, maxTempLineColor)
         searchDataUI.value.minTemperature =
-            createWeatherGraphLineUseCase.invoke("Min", minTemps, minTempLineColor)
+            createWeatherGraphLineUseCase.invoke(stringProvider.min(), minTemps, minTempLineColor)
         searchDataUI.value.sunDuration =
             createWeatherGraphLineUseCase.invoke("", sunshine, sunShineLineColor)
         searchDataUI.value.precipitation =

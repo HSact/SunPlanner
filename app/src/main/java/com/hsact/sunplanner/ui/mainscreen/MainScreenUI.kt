@@ -48,6 +48,7 @@ import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
 import androidx.compose.ui.res.stringResource
+import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -206,6 +207,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                     startDate = mainDataUI.confirmedStartLD,
                                     endDate = mainDataUI.confirmedEndLD,
                                     isOneDay = mainDataUI.isOneDay,
+                                    locale = Locale.getDefault(),
                                     singleDaySting = stringResource(R.string.single_day_range),
                                     dateRangeString = stringResource(R.string.date_range)
                                 ),

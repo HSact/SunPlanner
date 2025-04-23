@@ -1,0 +1,27 @@
+package com.hsact.sunplanner.data.utils
+
+import android.content.Context
+import com.hsact.sunplanner.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+
+class DefaultStringProvider @Inject constructor(
+    @ApplicationContext private val context: Context
+) : StringProvider {
+
+    override fun locationEmpty() = context.getString(R.string.error_location_empty)
+
+    override fun invalidDateRange() = context.getString(R.string.error_invalid_date_range)
+
+    override fun yearsRangeTooBig() = context.getString(R.string.error_years_range_too_big)
+
+    override fun fetchCitiesError(e: Exception) =
+        context.getString(R.string.error_fetching_cities, e.message ?: "unknown")
+
+    override fun fetchWeatherError(e: Exception) =
+        context.getString(R.string.error_fetching_weather, e.message ?: "unknown")
+
+    override fun max() = context.getString(R.string.max)
+
+    override fun min() = context.getString(R.string.min)
+}

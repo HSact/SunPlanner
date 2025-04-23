@@ -19,4 +19,9 @@
     <string name="sunshine_hours">Sunshine hours</string>
     <string name="precipitation">Precipitation (mm)</string>
     <string name="data_source">Data by Open-Meteo (CC BY 4.0)</string>
+    <string name="error_location_empty">Location is empty</string>
+    <string name="error_invalid_date_range">Invalid date range</string>
+    <string name="error_years_range_too_big">Years range is too big (max 20)</string>
+    <string name="error_fetching_cities">Error fetching cities: %1$s</string>
+    <string name="error_fetching_weather">Error fetching weather: %1$s</string>
 </resources>
