@@ -12,6 +12,7 @@ import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
+import com.hsact.sunplanner.data.responses.WeatherResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,7 @@ import kotlin.math.roundToInt
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
+    //private val
     weatherService: OpenMeteoService,
     geolocationService: OpenMeteoGeo
 ) : ViewModel() {
@@ -172,38 +174,42 @@ class MainViewModel @Inject constructor(
                     _searchDataUI.value.startLD,
                     _searchDataUI.value.endLD
                 )
-                _searchDataUI.value = _searchDataUI.value.copy(weatherData = filteredWeather)
-                var maxTemps = _searchDataUI.value.weatherData!!.daily.maxTemperature
-                var minTemps = _searchDataUI.value.weatherData!!.daily.minTemperature
-                var sunshine = _searchDataUI.value.weatherData!!.daily.sunshineDuration
-                    .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-                var precipitation = _searchDataUI.value.weatherData!!.daily.precipitationSum
-
-                if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
-                    _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue) {
-                    _searchDataUI.value = _searchDataUI.value.copy(isOneDay = false)
-                    val aggregated = AggregateWeatherByDateUseCase().execute(filteredWeather.daily)
-                    maxTemps = aggregated.map { it.avgMaxTemp }
-                    minTemps = aggregated.map { it.avgMinTemp }
-                    sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-                    precipitation = aggregated.map { it.avgPrecipitation }
-                }
-                else {
-                    _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
-                }
-                searchDataUI.value.maxTemperature =
-                    CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF5555))
-                searchDataUI.value.minTemperature =
-                    CreateWeatherGraphLineUseCase().invoke("Min", minTemps, Color(0xFF4646FF))
-                searchDataUI.value.sunDuration =
-                    CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF50))
-                searchDataUI.value.precipitation =
-                    CreateWeatherGraphBarsUseCase().invoke("", precipitation, Color(0xFF5555FF))
+                saveWeatherData(filteredWeather)
             } catch (e: Exception) {
                 println("Error fetching weather: ${e.message}")
                 updateError("Error fetching weather: ${e.message}")
             }
             _searchDataUI.value = _searchDataUI.value.copy(isLoading = false)
         }
+    }
+    fun saveWeatherData(data: WeatherResponse)
+    {
+        _searchDataUI.value = _searchDataUI.value.copy(weatherData = data)
+        var maxTemps = _searchDataUI.value.weatherData!!.daily.maxTemperature
+        var minTemps = _searchDataUI.value.weatherData!!.daily.minTemperature
+        var sunshine = _searchDataUI.value.weatherData!!.daily.sunshineDuration
+            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
+        var precipitation = _searchDataUI.value.weatherData!!.daily.precipitationSum
+
+        if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
+            _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue) {
+            _searchDataUI.value = _searchDataUI.value.copy(isOneDay = false)
+            val aggregated = AggregateWeatherByDateUseCase().execute(data.daily)
+            maxTemps = aggregated.map { it.avgMaxTemp }
+            minTemps = aggregated.map { it.avgMinTemp }
+            sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+            precipitation = aggregated.map { it.avgPrecipitation }
+        }
+        else {
+            _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
+        }
+        searchDataUI.value.maxTemperature =
+            CreateWeatherGraphLineUseCase().invoke("Max", maxTemps, Color(0xFFFF5555))
+        searchDataUI.value.minTemperature =
+            CreateWeatherGraphLineUseCase().invoke("Min", minTemps, Color(0xFF4646FF))
+        searchDataUI.value.sunDuration =
+            CreateWeatherGraphLineUseCase().invoke("", sunshine, Color(0xFFFFFF50))
+        searchDataUI.value.precipitation =
+            CreateWeatherGraphBarsUseCase().invoke("", precipitation, Color(0xFF5555FF))
     }
 }
