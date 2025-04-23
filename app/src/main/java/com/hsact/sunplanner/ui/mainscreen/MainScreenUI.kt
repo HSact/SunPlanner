@@ -18,12 +18,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -54,6 +60,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen(modifier: Modifier = Modifier) {
+        var showSettingsDialog by remember { mutableStateOf(false) }
         var cityName by remember { mutableStateOf("") }
         var isSearchExpanded by remember { mutableStateOf(false) }
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -102,11 +109,36 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         title = {
                             Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
                         },
+                        actions = {
+                            IconButton(onClick = {showSettingsDialog = true}) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Settings"
+                                )
+                            }
+                        },
                         scrollBehavior = if (canScroll.value) scrollBehavior else null
                     )
                 }
             }
         ) { innerPadding ->
+            if (showSettingsDialog) {
+                AlertDialog(
+                    onDismissRequest = { showSettingsDialog = false },
+                    confirmButton = {
+                        TextButton(onClick = { showSettingsDialog = false }) {
+                            Text("OK")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showSettingsDialog = false }) {
+                            Text(stringResource(R.string.cancel))
+                        }
+                    },
+                    title = { Text(stringResource(R.string.settings)) },
+                    text = { Text("Setting will be implemented soon") }
+                )
+            }
             Column(
                 modifier = modifier
                     .fillMaxSize()

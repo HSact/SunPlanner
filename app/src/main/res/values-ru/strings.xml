@@ -24,4 +24,6 @@
     <string name="error_years_range_too_big">Диапазон лет слишком большой (max 20)</string>
     <string name="error_fetching_cities">Ощибка получения списка городов: %1$s</string>
     <string name="error_fetching_weather">Ощибка получения погоды: %1$s</string>
+    <string name="settings">Настройки</string>
+    <string name="cancel">Отмена</string>
 </resources>
