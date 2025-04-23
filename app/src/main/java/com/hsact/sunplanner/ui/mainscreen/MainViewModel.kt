@@ -1,18 +1,19 @@
 package com.hsact.sunplanner.ui.mainscreen
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.WeatherRepository
-import com.hsact.sunplanner.data.network.OpenMeteoGeo
-import com.hsact.sunplanner.data.network.OpenMeteoService
 import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import com.hsact.sunplanner.ui.theme.maxTempLineColor
+import com.hsact.sunplanner.ui.theme.minTempLineColor
+import com.hsact.sunplanner.ui.theme.precipitationBarColor
+import com.hsact.sunplanner.ui.theme.sunShineLineColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -82,25 +83,6 @@ class MainViewModel @Inject constructor(
         return if (this.dayOfMonth > maxDay) this.withDayOfMonth(maxDay) else this
     }
 
-    /*private fun prepareDate(month: String, day: Int): String {
-        val monthNumber = when (month) {
-            "January" -> "01"
-            "February" -> "02"
-            "March" -> "03"
-            "April" -> "04"
-            "May" -> "05"
-            "June" -> "06"
-            "July" -> "07"
-            "August" -> "08"
-            "September" -> "09"
-            "October" -> "10"
-            "November" -> "11"
-            "December" -> "12"
-            else -> "00"
-        }
-        val dayFormatted = day.toString().padStart(2, '0')
-        return "$monthNumber-$dayFormatted"
-    }*/
     fun updateError(error: String) {
         _searchDataUI.value = _searchDataUI.value.copy(error = error)
     }
@@ -143,7 +125,6 @@ class MainViewModel @Inject constructor(
             this.startDate = startDate.toString() // YYYY-MM-DD
             this.endDate = endDate.toString()
         }
-        //fetchWeather(params)
     }
 
     fun fetchCityList(cityName: String) {
@@ -202,12 +183,12 @@ class MainViewModel @Inject constructor(
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
         searchDataUI.value.maxTemperature =
-            createWeatherGraphLineUseCase.invoke("Max", maxTemps, Color(0xFFFF5555))
+            createWeatherGraphLineUseCase.invoke("Max", maxTemps, maxTempLineColor)
         searchDataUI.value.minTemperature =
-            createWeatherGraphLineUseCase.invoke("Min", minTemps, Color(0xFF4646FF))
+            createWeatherGraphLineUseCase.invoke("Min", minTemps, minTempLineColor)
         searchDataUI.value.sunDuration =
-            createWeatherGraphLineUseCase.invoke("", sunshine, Color(0xFFFFFF50))
+            createWeatherGraphLineUseCase.invoke("", sunshine, sunShineLineColor)
         searchDataUI.value.precipitation =
-            createWeatherGraphBarsUseCase.invoke("", precipitation, Color(0xFF5555FF))
+            createWeatherGraphBarsUseCase.invoke("", precipitation, precipitationBarColor)
     }
 }
