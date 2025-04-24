@@ -30,7 +30,7 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
         AlertDialog(
             onDismissRequest = onDismiss,
             confirmButton = {
-                TextButton(onClick = onDismiss) {
+                TextButton(onClick = {viewModel.handleIntent(SettingsIntents.ApplySettings)}) {
                     Text("OK")
                 }
             },
