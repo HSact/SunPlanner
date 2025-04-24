@@ -53,6 +53,7 @@ import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
 import androidx.compose.ui.res.stringResource
 import com.hsact.sunplanner.ui.settings.SettingsDialog
+import com.hsact.sunplanner.ui.settings.SettingsViewModel
 import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
@@ -122,7 +123,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
             }
         ) { innerPadding ->
             if (showSettingsDialog) {
-                SettingsDialog().ShowDialog { showSettingsDialog = false }
+                SettingsDialog(SettingsViewModel()).ShowDialog { showSettingsDialog = false }
             }
             Column(
                 modifier = modifier

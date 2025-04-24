@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
 
-class SettingsDialog {
+class SettingsDialog (val viewModel: SettingsViewModel) {
     @Composable
     fun ShowDialog(
         onDismiss: () -> Unit
@@ -44,13 +44,13 @@ class SettingsDialog {
                 Text(stringResource(R.string.settings))
             },
             text = {
-                DialogContainer()
+                DialogContainer(viewModel)
             }
         )
     }
 
     @Composable
-    private fun DialogContainer() {
+    private fun DialogContainer(viewModel: SettingsViewModel) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),

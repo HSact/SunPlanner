@@ -1,12 +1,15 @@
 package com.hsact.sunplanner.ui.settings
 
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class SettingsViewModel: ViewModel() {
+@HiltViewModel
+class SettingsViewModel @Inject constructor(): ViewModel() {
     fun handleIntent(intent: SettingsIntents) {
         when (intent) {
-            is SettingsIntents.UpdateTheme -> {changeTheme(theme = intent.theme)}
-            is SettingsIntents.UpdateLanguage -> {changeLanguage(language = intent.language)}
+            is SettingsIntents.UpdateTheme -> {changeTheme(intent.theme)}
+            is SettingsIntents.UpdateLanguage -> {changeLanguage(intent.language)}
             is SettingsIntents.ApplySettings -> {applySettings()}
         }
     }
