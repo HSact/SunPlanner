@@ -7,10 +7,14 @@ class SettingsViewModel: ViewModel() {
         when (intent) {
             is SettingsIntents.UpdateTheme -> {changeTheme(theme = intent.theme)}
             is SettingsIntents.UpdateLanguage -> {changeLanguage(language = intent.language)}
+            is SettingsIntents.ApplySettings -> {applySettings()}
         }
     }
     private fun changeTheme(theme: String) {
     }
     private fun changeLanguage(language: String) {
+    }
+    private fun applySettings() {
+        TODO("Not yet implemented")
     }
 }
