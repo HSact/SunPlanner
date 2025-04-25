@@ -2,7 +2,7 @@ package com.hsact.sunplanner.ui.settings
 
 data class SettingsUIState(
     var currentTheme: ThemeMode = ThemeMode.SYSTEM,
-    var currentLanguage: String = "auto",
+    var currentLanguage: LanguageMode = LanguageMode.ENGLISH,
     var selectedTheme: ThemeMode = currentTheme,
-    var selectedLanguage: String = "auto",
+    var selectedLanguage: LanguageMode = currentLanguage,
 )

@@ -51,26 +51,30 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
 
     @Composable
     private fun DialogContainer(viewModel: SettingsViewModel) {
+        var selectedThemeIndex by remember { mutableIntStateOf(0) }
+        val themeChoices = listOf("Auto", "Day", "Night")
+        var selectedLanguageIndex by remember { mutableIntStateOf(0) }
+        val languageChoices = listOf("English", "Russian")
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Theme")
-                var selectedIndex by remember { mutableIntStateOf(0) }
-                val options = listOf("Auto", "Day", "Night")
-
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.padding(start = 20.dp),
                 ) {
-                    options.forEachIndexed { index, label ->
+                    themeChoices.forEachIndexed { index, label ->
                         SegmentedButton(
                             shape = SegmentedButtonDefaults.itemShape(
                                 index = index,
-                                count = options.size
+                                count = themeChoices.size
                             ),
-                            onClick = { selectedIndex = index },
-                            selected = index == selectedIndex,
+                            onClick = {
+                                selectedThemeIndex = index
+                                viewModel.handleIntent(SettingsIntents.UpdateTheme(indexToThemeMode(index)))
+                                      },
+                            selected = index == selectedThemeIndex,
                             label = { Text(label) }
                         )
                     }
@@ -85,9 +89,12 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
                 Text("Language")
                 DropDownPicker().ItemsDropdown(
                     "",
-                    listOf<String>("English", "Russian"),
-                    selected = "English",
-                    onSelected = {},
+                    languageChoices,
+                    selected = selectedLanguageIndex,
+                    onSelected = {
+                        //selectedLanguageIndex = 0
+                        viewModel.handleIntent(SettingsIntents.UpdateLanguage(indexToLanguageMode(0)))
+                    },
                     modifier = Modifier.padding(start = 20.dp)
                 )
             }
