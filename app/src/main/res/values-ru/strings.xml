@@ -28,4 +28,13 @@
     <string name="cancel">Отмена</string>
     <string name="language">Язык</string>
     <string name="theme">Тема</string>
+    <string-array name="theme_choices">
+        <item>Авто</item>
+        <item>День</item>
+        <item>Ночь</item>
+    </string-array>
+    <string-array name="language_choices">
+        <item>Английский</item>
+        <item>Русский</item>
+    </string-array>
 </resources>

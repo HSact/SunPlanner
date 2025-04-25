@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
@@ -52,9 +53,9 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
     @Composable
     private fun DialogContainer(viewModel: SettingsViewModel) {
         var selectedThemeIndex by remember { mutableIntStateOf(0) }
-        val themeChoices = listOf("Auto", "Day", "Night")
+        val themeChoices = LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
         var selectedLanguageIndex by remember { mutableIntStateOf(0) }
-        val languageChoices = listOf("English", "Russian")
+        val languageChoices = LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -90,10 +91,10 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
                 DropDownPicker().ItemsDropdown(
                     "",
                     languageChoices,
-                    selected = indexToLanguageMode(selectedLanguageIndex),
+                    selected = languageChoices[selectedLanguageIndex],
                     onSelected = {
                         selectedLanguageIndex = languageChoices.indexOf(it)
-                        viewModel.handleIntent(SettingsIntents.UpdateLanguage(indexToLanguageMode(0)))
+                        viewModel.handleIntent(SettingsIntents.UpdateLanguage(indexToLanguageMode(selectedLanguageIndex)))
                     },
                     modifier = Modifier.padding(start = 20.dp)
                 )

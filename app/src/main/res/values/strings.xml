@@ -28,4 +28,13 @@
     <string name="cancel">Cancel</string>
     <string name="language">Language</string>
     <string name="theme">Theme</string>
+    <string-array name="theme_choices">
+        <item>Auto</item>
+        <item>Day</item>
+        <item>Night</item>
+    </string-array>
+    <string-array name="language_choices">
+        <item>English</item>
+        <item>Russian</item>
+    </string-array>
 </resources>
