@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
-import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
+import com.hsact.sunplanner.ui.DropDownPicker
 
 class SettingsDialog (val viewModel: SettingsViewModel) {
     @Composable

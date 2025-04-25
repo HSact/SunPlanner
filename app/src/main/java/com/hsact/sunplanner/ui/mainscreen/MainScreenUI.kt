@@ -48,7 +48,7 @@ import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphBarsLineCard
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphLineCard
-import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
+import com.hsact.sunplanner.ui.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
 import androidx.compose.ui.res.stringResource

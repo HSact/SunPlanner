@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui.mainscreen.searchUiKit
+package com.hsact.sunplanner.ui
 
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,7 +22,7 @@ class DropDownPicker {
         list: List<T>,
         selected: T?,
         onSelected: (T) -> Unit,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier.Companion
     ) {
         var expanded by remember { mutableStateOf(false) }
         ExposedDropdownMenuBox(
@@ -39,7 +39,7 @@ class DropDownPicker {
                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                 },
                 modifier = modifier
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .menuAnchor(MenuAnchorType.Companion.PrimaryNotEditable, enabled = true)
             )
             ExposedDropdownMenu(
                 expanded = expanded,
