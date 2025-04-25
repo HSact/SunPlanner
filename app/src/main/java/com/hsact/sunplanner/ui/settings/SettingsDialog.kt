@@ -60,7 +60,7 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Theme")
+                Text(stringResource(R.string.theme))
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.padding(start = 20.dp),
                 ) {
@@ -86,13 +86,13 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
                     .align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Language")
+                Text(stringResource(R.string.language))
                 DropDownPicker().ItemsDropdown(
                     "",
                     languageChoices,
-                    selected = selectedLanguageIndex,
+                    selected = indexToLanguageMode(selectedLanguageIndex),
                     onSelected = {
-                        //selectedLanguageIndex = 0
+                        selectedLanguageIndex = languageChoices.indexOf(it)
                         viewModel.handleIntent(SettingsIntents.UpdateLanguage(indexToLanguageMode(0)))
                     },
                     modifier = Modifier.padding(start = 20.dp)

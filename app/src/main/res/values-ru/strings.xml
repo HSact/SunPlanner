@@ -26,4 +26,6 @@
     <string name="error_fetching_weather">Ощибка получения погоды: %1$s</string>
     <string name="settings">Настройки</string>
     <string name="cancel">Отмена</string>
+    <string name="language">Язык</string>
+    <string name="theme">Тема</string>
 </resources>
