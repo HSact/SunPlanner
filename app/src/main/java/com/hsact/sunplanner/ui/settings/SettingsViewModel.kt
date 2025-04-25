@@ -19,6 +19,7 @@ class SettingsViewModel @Inject constructor(): ViewModel() {
     }
     private fun changeTheme(theme: ThemeMode) {
         _uiState.value = _uiState.value.copy(selectedTheme = theme)
+        //ThemeViewModel().updateTheme(theme)
     }
     private fun changeLanguage(language: LanguageMode) {
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
