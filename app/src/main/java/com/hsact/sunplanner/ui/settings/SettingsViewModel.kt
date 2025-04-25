@@ -24,6 +24,8 @@ class SettingsViewModel @Inject constructor(): ViewModel() {
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
     }
     private fun applySettings() {
-        TODO("Not yet implemented")
+        _uiState.value = _uiState.value.copy(
+            currentTheme = _uiState.value.selectedTheme,
+            currentLanguage = uiState.value.selectedLanguage)
     }
 }
