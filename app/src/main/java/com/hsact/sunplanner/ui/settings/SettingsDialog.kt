@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.ui.DropDownPicker
 
-class SettingsDialog (val viewModel: SettingsViewModel) {
+class SettingsDialog (val viewModel: SettingsViewModel, val onApplyTheme: (ThemeMode) -> Unit) {
     @Composable
     fun ShowDialog(
         onDismiss: () -> Unit
@@ -47,13 +47,13 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
                 Text(stringResource(R.string.settings))
             },
             text = {
-                DialogContainer(viewModel)
+                DialogContainer(viewModel, onApplyTheme)
             }
         )
     }
 
     @Composable
-    private fun DialogContainer(viewModel: SettingsViewModel) {
+    private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
         var selectedThemeIndex by remember { mutableIntStateOf(0) }
         val themeChoices = LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
         var selectedLanguageIndex by remember { mutableIntStateOf(0) }
@@ -76,6 +76,7 @@ class SettingsDialog (val viewModel: SettingsViewModel) {
                             onClick = {
                                 selectedThemeIndex = index
                                 viewModel.handleIntent(SettingsIntents.UpdateTheme(indexToThemeMode(index)))
+                                onApplyTheme(viewModel.uiState.value.selectedTheme)
                                       },
                             selected = index == selectedThemeIndex,
                             label = { Text(label) }

@@ -54,12 +54,13 @@ import java.time.LocalDate
 import androidx.compose.ui.res.stringResource
 import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.settings.SettingsViewModel
+import com.hsact.sunplanner.ui.settings.ThemeMode
 import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MainScreen(modifier: Modifier = Modifier) {
+    fun MainScreen(modifier: Modifier = Modifier, onApplyTheme: (ThemeMode) -> Unit) {
         var showSettingsDialog by remember { mutableStateOf(false) }
         var cityName by remember { mutableStateOf("") }
         var isSearchExpanded by remember { mutableStateOf(false) }
@@ -123,7 +124,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
             }
         ) { innerPadding ->
             if (showSettingsDialog) {
-                SettingsDialog(SettingsViewModel()).ShowDialog { showSettingsDialog = false }
+                SettingsDialog(SettingsViewModel(), onApplyTheme).ShowDialog { showSettingsDialog = false }
             }
             Column(
                 modifier = modifier

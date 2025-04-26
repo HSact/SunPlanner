@@ -39,9 +39,12 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.LIGHT -> false
                 ThemeMode.DARK -> true
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
+
             }
+            val onApplyTheme: (ThemeMode) -> Unit = { selectedTheme ->
+                themeViewModel.updateTheme(selectedTheme) }
             SunPlannerTheme (darkTheme = isDarkTheme) {
-                mainScreenUI.MainScreen()
+                mainScreenUI.MainScreen(onApplyTheme = onApplyTheme)
             }
         }
     }
