@@ -42,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.utils.DateUtils
@@ -135,11 +137,14 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     )
                     .verticalScroll(scrollState)
             ) {
+                val windowInfo = LocalWindowInfo.current
+                val density = LocalDensity.current
+                val screenHeight = with(density) { windowInfo.containerSize.height.toDp() }
                 Row(
                     modifier = if (isSearchExpanded) Modifier
-                        .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
+                        .heightIn(max = screenHeight)
                     else Modifier
-                        .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
+                        .heightIn(max = screenHeight)
                         .padding(start = 10.dp, end = 10.dp)
                 ) {
                     searchUI.SearchCityBar(
