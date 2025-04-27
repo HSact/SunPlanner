@@ -54,9 +54,9 @@ class SettingsDialog (val viewModel: SettingsViewModel, val onApplyTheme: (Theme
 
     @Composable
     private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
-        var selectedThemeIndex by remember { mutableIntStateOf(0) }
+        var selectedThemeIndex by remember { mutableIntStateOf(viewModel.uiState.value.selectedTheme.toIndex()) }
         val themeChoices = LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
-        var selectedLanguageIndex by remember { mutableIntStateOf(0) }
+        var selectedLanguageIndex by remember { mutableIntStateOf(viewModel.uiState.value.selectedLanguage.toIndex()) }
         val languageChoices = LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
         Column {
             Row(
