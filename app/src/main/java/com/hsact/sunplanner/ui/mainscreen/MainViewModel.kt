@@ -11,6 +11,8 @@ import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.StringProvider
+import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
+import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
 import com.hsact.sunplanner.ui.theme.precipitationBarColor
@@ -28,6 +30,7 @@ import kotlin.math.roundToInt
 class MainViewModel @Inject constructor(
     private val repository: WeatherRepository,
     private val stringProvider: StringProvider,
+    private val getSettingsUseCase: GetSettingsUseCase,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
     private val createWeatherGraphLineUseCase: CreateWeatherGraphLineUseCase,
@@ -36,6 +39,14 @@ class MainViewModel @Inject constructor(
 
     private val _searchDataUI = MutableStateFlow(MainUIState())
     val searchDataUI: StateFlow<MainUIState> get() = _searchDataUI
+
+    init {
+        viewModelScope.launch {
+            getSettingsUseCase.language.collect { language: LanguageMode ->
+                _searchDataUI.value = _searchDataUI.value.copy(languageMode = language)
+            }
+        }
+    }
 
     fun saveLocationToVM(city: Location) {
         _searchDataUI.value = _searchDataUI.value.copy(location = city)

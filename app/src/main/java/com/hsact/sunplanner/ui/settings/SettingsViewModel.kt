@@ -1,5 +1,6 @@
 package com.hsact.sunplanner.ui.settings
 
+import android.content.res.Resources
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
@@ -9,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,11 +28,11 @@ class SettingsViewModel @Inject constructor(
     }
     private suspend fun observeSettings() {
         getSettingsUseCase.theme.collect {theme: ThemeMode ->
-            _uiState.value = _uiState.value.copy(currentTheme = theme, selectedTheme = theme)
+            _uiState.value = _uiState.value.copy(currentTheme = theme)
         }
 
         getSettingsUseCase.language.collect { language: LanguageMode ->
-            _uiState.value = _uiState.value.copy(currentLanguage = language, selectedLanguage = language)
+            _uiState.value = _uiState.value.copy(currentLanguage = language)
         }
     }
     fun handleIntent(intent: SettingsIntents) {
@@ -55,5 +57,12 @@ class SettingsViewModel @Inject constructor(
             currentTheme = _uiState.value.selectedTheme,
             currentLanguage = uiState.value.selectedLanguage)
         updateLanguageUseCase(_uiState.value.selectedLanguage)
+        val locale = when (_uiState.value.selectedLanguage) {
+            LanguageMode.ENGLISH -> Locale.ENGLISH
+            LanguageMode.RUSSIAN -> Locale("ru")
+        }
+        Locale.setDefault(locale)
+        val config = Resources.getSystem().configuration
+        config.setLocale(locale)
     }
 }
