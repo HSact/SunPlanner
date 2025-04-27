@@ -3,7 +3,7 @@ package com.hsact.sunplanner.ui.mainscreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.data.WeatherRepository
+import com.hsact.sunplanner.data.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase

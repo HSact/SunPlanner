@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -54,6 +53,7 @@ import com.hsact.sunplanner.ui.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.settings.SettingsViewModel
 import com.hsact.sunplanner.ui.settings.ThemeMode
@@ -126,7 +126,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
             }
         ) { innerPadding ->
             if (showSettingsDialog) {
-                SettingsDialog(SettingsViewModel(), onApplyTheme).ShowDialog { showSettingsDialog = false }
+                SettingsDialog(hiltViewModel(), onApplyTheme).ShowDialog { showSettingsDialog = false }
             }
             Column(
                 modifier = modifier

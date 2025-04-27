@@ -1,12 +1,13 @@
-package com.hsact.sunplanner.data
+package com.hsact.sunplanner.data.repository
 
-import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.network.OpenMeteoGeo
 import com.hsact.sunplanner.data.network.OpenMeteoService
+import com.hsact.sunplanner.data.responses.Location
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
-    private val service: OpenMeteoService, private val geolocationService: OpenMeteoGeo) {
+    private val service: OpenMeteoService, private val geolocationService: OpenMeteoGeo
+) {
 
     suspend fun getWeather(latitude: Double, longitude: Double, startDate: String, endDate: String) =
         service.getHistoricalWeather(latitude, longitude, startDate, endDate)
