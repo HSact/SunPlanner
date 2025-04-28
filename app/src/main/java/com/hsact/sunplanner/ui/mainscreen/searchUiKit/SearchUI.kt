@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.hsact.sunplanner.R
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.utils.LocationUtils
@@ -85,7 +87,7 @@ class SearchUI {
                                 .fillMaxWidth()
                                 .focusRequester(focusRequester),
                             shape = searchBarShape,
-                            placeholder = { Text("City/Town") },
+                            placeholder = { Text(stringResource(R.string.search_hint)) },
                             leadingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.Search,
@@ -137,9 +139,9 @@ class SearchUI {
                 }
             }
         } else if (searchDataUI.cityName.length >= minCityLetters) {
-            Text("No cities available.", modifier = Modifier.padding(8.dp))
+            Text(stringResource(R.string.no_cities), modifier = Modifier.padding(8.dp))
         } else {
-            Text("Enter at least a two letters of a city name", modifier = Modifier.padding(8.dp))
+            Text(stringResource(R.string.enter_city_hint), modifier = Modifier.padding(8.dp))
         }
     }
 

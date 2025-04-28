@@ -6,8 +6,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.unit.dp
 import ir.ehsannarmani.compose_charts.models.Line
+import javax.inject.Inject
 
-class CreateWeatherGraphLineUseCase {
+class CreateWeatherGraphLineUseCase @Inject constructor() {
     operator fun invoke(
         label: String,
         values: List<Double>,

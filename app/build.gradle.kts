@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("kotlin-kapt")
+    alias(libs.plugins.google.ksp)
+    alias(libs.plugins.hilt.gradle)
+}
+hilt {
+    enableAggregatingTask = false
 }
 
 android {
@@ -57,7 +61,13 @@ dependencies {
     implementation(libs.moshi.adapters)
     implementation(libs.compose.charts)
     implementation(libs.androidx.core.splashscreen)
-    kapt(libs.moshi.kotlin.codegen)
+    implementation(libs.hilt)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.datastore.preferences)
+    implementation (libs.kotlinx.coroutines.core)
+    implementation (libs.kotlinx.coroutines.android)
+    ksp(libs.moshi.kotlin.codegen)
+    ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

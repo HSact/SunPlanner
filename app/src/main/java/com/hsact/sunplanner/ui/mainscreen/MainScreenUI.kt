@@ -1,11 +1,14 @@
 package com.hsact.sunplanner.ui.mainscreen
 
+import android.annotation.SuppressLint
+import com.hsact.sunplanner.R
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,9 +19,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -34,33 +41,44 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.utils.DateUtils
-import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphBarsLineCard
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphLineCard
-import com.hsact.sunplanner.ui.mainscreen.searchUiKit.DropDownPicker
+import com.hsact.sunplanner.ui.DropDownPicker
 import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
 import java.time.LocalDate
+import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.hsact.sunplanner.ui.settings.LanguageMode
+import com.hsact.sunplanner.ui.settings.SettingsDialog
+import com.hsact.sunplanner.ui.settings.ThemeMode
+import java.util.Locale
 
 class MainScreenUI(val viewModel: MainViewModel) {
+    @SuppressLint("LocalContextConfigurationRead")
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun MainScreen(modifier: Modifier = Modifier) {
+    fun MainScreen(
+        modifier: Modifier = Modifier,
+        onApplyTheme: (ThemeMode) -> Unit,
+        onChangeLanguage: (LanguageMode) -> Unit
+    ) {
+        val mainDataUI by viewModel.searchDataUI.collectAsState()
+        val context = LocalContext.current
+        var showSettingsDialog by remember { mutableStateOf(false) }
         var cityName by remember { mutableStateOf("") }
         var isSearchExpanded by remember { mutableStateOf(false) }
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val scrollState = rememberScrollState()
         val canScroll = remember { mutableStateOf(false) }
-        val mainDataUI by viewModel.searchDataUI.collectAsState()
         val searchUI = SearchUI()
         var query by remember { mutableStateOf("") }
-
         val date1 = mainDataUI.startLD
         var years1 by remember {
             mutableStateOf(
@@ -69,7 +87,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
         }
         val months1 by remember { mutableStateOf((1..12).toList()) }
         val days1 = remember(date1) { (1..date1.lengthOfMonth()).toList() }
-
         val date2 = mainDataUI.endLD
         val years2 by remember {
             mutableStateOf(
@@ -78,10 +95,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
         }
         val months2 by remember { mutableStateOf((1..12).toList()) }
         val days2 = remember(date2) { (1..date2.lengthOfMonth()).toList() }
-        val context = LocalContext.current
 
         LaunchedEffect(scrollState.maxValue) {
-            canScroll.value = scrollState.maxValue > 0
+            canScroll.value = scrollState.maxValue > 0 && !mainDataUI.isLoading
         }
         LaunchedEffect(mainDataUI.error) {
             if (mainDataUI.error.isNotEmpty()) {
@@ -89,7 +105,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 viewModel.cleanError()
             }
         }
-
         Scaffold(
             modifier = Modifier
                 .then(if (canScroll.value) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier)
@@ -98,13 +113,29 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 if (!isSearchExpanded) {
                     TopAppBar(
                         title = {
-                            Text("Sun Planner", style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                stringResource(R.string.app_name),
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                        },
+                        actions = {
+                            IconButton(onClick = { showSettingsDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Settings"
+                                )
+                            }
                         },
                         scrollBehavior = if (canScroll.value) scrollBehavior else null
                     )
                 }
             }
         ) { innerPadding ->
+            if (showSettingsDialog) {
+                SettingsDialog(hiltViewModel(), onApplyTheme, onChangeLanguage).ShowDialog {
+                    showSettingsDialog = false
+                }
+            }
             Column(
                 modifier = modifier
                     .fillMaxSize()
@@ -114,11 +145,14 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     )
                     .verticalScroll(scrollState)
             ) {
+                val windowInfo = LocalWindowInfo.current
+                val density = LocalDensity.current
+                val screenHeight = with(density) { windowInfo.containerSize.height.toDp() }
                 Row(
                     modifier = if (isSearchExpanded) Modifier
-                        .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
+                        .heightIn(max = screenHeight)
                     else Modifier
-                        .heightIn(max = LocalConfiguration.current.screenHeightDp.dp)
+                        .heightIn(max = screenHeight)
                         .padding(start = 10.dp, end = 10.dp)
                 ) {
                     searchUI.SearchCityBar(
@@ -126,7 +160,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         query = query,
                         onQueryChange = { query = it },
                         onCitySelected = { selectedCity ->
-                            viewModel.saveLocationToVM(selectedCity)
+                            viewModel.updateLocation(selectedCity)
                             isSearchExpanded = false
                             cityName = LocationUtils.buildCityFullName(selectedCity)
                             query = cityName
@@ -136,13 +170,14 @@ class MainScreenUI(val viewModel: MainViewModel) {
                     )
                 }
                 if (!isSearchExpanded) {
+                    val dropDownPicker = DropDownPicker()
                     Row(
                         modifier = Modifier
                             .padding(top = 10.dp, start = 10.dp, end = 10.dp)
                             .fillMaxWidth()
                     ) {
-                        DropDownPicker().ItemsDropdown(
-                            label = "Start year",
+                        dropDownPicker.ItemsDropdown(
+                            label = stringResource(R.string.start_year),
                             list = years1,
                             selected = date1.year,
                             onSelected = {
@@ -152,8 +187,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 .weight(0.5f)
                                 .padding(end = 3.dp)
                         )
-                        DropDownPicker().ItemsDropdown(
-                            label = "End year",
+                        dropDownPicker.ItemsDropdown(
+                            label = stringResource(R.string.end_year),
                             list = years2,
                             selected = date2.year,
                             onSelected = {
@@ -164,114 +199,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 .padding(start = 3.dp)
                         )
                     }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp)
-                            .align(Alignment.CenterHorizontally)
-                    )
-                    {
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            Text(
-                                text = "Dates range",
-                                modifier = Modifier
-                                    .align(Alignment.TopCenter)
-                                    .offset(y = 8.dp)
-                                    .background(MaterialTheme.colorScheme.background)
-                                    .padding(horizontal = 8.dp)
-                                    .zIndex(1f),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 20.dp, start = 10.dp, end = 10.dp)
-                                    .border(
-                                        1.dp,
-                                        MaterialTheme.colorScheme.outline,
-                                        RoundedCornerShape(10.dp)
-                                    )
-                                    .padding(
-                                        top = 10.dp,
-                                        start = 5.dp,
-                                        end = 5.dp,
-                                        bottom = 5.dp
-                                    )
-                                    .align(Alignment.TopCenter)
-                                    .zIndex(0f)
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(top = 2.dp)
-                                            .align(Alignment.CenterHorizontally)
-                                            .background(MaterialTheme.colorScheme.background)
-                                            .padding(horizontal = 8.dp)
-                                    ) {
-
-                                    }
-                                    Row(
-                                        modifier = Modifier
-                                            .padding(
-                                                top = 10.dp, start = 10.dp,
-                                                end = 10.dp, bottom = 10.dp
-                                            )
-                                    ) {
-                                        DropDownPicker().ItemsDropdown(
-                                            label = "Start month",
-                                            list = months1,
-                                            selected = date1.monthValue,
-                                            onSelected = {
-                                                viewModel.updateStartMonth(it)
-                                            },
-                                            modifier = Modifier
-                                                .weight(0.5f)
-                                                .padding(end = 3.dp)
-                                        )
-                                        DropDownPicker().ItemsDropdown(
-                                            label = "End month",
-                                            list = months2,
-                                            selected = date2.monthValue,
-                                            onSelected = {
-                                                viewModel.updateEndMonth(it)
-                                            },
-                                            modifier = Modifier
-                                                .weight(0.5f)
-                                                .padding(start = 3.dp)
-                                        )
-                                    }
-                                    Row(modifier = Modifier.padding(10.dp))
-                                    {
-                                        DropDownPicker().ItemsDropdown(
-                                            label = "Start day",
-                                            list = days1,
-                                            selected = date1.dayOfMonth,
-                                            onSelected = {
-                                                viewModel.updateStartDay(it)
-                                            },
-                                            modifier = Modifier
-                                                .weight(0.5f)
-                                                .padding(end = 3.dp)
-                                        )
-                                        DropDownPicker().ItemsDropdown(
-                                            label = "End day",
-                                            list = days2,
-                                            selected = date2.dayOfMonth,
-                                            onSelected = {
-                                                viewModel.updateEndDay(it)
-                                            },
-                                            modifier = Modifier
-                                                .weight(0.5f)
-                                                .padding(start = 3.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    DatesRangeSection(date1, months1, days1, date2, months2, days2)
                     Row(
                         modifier = Modifier
                             .padding(top = 10.dp, start = 10.dp, end = 10.dp)
@@ -282,7 +210,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 .weight(1f),
                             enabled = !mainDataUI.isLoading
                         ) {
-                            Text("Search")
+                            Text(stringResource(R.string.search))
                         }
                     }
                     if (mainDataUI.isLoading) {
@@ -310,7 +238,10 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 text = DateUtils.formatDateRange(
                                     startDate = mainDataUI.confirmedStartLD,
                                     endDate = mainDataUI.confirmedEndLD,
-                                    isOneDay = mainDataUI.isOneDay
+                                    isOneDay = mainDataUI.isOneDay,
+                                    locale = Locale.getDefault(),
+                                    singleDaySting = stringResource(R.string.single_day_range),
+                                    dateRangeString = stringResource(R.string.date_range)
                                 ),
                             )
                         }
@@ -322,7 +253,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         ) {
                             //Text("Weather: ${searchDataUI.weatherData}")
                             WeatherGraphLineCard().WeatherCard(
-                                "Temperature",
+                                stringResource(R.string.temperature),
                                 listOf(
                                     mainDataUI.maxTemperature!!,
                                     mainDataUI.minTemperature!!
@@ -334,16 +265,17 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         Row(modifier.fillMaxWidth())
                         {
                             WeatherGraphLineCard().WeatherCard(
-                                "Sunshine hours",
+                                stringResource(R.string.sunshine_hours),
                                 listOf(mainDataUI.sunDuration!!),
                                 mainDataUI.confirmedStartLD,
-                                mainDataUI.confirmedEndLD
+                                mainDataUI.confirmedEndLD,
+                                true              //set min value 0
                             )
                         }
                         Row(modifier.fillMaxWidth())
                         {
                             WeatherGraphBarsLineCard().WeatherCard(
-                                "Precipitation mm",
+                                stringResource(R.string.precipitation),
                                 listOf(mainDataUI.precipitation!!),
                                 mainDataUI.confirmedStartLD,
                                 mainDataUI.confirmedEndLD
@@ -354,7 +286,128 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 .fillMaxWidth()
                                 .padding(start = 10.dp, end = 10.dp)
                         ) {
-                            Text("Data by Open-Meteo (CC BY 4.0)")
+                            Text(stringResource(R.string.data_source))
+                        }
+                    }
+                }
+            }
+        }
+        //}
+    }
+
+    @Composable
+    private fun ColumnScope.DatesRangeSection(
+        date1: LocalDate,
+        months1: List<Int>,
+        days1: List<Int>,
+        date2: LocalDate,
+        months2: List<Int>,
+        days2: List<Int>
+    ) {
+        val dropDownPicker = DropDownPicker()
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+        {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.dates_range),
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .offset(y = 8.dp)
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(horizontal = 8.dp)
+                        .zIndex(1f),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+                Box(
+                    modifier = Modifier
+                        .padding(top = 20.dp, start = 10.dp, end = 10.dp)
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.outline,
+                            RoundedCornerShape(10.dp)
+                        )
+                        .padding(
+                            top = 10.dp,
+                            start = 5.dp,
+                            end = 5.dp,
+                            bottom = 5.dp
+                        )
+                        .align(Alignment.TopCenter)
+                        .zIndex(0f)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .padding(top = 2.dp)
+                                .align(Alignment.CenterHorizontally)
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(horizontal = 8.dp)
+                        ) {
+
+                        }
+                        Row(
+                            modifier = Modifier
+                                .padding(
+                                    top = 10.dp, start = 10.dp,
+                                    end = 10.dp, bottom = 10.dp
+                                )
+                        ) {
+                            dropDownPicker.ItemsDropdown(
+                                label = stringResource(R.string.start_month),
+                                list = months1,
+                                selected = date1.monthValue,
+                                onSelected = {
+                                    viewModel.updateStartMonth(it)
+                                },
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .padding(end = 3.dp)
+                            )
+                            dropDownPicker.ItemsDropdown(
+                                label = stringResource(R.string.end_month),
+                                list = months2,
+                                selected = date2.monthValue,
+                                onSelected = {
+                                    viewModel.updateEndMonth(it)
+                                },
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .padding(start = 3.dp)
+                            )
+                        }
+                        Row(modifier = Modifier.padding(10.dp))
+                        {
+                            dropDownPicker.ItemsDropdown(
+                                label = stringResource(R.string.start_day),
+                                list = days1,
+                                selected = date1.dayOfMonth,
+                                onSelected = {
+                                    viewModel.updateStartDay(it)
+                                },
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .padding(end = 3.dp)
+                            )
+                            dropDownPicker.ItemsDropdown(
+                                label = stringResource(R.string.end_day),
+                                list = days2,
+                                selected = date2.dayOfMonth,
+                                onSelected = {
+                                    viewModel.updateEndDay(it)
+                                },
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .padding(start = 3.dp)
+                            )
                         }
                     }
                 }
@@ -363,11 +416,12 @@ class MainScreenUI(val viewModel: MainViewModel) {
     }
 }
 
-@Preview(showBackground = true)
+/*@Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    val viewModel = MainViewModel()
+    val fakeUseCase = null
+    val viewModel = MainViewModel(fakeUseCase!!)
     SunPlannerTheme {
         MainScreenUI(viewModel = viewModel).MainScreen()
     }
-}
+}*/

@@ -1,12 +1,14 @@
 package com.hsact.sunplanner.domain.usecase
 
-import com.hsact.sunplanner.data.WeatherRepository
+import com.hsact.sunplanner.data.repository.WeatherRepository
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.WeatherUtils
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import java.time.LocalDate
+import javax.inject.Inject
 
-class FetchFilteredWeatherUseCase(private val repository: WeatherRepository) {
+class FetchFilteredWeatherUseCase @Inject constructor(
+    private val repository: WeatherRepository) {
     suspend fun execute(
         params: WeatherRequestParams,
         startLD: LocalDate,
