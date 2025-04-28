@@ -27,12 +27,22 @@ class SettingsViewModel @Inject constructor(
         }
     }
     private suspend fun observeSettings() {
-        getSettingsUseCase.theme.collect {theme: ThemeMode ->
+        /*getSettingsUseCase.theme.collect {theme: ThemeMode ->
             _uiState.value = _uiState.value.copy(currentTheme = theme)
         }
 
         getSettingsUseCase.language.collect { language: LanguageMode ->
             _uiState.value = _uiState.value.copy(currentLanguage = language)
+        }*/
+        viewModelScope.launch {
+            getSettingsUseCase.theme.collect { theme ->
+                _uiState.value = _uiState.value.copy(currentTheme = theme)
+            }
+        }
+        viewModelScope.launch {
+            getSettingsUseCase.language.collect { language ->
+                _uiState.value = _uiState.value.copy(currentLanguage = language)
+            }
         }
     }
     fun handleIntent(intent: SettingsIntents) {
