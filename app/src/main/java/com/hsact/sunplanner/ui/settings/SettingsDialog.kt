@@ -11,7 +11,6 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -61,10 +60,6 @@ class SettingsDialog (val viewModel: SettingsViewModel, val onApplyTheme: (Theme
         val themeChoices = LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
         var selectedLanguageIndex by remember (uiState.currentLanguage) { mutableIntStateOf(viewModel.uiState.value.currentLanguage.toIndex()) }
         val languageChoices = LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
-        LaunchedEffect(uiState.currentTheme, uiState.currentLanguage) {
-            selectedThemeIndex = uiState.currentTheme.toIndex()
-            selectedLanguageIndex = uiState.currentLanguage.toIndex()
-        }
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
