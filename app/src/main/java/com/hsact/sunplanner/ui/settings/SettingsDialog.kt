@@ -24,7 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.ui.DropDownPicker
 
-class SettingsDialog (val viewModel: SettingsViewModel, val onApplyTheme: (ThemeMode) -> Unit) {
+class SettingsDialog (val viewModel: SettingsViewModel,
+                      val onApplyTheme: (ThemeMode) -> Unit,
+                      val onChangeLanguage: (LanguageMode) -> Unit) {
     @Composable
     fun ShowDialog(
         onDismiss: () -> Unit
@@ -33,6 +35,9 @@ class SettingsDialog (val viewModel: SettingsViewModel, val onApplyTheme: (Theme
             onDismissRequest = onDismiss,
             confirmButton = {
                 TextButton(onClick = {
+                    if (viewModel.uiState.value.selectedLanguage != viewModel.uiState.value.currentLanguage) {
+                        onChangeLanguage(viewModel.uiState.value.selectedLanguage)
+                    }
                     viewModel.handleIntent(SettingsIntents.ApplySettings)
                     onDismiss()}) {
                     Text("OK")
@@ -48,13 +53,13 @@ class SettingsDialog (val viewModel: SettingsViewModel, val onApplyTheme: (Theme
                 Text(stringResource(R.string.settings))
             },
             text = {
-                DialogContainer(viewModel, onApplyTheme)
+                DialogContainer(viewModel, onApplyTheme, onChangeLanguage)
             }
         )
     }
 
     @Composable
-    private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
+    private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit, onChangeLanguage: (LanguageMode) -> Unit) {
         val uiState by viewModel.uiState.collectAsState()
         var selectedThemeIndex by remember (uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
         val themeChoices = LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
@@ -100,6 +105,7 @@ class SettingsDialog (val viewModel: SettingsViewModel, val onApplyTheme: (Theme
                     onSelected = {
                         selectedLanguageIndex = languageChoices.indexOf(it)
                         viewModel.handleIntent(SettingsIntents.UpdateLanguage(indexToLanguageMode(selectedLanguageIndex)))
+                        //onChangeLanguage (viewModel.uiState.value.selectedLanguage)
                     },
                     modifier = Modifier.padding(start = 20.dp)
                 )
