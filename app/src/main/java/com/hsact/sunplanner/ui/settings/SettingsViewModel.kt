@@ -26,7 +26,7 @@ class SettingsViewModel @Inject constructor(
             observeSettings()
         }
     }
-    private suspend fun observeSettings() {
+    private fun observeSettings() {
         /*getSettingsUseCase.theme.collect {theme: ThemeMode ->
             _uiState.value = _uiState.value.copy(currentTheme = theme)
         }

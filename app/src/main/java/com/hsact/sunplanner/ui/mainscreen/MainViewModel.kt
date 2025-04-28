@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun saveLocationToVM(city: Location) {
+    fun updateLocation(city: Location) {
         _searchDataUI.value = _searchDataUI.value.copy(location = city)
     }
 
