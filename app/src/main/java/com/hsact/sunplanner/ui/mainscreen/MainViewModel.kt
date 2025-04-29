@@ -2,7 +2,6 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
@@ -25,7 +24,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
