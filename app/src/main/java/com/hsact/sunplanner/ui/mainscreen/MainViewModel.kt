@@ -2,6 +2,7 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
@@ -14,6 +15,7 @@ import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.settings.ThemeMode
+import com.hsact.sunplanner.ui.settings.toName
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
 import com.hsact.sunplanner.ui.theme.precipitationBarColor
@@ -155,7 +157,7 @@ class MainViewModel @Inject constructor(
             try {
                 cities = repository.getCitiesList(
                     cityName = cityName,
-                    language = Locale.getDefault().language,
+                    language = _searchDataUI.value.languageMode.toName(),
                 )
             } catch (e: Exception) {
                 //updateError("Error fetching cities: ${e.message}")
