@@ -7,7 +7,7 @@ import javax.inject.Inject
 class UpdateWindSpeedUnitUseCase @Inject constructor(
     private val repository: SettingsRepository
 ) {
-    suspend operator fun invoke(windSpeedMode: WindSpeedUnitMode) {
-        repository.setWindSpeedUnit(windSpeedMode)
+    suspend operator fun invoke(windSpeedUnit: WindSpeedUnitMode) {
+        repository.setWindSpeedUnit(windSpeedUnit)
     }
 }

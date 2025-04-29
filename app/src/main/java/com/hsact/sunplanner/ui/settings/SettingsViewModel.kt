@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLanguageUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdateTemperatureUnitUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateThemeUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdateWindSpeedUnitUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +18,10 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateThemeUseCase: UpdateThemeUseCase,
-    private val updateLanguageUseCase: UpdateLanguageUseCase
+    private val updateLanguageUseCase: UpdateLanguageUseCase,
+    private val updateTemperatureUnitUseCase: UpdateTemperatureUnitUseCase,
+    private val updateWindSpeedUnitUseCase: UpdateWindSpeedUnitUseCase,
+    private val updatePrecipitationUnitUseCase: UpdatePrecipitationUnitUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUIState())
     val uiState: StateFlow<SettingsUIState> get() = _uiState
@@ -43,13 +49,18 @@ class SettingsViewModel @Inject constructor(
             when (intent) {
                 is SettingsIntents.UpdateTheme -> {changeTheme(intent.theme)}
                 is SettingsIntents.UpdateLanguage -> {changeLanguage(intent.language)}
-                is SettingsIntents.UpdateTemperatureUnit -> {}
+                is SettingsIntents.UpdateTemperatureUnit -> {/*changeTemperatureUnit(intent.)*/}
                 is SettingsIntents.UpdateWindSpeedUnit -> {}
                 is SettingsIntents.UpdatePrecipitationUnit -> {}
                 is SettingsIntents.ApplySettings -> {applySettings()}
             }
         }
     }
+
+    /*private suspend fun changeTemperatureUnit(temperatureUnit: TemperatureUnitMode) {
+        TODO("Not yet implemented")
+    }*/
+
     private suspend fun changeTheme(theme: ThemeMode) {
         _uiState.value = _uiState.value.copy(selectedTheme = theme)
         updateThemeUseCase(theme)
