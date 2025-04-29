@@ -44,12 +44,12 @@ class SettingsRepositoryImpl @Inject constructor(
         }
     override val windSpeedUnit: Flow<WindSpeedUnitMode> =
         context.dataStore.data.map { preferences ->
-            preferences[TEMPERATURE_UNIT_KEY]?.let { WindSpeedUnitMode.entries[it] }
+            preferences[WIND_SPEED_UNIT_KEY]?.let { WindSpeedUnitMode.entries[it] }
                 ?: WindSpeedUnitMode.MS
         }
     override val precipitationUnit: Flow<PrecipitationUnitMode> =
         context.dataStore.data.map { preferences ->
-            preferences[TEMPERATURE_UNIT_KEY]?.let { PrecipitationUnitMode.entries[it] }
+            preferences[PRECIPITATION_UNIT_KEY]?.let { PrecipitationUnitMode.entries[it] }
                 ?: PrecipitationUnitMode.MM
         }
 
@@ -67,7 +67,7 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setTemperatureUnit(temperatureMode: TemperatureUnitMode) {
         context.dataStore.edit { preferences ->
-            preferences[THEME_KEY] = temperatureMode.ordinal
+            preferences[TEMPERATURE_UNIT_KEY] = temperatureMode.ordinal
         }
     }
 

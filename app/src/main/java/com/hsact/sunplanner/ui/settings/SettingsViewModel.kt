@@ -8,6 +8,9 @@ import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCa
 import com.hsact.sunplanner.domain.usecase.settings.UpdateTemperatureUnitUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateThemeUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateWindSpeedUnitUseCase
+import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,17 +52,23 @@ class SettingsViewModel @Inject constructor(
             when (intent) {
                 is SettingsIntents.UpdateTheme -> {changeTheme(intent.theme)}
                 is SettingsIntents.UpdateLanguage -> {changeLanguage(intent.language)}
-                is SettingsIntents.UpdateTemperatureUnit -> {/*changeTemperatureUnit(intent.)*/}
-                is SettingsIntents.UpdateWindSpeedUnit -> {}
-                is SettingsIntents.UpdatePrecipitationUnit -> {}
+                is SettingsIntents.UpdateTemperatureUnit -> {changeTemperatureUnit(intent.unitTemp)}
+                is SettingsIntents.UpdateWindSpeedUnit -> {changeWindSpeedUnit(intent.unitWind)}
+                is SettingsIntents.UpdatePrecipitationUnit -> {changePrecipitationUnit(intent.unitPrecipitation)}
                 is SettingsIntents.ApplySettings -> {applySettings()}
             }
         }
     }
 
-    /*private suspend fun changeTemperatureUnit(temperatureUnit: TemperatureUnitMode) {
-        TODO("Not yet implemented")
-    }*/
+    private fun changeTemperatureUnit(temperatureUnit: TemperatureUnitMode) {
+        _uiState.value = _uiState.value.copy(selectedTemperatureUnit = temperatureUnit)
+    }
+    private fun changeWindSpeedUnit(windSpeedUnit: WindSpeedUnitMode) {
+        _uiState.value = _uiState.value.copy(selectedWindSpeedUnit = windSpeedUnit)
+    }
+    private fun changePrecipitationUnit(precipitationUnit: PrecipitationUnitMode) {
+        _uiState.value = _uiState.value.copy(selectedPrecipitationUnit = precipitationUnit)
+    }
 
     private suspend fun changeTheme(theme: ThemeMode) {
         _uiState.value = _uiState.value.copy(selectedTheme = theme)
@@ -69,6 +78,9 @@ class SettingsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
     }
     private suspend fun applySettings() {
+        updateTemperatureUnitUseCase(_uiState.value.selectedTemperatureUnit)
+        updateWindSpeedUnitUseCase(_uiState.value.selectedWindSpeedUnit)
+        updatePrecipitationUnitUseCase(_uiState.value.selectedPrecipitationUnit)
         _uiState.value = _uiState.value.copy(
             currentTheme = _uiState.value.selectedTheme)
         if (_uiState.value.currentLanguage != _uiState.value.selectedLanguage) {
