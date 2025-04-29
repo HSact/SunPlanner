@@ -142,14 +142,18 @@ class MainViewModel @Inject constructor(
         val location = _searchDataUI.value.location?: return null
         val startDate = _searchDataUI.value.startLD
         val endDate = _searchDataUI.value.endLD
-        val windSpeedUnit = "ms" //TODO: get from settings
+        val temperatureUnit = "celsius" //TODO: get from settings
+        val windSpeedUnit = "ms"
+        val precipitationUnit = "mm"
 
         return WeatherRequestParams().apply {
             latitude = location.latitude
             longitude = location.longitude
             this.startDate = startDate.toString() // YYYY-MM-DD
             this.endDate = endDate.toString()
+            this.temperatureUnit = temperatureUnit
             this.windSpeedUnit = windSpeedUnit
+            this.precipitationUnit = precipitationUnit
         }
     }
 

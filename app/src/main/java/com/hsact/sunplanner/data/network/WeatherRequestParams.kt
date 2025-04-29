@@ -5,5 +5,7 @@ data class WeatherRequestParams(
     var longitude: Double = 0.0,
     var startDate: String = "",
     var endDate: String = "",
+    var temperatureUnit: String = "",
     var windSpeedUnit: String = "",
+    var precipitationUnit: String = ""
 )

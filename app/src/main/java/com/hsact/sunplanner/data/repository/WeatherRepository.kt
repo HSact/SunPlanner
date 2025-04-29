@@ -9,8 +9,22 @@ class WeatherRepository @Inject constructor(
     private val service: OpenMeteoService, private val geolocationService: OpenMeteoGeo
 ) {
 
-    suspend fun getWeather(latitude: Double, longitude: Double, startDate: String, endDate: String, windSpeedUnit: String) =
-        service.getHistoricalWeather(latitude, longitude, startDate, endDate, windSpeedUnit = windSpeedUnit)
+    suspend fun getWeather(
+        latitude: Double, longitude: Double,
+        startDate: String, endDate: String,
+        temperatureUnit: String,
+        windSpeedUnit: String,
+        precipitationUnit: String
+    ) =
+        service.getHistoricalWeather(
+            latitude,
+            longitude,
+            startDate,
+            endDate,
+            temperatureUnit = temperatureUnit,
+            windSpeedUnit = windSpeedUnit,
+            precipitationUnit = precipitationUnit
+        )
 
     suspend fun getCoordinatesByCity(cityName: String): Location? {
         return try {
@@ -21,6 +35,7 @@ class WeatherRepository @Inject constructor(
             null
         }
     }
+
     suspend fun getCitiesList(cityName: String, language: String): List<Location>? {
         return try {
             val response = geolocationService.getCityCoordinates(cityName, language = language)
