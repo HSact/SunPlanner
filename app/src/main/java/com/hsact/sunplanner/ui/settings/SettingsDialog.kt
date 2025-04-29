@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -20,10 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.ui.DropDownPicker
+import com.hsact.sunplanner.ui.settings.unitModes.indexToPrecipitationUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.indexToTemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.indexToWindSpeedUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.toIndex
 
 class SettingsDialog(
@@ -69,16 +74,29 @@ class SettingsDialog(
         var selectedThemeIndex by remember(uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
         val themeChoices =
             LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
-        var selectedLanguageIndex by remember(uiState.currentLanguage) { mutableIntStateOf(viewModel.uiState.value.currentLanguage.toIndex()) }
+        var selectedLanguageIndex = remember(uiState.currentLanguage) {
+            mutableIntStateOf(uiState.currentLanguage.toIndex())
+        }
         val languageChoices =
             LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
 
         val tempUnitChoices =
             LocalContext.current.resources.getStringArray(R.array.temp_unit_choices).toList()
-        var selectedTempUnitIndex by remember(uiState.currentTemperatureUnit) {
-            mutableIntStateOf(
-                viewModel.uiState.value.currentTemperatureUnit.toIndex()
-            )
+        var selectedTempUnitIndex = remember(uiState.currentTemperatureUnit) {
+            mutableIntStateOf(uiState.currentTemperatureUnit.toIndex())
+        }
+
+        val windUnitChoices =
+            LocalContext.current.resources.getStringArray(R.array.speed_unit_choices).toList()
+        var selectedWindUnitIndex = remember(uiState.currentWindSpeedUnit) {
+            mutableIntStateOf(uiState.currentWindSpeedUnit.toIndex())
+        }
+
+        val precipitationUnitChoices =
+            LocalContext.current.resources.getStringArray(R.array.precipitation_unit_choices)
+                .toList()
+        var selectedPrecipitationUnitIndex = remember(uiState.currentPrecipitationUnit) {
+            mutableIntStateOf(uiState.currentPrecipitationUnit.toIndex())
         }
         Column {
             Row(
@@ -123,13 +141,13 @@ class SettingsDialog(
                 DropDownPicker().ItemsDropdown(
                     "",
                     languageChoices,
-                    selected = languageChoices[selectedLanguageIndex],
+                    selected = languageChoices[selectedLanguageIndex.intValue],
                     onSelected = {
-                        selectedLanguageIndex = languageChoices.indexOf(it)
+                        selectedLanguageIndex.intValue = languageChoices.indexOf(it)
                         viewModel.handleIntent(
                             SettingsIntents.UpdateLanguage(
                                 indexToLanguageMode(
-                                    selectedLanguageIndex
+                                    selectedLanguageIndex.intValue
                                 )
                             )
                         )
@@ -138,32 +156,84 @@ class SettingsDialog(
                 )
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Temp unit")
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.padding(start = 20.dp),
-                ) {
-                    tempUnitChoices.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = tempUnitChoices.size
-                            ),
-                            onClick = {
-                                selectedTempUnitIndex = index
-                                viewModel.handleIntent(
-                                    SettingsIntents.UpdateTemperatureUnit(
-                                        indexToTemperatureUnitMode(index)
-                                    )
-                                )
-                            },
-                            selected = index == selectedTempUnitIndex,
-                            label = { Text(label) }
+                Text(stringResource(R.string.temperature))
+                SegmentedButtonUnitPicker(
+                    viewModel,
+                    tempUnitChoices,
+                    selectedTempUnitIndex
+                ) { index ->
+                    SettingsIntents.UpdateTemperatureUnit(indexToTemperatureUnitMode(index))
+                }
+                //SettingsIntents.UpdateTemperatureUnit(indexToTemperatureUnitMode(selectedTempUnitIndex.intValue)))
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.wind))
+                SegmentedButtonUnitPicker(
+                    viewModel,
+                    windUnitChoices,
+                    selectedWindUnitIndex
+                ) { index ->
+                    SettingsIntents.UpdateWindSpeedUnit(indexToWindSpeedUnitMode(index))
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.precipitation))
+                SegmentedButtonUnitPicker(
+                    viewModel,
+                    precipitationUnitChoices,
+                    selectedPrecipitationUnitIndex
+                ) { index ->
+                    SettingsIntents.UpdatePrecipitationUnit(indexToPrecipitationUnitMode(index))
+                }
+            }
+        }
+    }
+
+    @Composable
+    private fun SegmentedButtonUnitPicker(
+        viewModel: SettingsViewModel,
+        choices: List<String>,
+        selectedIndex: MutableState<Int>,
+        onIndexSelected: (Int) -> SettingsIntents
+    ) {
+        SingleChoiceSegmentedButtonRow(
+            modifier = Modifier.padding(start = 20.dp),
+        ) {
+            choices.forEachIndexed { index, label ->
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = choices.size
+                    ),
+                    onClick = {
+                        selectedIndex.value = index
+                        viewModel.handleIntent(onIndexSelected(index))
+                    },
+                    selected = index == selectedIndex.value,
+                    label = {
+                        Text(
+                            text = label,
+                            maxLines = 1,
+                            overflow = TextOverflow.Clip,
+                            style = MaterialTheme.typography.bodySmall
                         )
                     }
-                }
+                )
             }
         }
     }

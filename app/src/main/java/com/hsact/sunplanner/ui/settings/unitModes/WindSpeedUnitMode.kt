@@ -7,3 +7,16 @@ fun WindSpeedUnitMode.name(): String = when (this) {
     WindSpeedUnitMode.MPH -> "mph"
     WindSpeedUnitMode.KN -> "kn"
 }
+fun WindSpeedUnitMode.toIndex(): Int = when (this) {
+    WindSpeedUnitMode.KMH -> 0
+    WindSpeedUnitMode.MS -> 1
+    WindSpeedUnitMode.MPH -> 2
+    WindSpeedUnitMode.KN -> 3
+}
+fun indexToWindSpeedUnitMode(index: Int): WindSpeedUnitMode = when (index) {
+    0 -> WindSpeedUnitMode.KMH
+    1 -> WindSpeedUnitMode.MS
+    2 -> WindSpeedUnitMode.MPH
+    3 -> WindSpeedUnitMode.KN
+    else -> WindSpeedUnitMode.MS
+}

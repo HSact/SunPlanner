@@ -19,7 +19,7 @@
     <string name="date_range">%1$d %2$s – %3$d %4$s average in %5$d–%6$d values</string>
     <string name="temperature">Temperature</string>
     <string name="sunshine_hours">Sunshine hours</string>
-    <string name="precipitation">Precipitation (mm)</string>
+    <string name="precipitation">Precipitation</string>
     <string name="data_source">Data by Open-Meteo (CC BY 4.0)</string>
     <string name="error_location_empty">Location is empty</string>
     <string name="error_invalid_date_range">Invalid date range</string>
@@ -45,5 +45,15 @@
     <string-array name="temp_unit_choices">
         <item>Celsius</item>
         <item>Fahrenheit</item>
+    </string-array>
+    <string-array name="speed_unit_choices">
+        <item>km/h</item>
+        <item>m/s</item>
+        <item>mp/h</item>
+        <item>kn</item>
+    </string-array>
+    <string-array name="precipitation_unit_choices">
+        <item>mm</item>
+        <item>inch</item>
     </string-array>
 </resources>

@@ -46,6 +46,24 @@ class SettingsViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(selectedLanguage = language)
             }
         }
+        viewModelScope.launch {
+            getSettingsUseCase.temperatureUnit.collect { temperatureUnit ->
+                _uiState.value = _uiState.value.copy(currentTemperatureUnit = temperatureUnit)
+                _uiState.value = _uiState.value.copy(selectedTemperatureUnit = temperatureUnit)
+            }
+        }
+        viewModelScope.launch {
+            getSettingsUseCase.windUnit.collect { windUnit ->
+                _uiState.value = _uiState.value.copy(currentWindSpeedUnit = windUnit)
+                _uiState.value = _uiState.value.copy(selectedWindSpeedUnit = windUnit)
+            }
+        }
+        viewModelScope.launch {
+            getSettingsUseCase.precipitationUnit.collect { precipitationUnit ->
+                _uiState.value = _uiState.value.copy(currentPrecipitationUnit = precipitationUnit)
+                _uiState.value = _uiState.value.copy(selectedPrecipitationUnit = precipitationUnit)
+            }
+        }
     }
     fun handleIntent(intent: SettingsIntents) {
         viewModelScope.launch {
@@ -78,6 +96,10 @@ class SettingsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
     }
     private suspend fun applySettings() {
+        _uiState.value = _uiState.value.copy(currentTemperatureUnit = _uiState.value.selectedTemperatureUnit,
+            currentWindSpeedUnit = _uiState.value.selectedWindSpeedUnit, currentPrecipitationUnit = _uiState.value.selectedPrecipitationUnit)
+        //_uiState.value = _uiState.value.copy(currentWindSpeedUnit = _uiState.value.selectedWindSpeedUnit)
+        //_uiState.value = _uiState.value.copy(currentPrecipitationUnit = _uiState.value.selectedPrecipitationUnit)
         updateTemperatureUnitUseCase(_uiState.value.selectedTemperatureUnit)
         updateWindSpeedUnitUseCase(_uiState.value.selectedWindSpeedUnit)
         updatePrecipitationUnitUseCase(_uiState.value.selectedPrecipitationUnit)
