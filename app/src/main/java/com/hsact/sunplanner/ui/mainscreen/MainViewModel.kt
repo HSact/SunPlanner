@@ -195,6 +195,13 @@ class MainViewModel @Inject constructor(
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
         var precipitation = _searchDataUI.value.weatherData!!.daily.precipitationSum
 
+        if (_searchDataUI.value.startLD.year == _searchDataUI.value.endLD.year) {
+            _searchDataUI.value = _searchDataUI.value.copy(isOneYear = true)
+        }
+        else {
+            _searchDataUI.value = _searchDataUI.value.copy(isOneYear = false)
+        }
+
         if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
             _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue) {
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = false)
@@ -208,11 +215,17 @@ class MainViewModel @Inject constructor(
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
         searchDataUI.value.maxTemperature =
-            createWeatherGraphLineUseCase.invoke(stringProvider.max(), maxTemps, maxTempLineColor)
+            createWeatherGraphLineUseCase.invoke(stringProvider.max(), maxTemps,
+                maxTempLineColor, _searchDataUI.value.isOneYear)
+
         searchDataUI.value.minTemperature =
-            createWeatherGraphLineUseCase.invoke(stringProvider.min(), minTemps, minTempLineColor)
+            createWeatherGraphLineUseCase.invoke(stringProvider.min(), minTemps,
+                minTempLineColor, _searchDataUI.value.isOneYear)
+
         searchDataUI.value.sunDuration =
-            createWeatherGraphLineUseCase.invoke("", sunshine, sunShineLineColor)
+            createWeatherGraphLineUseCase.invoke("", sunshine,
+                sunShineLineColor, _searchDataUI.value.isOneYear)
+
         searchDataUI.value.precipitation =
             createWeatherGraphBarsUseCase.invoke("", precipitation, precipitationBarColor)
     }

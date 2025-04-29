@@ -14,6 +14,7 @@ data class MainUIState (
     var error : String = "",
     var isLoading: Boolean = false,
     var isOneDay: Boolean = true,
+    var isOneYear: Boolean = false,
     val cityName: String = "",
     var cities: List<Location> = emptyList(),
     val location: Location? = null,

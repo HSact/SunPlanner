@@ -67,11 +67,16 @@ class WeatherGraphLineCard {
             if (isDarkTheme) TextStyle(color = Color.White)
             else TextStyle(color = Color.Black)
         }
+        var labels = DateUtils.labelsForCard(startDate, endDate)
+        if (labels.size < 2)
+        {
+            labels = labels + labels
+        }
 
         val labelProperties = LabelProperties(
             enabled = true,
             textStyle = textStyle,
-            labels = DateUtils.labelsForCard(startDate, endDate),
+            labels = labels,
                 /*if (useYearsAsLabels) (startDate.year..endDate.year).map
             { "'${(it % 100).toString().padStart(2, '0')}" }
                 else (startDate.dayOfMonth..endDate.dayOfMonth).map { it.toString() },*/
