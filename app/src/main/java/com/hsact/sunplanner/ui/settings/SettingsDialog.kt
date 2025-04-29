@@ -23,10 +23,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.ui.DropDownPicker
+import com.hsact.sunplanner.ui.settings.unitModes.indexToTemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.toIndex
 
-class SettingsDialog (val viewModel: SettingsViewModel,
-                      val onApplyTheme: (ThemeMode) -> Unit,
-                      val onChangeLanguage: (LanguageMode) -> Unit) {
+class SettingsDialog(
+    val viewModel: SettingsViewModel,
+    val onApplyTheme: (ThemeMode) -> Unit,
+    val onChangeLanguage: (LanguageMode) -> Unit
+) {
     @Composable
     fun ShowDialog(
         onDismiss: () -> Unit
@@ -39,7 +43,8 @@ class SettingsDialog (val viewModel: SettingsViewModel,
                         onChangeLanguage(viewModel.uiState.value.selectedLanguage)
                     }
                     viewModel.handleIntent(SettingsIntents.ApplySettings)
-                    onDismiss()}) {
+                    onDismiss()
+                }) {
                     Text("OK")
                 }
             },
@@ -61,10 +66,20 @@ class SettingsDialog (val viewModel: SettingsViewModel,
     @Composable
     private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
         val uiState by viewModel.uiState.collectAsState()
-        var selectedThemeIndex by remember (uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
-        val themeChoices = LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
-        var selectedLanguageIndex by remember (uiState.currentLanguage) { mutableIntStateOf(viewModel.uiState.value.currentLanguage.toIndex()) }
-        val languageChoices = LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
+        var selectedThemeIndex by remember(uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
+        val themeChoices =
+            LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
+        var selectedLanguageIndex by remember(uiState.currentLanguage) { mutableIntStateOf(viewModel.uiState.value.currentLanguage.toIndex()) }
+        val languageChoices =
+            LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
+
+        val tempUnitChoices =
+            LocalContext.current.resources.getStringArray(R.array.temp_unit_choices).toList()
+        var selectedTempUnitIndex by remember(uiState.currentTemperatureUnit) {
+            mutableIntStateOf(
+                viewModel.uiState.value.currentTemperatureUnit.toIndex()
+            )
+        }
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -82,9 +97,15 @@ class SettingsDialog (val viewModel: SettingsViewModel,
                             ),
                             onClick = {
                                 selectedThemeIndex = index
-                                viewModel.handleIntent(SettingsIntents.UpdateTheme(indexToThemeMode(index)))
+                                viewModel.handleIntent(
+                                    SettingsIntents.UpdateTheme(
+                                        indexToThemeMode(
+                                            index
+                                        )
+                                    )
+                                )
                                 onApplyTheme(viewModel.uiState.value.selectedTheme)
-                                      },
+                            },
                             selected = index == selectedThemeIndex,
                             label = { Text(label) }
                         )
@@ -94,6 +115,7 @@ class SettingsDialog (val viewModel: SettingsViewModel,
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = 15.dp)
                     .align(Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -104,10 +126,44 @@ class SettingsDialog (val viewModel: SettingsViewModel,
                     selected = languageChoices[selectedLanguageIndex],
                     onSelected = {
                         selectedLanguageIndex = languageChoices.indexOf(it)
-                        viewModel.handleIntent(SettingsIntents.UpdateLanguage(indexToLanguageMode(selectedLanguageIndex)))
+                        viewModel.handleIntent(
+                            SettingsIntents.UpdateLanguage(
+                                indexToLanguageMode(
+                                    selectedLanguageIndex
+                                )
+                            )
+                        )
                     },
                     modifier = Modifier.padding(start = 20.dp)
                 )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Temp unit")
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier.padding(start = 20.dp),
+                ) {
+                    tempUnitChoices.forEachIndexed { index, label ->
+                        SegmentedButton(
+                            shape = SegmentedButtonDefaults.itemShape(
+                                index = index,
+                                count = tempUnitChoices.size
+                            ),
+                            onClick = {
+                                selectedTempUnitIndex = index
+                                viewModel.handleIntent(
+                                    SettingsIntents.UpdateTemperatureUnit(
+                                        indexToTemperatureUnitMode(index)
+                                    )
+                                )
+                            },
+                            selected = index == selectedTempUnitIndex,
+                            label = { Text(label) }
+                        )
+                    }
+                }
             }
         }
     }

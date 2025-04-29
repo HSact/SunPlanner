@@ -42,4 +42,8 @@
         <item>Английский</item>
         <item>Русский</item>
     </string-array>
+    <string-array name="temp_unit_choices">
+        <item>Цельсий</item>
+        <item>Фаренгейт</item>
+    </string-array>
 </resources>
