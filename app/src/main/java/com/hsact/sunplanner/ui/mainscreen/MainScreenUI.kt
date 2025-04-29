@@ -239,8 +239,11 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                     startDate = mainDataUI.confirmedStartLD,
                                     endDate = mainDataUI.confirmedEndLD,
                                     isOneDay = mainDataUI.isOneDay,
+                                    isOneYear = mainDataUI.isOneYear,
                                     locale = Locale.getDefault(),
+                                    singleDayOneYearString = stringResource(R.string.single_day_one_year),
                                     singleDaySting = stringResource(R.string.single_day_range),
+                                    dateRangeOneYearSting = stringResource(R.string.date_range_one_year),
                                     dateRangeString = stringResource(R.string.date_range)
                                 ),
                             )

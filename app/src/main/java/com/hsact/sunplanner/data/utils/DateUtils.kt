@@ -9,21 +9,34 @@ object DateUtils {
         startDate: LocalDate,
         endDate: LocalDate,
         isOneDay: Boolean,
+        isOneYear: Boolean,
         locale: Locale = Locale.getDefault(),
+        singleDayOneYearString: String = "",
         singleDaySting: String = "",
+        dateRangeOneYearSting: String = "",
         dateRangeString: String = ""
     ): String {
         return if (isOneDay) {
             val monthName = startDate.month
                 .getDisplayName(TextStyle.FULL, locale)
                 .replaceFirstChar { it.uppercase() }
-            String.format(
-                singleDaySting,
-                startDate.dayOfMonth,
-                monthName,
-                startDate.year,
-                endDate.year
-            )
+            if (isOneYear) {
+                String.format(
+                    singleDayOneYearString,
+                    startDate.dayOfMonth,
+                    monthName,
+                    startDate.year
+                )
+            }
+            else {
+                String.format(
+                    singleDaySting,
+                    startDate.dayOfMonth,
+                    monthName,
+                    startDate.year,
+                    endDate.year
+                )
+            }
         } else {
             val monthName1 = startDate.month
                 .getDisplayName(TextStyle.FULL, locale)
@@ -31,15 +44,27 @@ object DateUtils {
             val monthName2 = endDate.month
                 .getDisplayName(TextStyle.FULL, locale)
                 .replaceFirstChar { it.uppercase() }
-            String.format(
-                dateRangeString,
-                startDate.dayOfMonth,
-                monthName1,
-                endDate.dayOfMonth,
-                monthName2,
-                startDate.year,
-                endDate.year
-            )
+            if (isOneYear) {
+                String.format(
+                    dateRangeOneYearSting,
+                    startDate.dayOfMonth,
+                    monthName1,
+                    endDate.dayOfMonth,
+                    monthName2,
+                    startDate.year,
+                )
+            }
+            else {
+                String.format(
+                    dateRangeString,
+                    startDate.dayOfMonth,
+                    monthName1,
+                    endDate.dayOfMonth,
+                    monthName2,
+                    startDate.year,
+                    endDate.year
+                )
+            }
         }
     }
 
