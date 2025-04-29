@@ -23,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.data.utils.DateUtils
+import com.hsact.sunplanner.ui.settings.ThemeMode
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
@@ -39,6 +40,7 @@ class WeatherGraphLineCard {
         lineList: List<Line>,
         startDate: LocalDate,
         endDate: LocalDate,
+        theme: ThemeMode = ThemeMode.SYSTEM,
         minIsZero: Boolean = false
     ) {
 
@@ -56,7 +58,14 @@ class WeatherGraphLineCard {
             lineList.any { it.label.isNotBlank() }
         }
 
-        val isDarkTheme = isSystemInDarkTheme()
+        val isDarkTheme =
+            if (theme == ThemeMode.SYSTEM) isSystemInDarkTheme()
+            else {
+                if (theme == ThemeMode.DARK) {
+                    true
+                }
+                else false
+            }
         val textStyle = remember(isDarkTheme) {
             if (isDarkTheme) TextStyle(color = Color.White)
             else TextStyle(color = Color.Black)

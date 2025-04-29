@@ -15,6 +15,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.data.utils.DateUtils
+import com.hsact.sunplanner.ui.settings.ThemeMode
 import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.models.*
 import java.time.LocalDate
@@ -26,7 +27,8 @@ class WeatherGraphBarsLineCard {
         header: String,
         barGroups: List<Bars>,
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        theme: ThemeMode = ThemeMode.SYSTEM
     ) {
         val max = remember(barGroups) {
             val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
@@ -37,7 +39,14 @@ class WeatherGraphBarsLineCard {
             barGroups.any { it.label.isNotBlank() }
         }
 
-        val isDarkTheme = isSystemInDarkTheme()
+        val isDarkTheme =
+            if (theme == ThemeMode.SYSTEM) isSystemInDarkTheme()
+            else {
+                if (theme == ThemeMode.DARK) {
+                    true
+                }
+                else false
+            }
         val textStyle = remember(isDarkTheme) {
             if (isDarkTheme) TextStyle(color = Color.White)
             else TextStyle(color = Color.Black)

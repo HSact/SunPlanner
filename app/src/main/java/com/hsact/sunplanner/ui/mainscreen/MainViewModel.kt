@@ -13,6 +13,7 @@ import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.settings.LanguageMode
+import com.hsact.sunplanner.ui.settings.ThemeMode
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
 import com.hsact.sunplanner.ui.theme.precipitationBarColor
@@ -44,6 +45,11 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getSettingsUseCase.language.collect { language: LanguageMode ->
                 _searchDataUI.value = _searchDataUI.value.copy(languageMode = language)
+            }
+        }
+        viewModelScope.launch {
+            getSettingsUseCase.theme.collect { theme: ThemeMode ->
+                _searchDataUI.value = _searchDataUI.value.copy(themeMode = theme)
             }
         }
     }

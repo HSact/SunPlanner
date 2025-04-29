@@ -3,12 +3,14 @@ package com.hsact.sunplanner.ui.mainscreen
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.ui.settings.LanguageMode
+import com.hsact.sunplanner.ui.settings.ThemeMode
 import ir.ehsannarmani.compose_charts.models.Bars
 import ir.ehsannarmani.compose_charts.models.Line
 import java.time.LocalDate
 
 data class MainUIState (
     var languageMode: LanguageMode = LanguageMode.ENGLISH,
+    var themeMode: ThemeMode = ThemeMode.SYSTEM,
     var error : String = "",
     var isLoading: Boolean = false,
     var isOneDay: Boolean = true,

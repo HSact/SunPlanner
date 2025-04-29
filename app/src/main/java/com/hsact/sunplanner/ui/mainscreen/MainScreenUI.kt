@@ -259,7 +259,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                     mainDataUI.minTemperature!!
                                 ),
                                 mainDataUI.confirmedStartLD,
-                                mainDataUI.confirmedEndLD
+                                mainDataUI.confirmedEndLD,
+                                mainDataUI.themeMode
                             )
                         }
                         Row(modifier.fillMaxWidth())
@@ -269,6 +270,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 listOf(mainDataUI.sunDuration!!),
                                 mainDataUI.confirmedStartLD,
                                 mainDataUI.confirmedEndLD,
+                                mainDataUI.themeMode,
                                 true              //set min value 0
                             )
                         }
@@ -278,7 +280,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 stringResource(R.string.precipitation),
                                 listOf(mainDataUI.precipitation!!),
                                 mainDataUI.confirmedStartLD,
-                                mainDataUI.confirmedEndLD
+                                mainDataUI.confirmedEndLD,
+                                mainDataUI.themeMode
                             )
                         }
                         Row(
