@@ -19,6 +19,8 @@ import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
 import com.hsact.sunplanner.ui.theme.precipitationBarColor
 import com.hsact.sunplanner.ui.theme.sunShineLineColor
+import com.hsact.sunplanner.ui.theme.windGustsSpeedColor
+import com.hsact.sunplanner.ui.theme.windSpeedColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -140,12 +142,14 @@ class MainViewModel @Inject constructor(
         val location = _searchDataUI.value.location?: return null
         val startDate = _searchDataUI.value.startLD
         val endDate = _searchDataUI.value.endLD
+        val windSpeedUnit = "ms" //TODO: get from settings
 
         return WeatherRequestParams().apply {
             latitude = location.latitude
             longitude = location.longitude
             this.startDate = startDate.toString() // YYYY-MM-DD
             this.endDate = endDate.toString()
+            this.windSpeedUnit = windSpeedUnit
         }
     }
 
@@ -180,7 +184,6 @@ class MainViewModel @Inject constructor(
                 )
                 saveWeatherData(filteredWeather)
             } catch (e: Exception) {
-                //updateError("Error fetching weather: ${e.message}")
                 updateError(stringProvider.fetchWeatherError(e))
             }
             _searchDataUI.value = _searchDataUI.value.copy(isLoading = false)
@@ -214,19 +217,27 @@ class MainViewModel @Inject constructor(
         else {
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
-        searchDataUI.value.maxTemperature =
+        _searchDataUI.value.maxTemperature =
             createWeatherGraphLineUseCase.invoke(stringProvider.max(), maxTemps,
                 maxTempLineColor, _searchDataUI.value.isOneYear)
 
-        searchDataUI.value.minTemperature =
+        _searchDataUI.value.minTemperature =
             createWeatherGraphLineUseCase.invoke(stringProvider.min(), minTemps,
                 minTempLineColor, _searchDataUI.value.isOneYear)
 
-        searchDataUI.value.sunDuration =
+        _searchDataUI.value.sunDuration =
             createWeatherGraphLineUseCase.invoke("", sunshine,
                 sunShineLineColor, _searchDataUI.value.isOneYear)
 
-        searchDataUI.value.precipitation =
+        _searchDataUI.value.precipitation =
             createWeatherGraphBarsUseCase.invoke("", precipitation, precipitationBarColor)
+
+        _searchDataUI.value.windSpeed =
+            createWeatherGraphLineUseCase.invoke(stringProvider.wind(), data.daily.windSpeedMax,
+                windSpeedColor, _searchDataUI.value.isOneYear)
+
+        _searchDataUI.value.windGustsSpeed =
+            createWeatherGraphLineUseCase.invoke(stringProvider.gusts(), data.daily.windGustsMax,
+                windGustsSpeedColor, _searchDataUI.value.isOneYear)
     }
 }

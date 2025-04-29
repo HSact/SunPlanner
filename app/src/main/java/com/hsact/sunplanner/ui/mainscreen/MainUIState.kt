@@ -30,5 +30,7 @@ data class MainUIState (
     var maxTemperature: Line? = null,
     var minTemperature: Line? = null,
     var sunDuration: Line? = null,
-    var precipitation: Bars? = null
+    var precipitation: Bars? = null,
+    var windSpeed: Line? = null,
+    var windGustsSpeed: Line? = null
 )

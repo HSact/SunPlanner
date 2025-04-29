@@ -4,5 +4,6 @@ data class WeatherRequestParams(
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
     var startDate: String = "",
-    var endDate: String = ""
+    var endDate: String = "",
+    var windSpeedUnit: String = "",
 )

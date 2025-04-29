@@ -287,6 +287,19 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                 mainDataUI.themeMode
                             )
                         }
+                        Row(modifier.fillMaxWidth()) {
+                            WeatherGraphLineCard().WeatherCard(
+                                stringResource(R.string.wind_speed),
+                                listOf(
+                                    mainDataUI.windSpeed!!,
+                                    mainDataUI.windGustsSpeed!!
+                                ),
+                                mainDataUI.confirmedStartLD,
+                                mainDataUI.confirmedEndLD,
+                                mainDataUI.themeMode,
+                                true
+                            )
+                        }
                         Row(
                             modifier
                                 .fillMaxWidth()

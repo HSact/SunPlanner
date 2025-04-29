@@ -30,6 +30,9 @@
     <string name="cancel">Отмена</string>
     <string name="language">Язык</string>
     <string name="theme">Тема</string>
+    <string name="wind_speed">Скорость ветра (м/с)</string>
+    <string name="wind">Ветер</string>
+    <string name="gusts">Порывы</string>
     <string-array name="theme_choices">
         <item>Авто</item>
         <item>День</item>

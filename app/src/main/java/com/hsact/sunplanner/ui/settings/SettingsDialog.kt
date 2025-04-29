@@ -53,13 +53,13 @@ class SettingsDialog (val viewModel: SettingsViewModel,
                 Text(stringResource(R.string.settings))
             },
             text = {
-                DialogContainer(viewModel, onApplyTheme, onChangeLanguage)
+                DialogContainer(viewModel, onApplyTheme)
             }
         )
     }
 
     @Composable
-    private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit, onChangeLanguage: (LanguageMode) -> Unit) {
+    private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
         val uiState by viewModel.uiState.collectAsState()
         var selectedThemeIndex by remember (uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
         val themeChoices = LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
@@ -105,7 +105,6 @@ class SettingsDialog (val viewModel: SettingsViewModel,
                     onSelected = {
                         selectedLanguageIndex = languageChoices.indexOf(it)
                         viewModel.handleIntent(SettingsIntents.UpdateLanguage(indexToLanguageMode(selectedLanguageIndex)))
-                        //onChangeLanguage (viewModel.uiState.value.selectedLanguage)
                     },
                     modifier = Modifier.padding(start = 20.dp)
                 )

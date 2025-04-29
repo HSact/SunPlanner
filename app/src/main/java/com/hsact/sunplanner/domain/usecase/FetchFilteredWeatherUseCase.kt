@@ -18,7 +18,8 @@ class FetchFilteredWeatherUseCase @Inject constructor(
             latitude = params.latitude,
             longitude = params.longitude,
             startDate = params.startDate,
-            endDate = params.endDate
+            endDate = params.endDate,
+            windSpeedUnit = params.windSpeedUnit,
         )
         val filtered = WeatherUtils.filterDailyWeatherByDateRange(
             response.daily, startLD, endLD
