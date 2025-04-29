@@ -42,10 +42,7 @@ class WeatherGraphBarsLineCard {
         val isDarkTheme =
             if (theme == ThemeMode.SYSTEM) isSystemInDarkTheme()
             else {
-                if (theme == ThemeMode.DARK) {
-                    true
-                }
-                else false
+                theme == ThemeMode.DARK
             }
         val textStyle = remember(isDarkTheme) {
             if (isDarkTheme) TextStyle(color = Color.White)
