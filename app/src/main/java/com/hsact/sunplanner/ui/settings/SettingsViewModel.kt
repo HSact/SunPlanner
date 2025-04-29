@@ -43,6 +43,9 @@ class SettingsViewModel @Inject constructor(
             when (intent) {
                 is SettingsIntents.UpdateTheme -> {changeTheme(intent.theme)}
                 is SettingsIntents.UpdateLanguage -> {changeLanguage(intent.language)}
+                is SettingsIntents.UpdateTemperatureUnit -> {}
+                is SettingsIntents.UpdateWindSpeedUnit -> {}
+                is SettingsIntents.UpdatePrecipitationUnit -> {}
                 is SettingsIntents.ApplySettings -> {applySettings()}
             }
         }

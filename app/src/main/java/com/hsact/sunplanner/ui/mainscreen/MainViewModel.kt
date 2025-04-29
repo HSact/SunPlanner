@@ -112,18 +112,18 @@ class MainViewModel @Inject constructor(
     fun cleanError() {
         _searchDataUI.value = _searchDataUI.value.copy(error = "")
     }
+
     fun updateConfirmedLD(start: LocalDate, end: LocalDate) {
-        _searchDataUI.value = _searchDataUI.value.copy(confirmedStartLD = start, confirmedEndLD = end)
+        _searchDataUI.value =
+            _searchDataUI.value.copy(confirmedStartLD = start, confirmedEndLD = end)
     }
 
-    fun onSearchClick () {
+    fun onSearchClick() {
         if (_searchDataUI.value.location == null) {
-            //updateError("Location is empty")
             updateError(stringProvider.locationEmpty())
             return
         }
         if (_searchDataUI.value.startLD > _searchDataUI.value.endLD) {
-            //updateError("Invalid date range")
             updateError(stringProvider.invalidDateRange())
             return
         }
@@ -139,7 +139,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun prepareParamsForRequest(): WeatherRequestParams? {
-        val location = _searchDataUI.value.location?: return null
+        val location = _searchDataUI.value.location ?: return null
         val startDate = _searchDataUI.value.startLD
         val endDate = _searchDataUI.value.endLD
         val temperatureUnit = "celsius" //TODO: get from settings
@@ -193,8 +193,8 @@ class MainViewModel @Inject constructor(
             _searchDataUI.value = _searchDataUI.value.copy(isLoading = false)
         }
     }
-    fun saveWeatherData(data: WeatherResponse)
-    {
+
+    fun saveWeatherData(data: WeatherResponse) {
         _searchDataUI.value = _searchDataUI.value.copy(weatherData = data)
         var maxTemps = _searchDataUI.value.weatherData!!.daily.maxTemperature
         var minTemps = _searchDataUI.value.weatherData!!.daily.minTemperature
@@ -204,44 +204,53 @@ class MainViewModel @Inject constructor(
 
         if (_searchDataUI.value.startLD.year == _searchDataUI.value.endLD.year) {
             _searchDataUI.value = _searchDataUI.value.copy(isOneYear = true)
-        }
-        else {
+        } else {
             _searchDataUI.value = _searchDataUI.value.copy(isOneYear = false)
         }
 
         if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
-            _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue) {
+            _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue
+        ) {
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = false)
             val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
             maxTemps = aggregated.map { it.avgMaxTemp }
             minTemps = aggregated.map { it.avgMinTemp }
             sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
             precipitation = aggregated.map { it.avgPrecipitation }
-        }
-        else {
+        } else {
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
         _searchDataUI.value.maxTemperature =
-            createWeatherGraphLineUseCase.invoke(stringProvider.max(), maxTemps,
-                maxTempLineColor, _searchDataUI.value.isOneYear)
+            createWeatherGraphLineUseCase.invoke(
+                stringProvider.max(), maxTemps,
+                maxTempLineColor, _searchDataUI.value.isOneYear
+            )
 
         _searchDataUI.value.minTemperature =
-            createWeatherGraphLineUseCase.invoke(stringProvider.min(), minTemps,
-                minTempLineColor, _searchDataUI.value.isOneYear)
+            createWeatherGraphLineUseCase.invoke(
+                stringProvider.min(), minTemps,
+                minTempLineColor, _searchDataUI.value.isOneYear
+            )
 
         _searchDataUI.value.sunDuration =
-            createWeatherGraphLineUseCase.invoke("", sunshine,
-                sunShineLineColor, _searchDataUI.value.isOneYear)
+            createWeatherGraphLineUseCase.invoke(
+                "", sunshine,
+                sunShineLineColor, _searchDataUI.value.isOneYear
+            )
 
         _searchDataUI.value.precipitation =
             createWeatherGraphBarsUseCase.invoke("", precipitation, precipitationBarColor)
 
         _searchDataUI.value.windSpeed =
-            createWeatherGraphLineUseCase.invoke(stringProvider.wind(), data.daily.windSpeedMax,
-                windSpeedColor, _searchDataUI.value.isOneYear)
+            createWeatherGraphLineUseCase.invoke(
+                stringProvider.wind(), data.daily.windSpeedMax,
+                windSpeedColor, _searchDataUI.value.isOneYear
+            )
 
         _searchDataUI.value.windGustsSpeed =
-            createWeatherGraphLineUseCase.invoke(stringProvider.gusts(), data.daily.windGustsMax,
-                windGustsSpeedColor, _searchDataUI.value.isOneYear)
+            createWeatherGraphLineUseCase.invoke(
+                stringProvider.gusts(), data.daily.windGustsMax,
+                windGustsSpeedColor, _searchDataUI.value.isOneYear
+            )
     }
 }
