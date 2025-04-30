@@ -30,7 +30,7 @@
     <string name="cancel">Cancel</string>
     <string name="language">Language</string>
     <string name="theme">Theme</string>
-    <string name="wind_speed">Wind speed (m/s)</string>
+    <string name="wind_speed">Wind speed</string>
     <string name="wind">Wind</string>
     <string name="gusts">Gusts</string>
     <string-array name="theme_choices">
