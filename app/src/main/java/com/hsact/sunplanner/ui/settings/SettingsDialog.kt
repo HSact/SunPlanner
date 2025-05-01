@@ -2,6 +2,7 @@ package com.hsact.sunplanner.ui.settings
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -104,6 +105,7 @@ class SettingsDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(stringResource(R.string.theme))
+                Spacer(modifier = Modifier.weight(1f))
                 SingleChoiceSegmentedButtonRow(
                     modifier = Modifier.padding(start = 20.dp),
                 ) {
@@ -138,6 +140,7 @@ class SettingsDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(stringResource(R.string.language))
+                Spacer(modifier = Modifier.weight(1f))
                 DropDownPicker().ItemsDropdown(
                     "",
                     languageChoices,
@@ -162,6 +165,7 @@ class SettingsDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(stringResource(R.string.temperature))
+                Spacer(modifier = Modifier.weight(1f))
                 SegmentedButtonUnitPicker(
                     viewModel,
                     tempUnitChoices,
@@ -169,7 +173,6 @@ class SettingsDialog(
                 ) { index ->
                     SettingsIntents.UpdateTemperatureUnit(indexToTemperatureUnitMode(index))
                 }
-                //SettingsIntents.UpdateTemperatureUnit(indexToTemperatureUnitMode(selectedTempUnitIndex.intValue)))
             }
             Row(
                 modifier = Modifier
@@ -178,6 +181,7 @@ class SettingsDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(stringResource(R.string.wind))
+                Spacer(modifier = Modifier.weight(1f))
                 SegmentedButtonUnitPicker(
                     viewModel,
                     windUnitChoices,
@@ -193,6 +197,7 @@ class SettingsDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(stringResource(R.string.precipitation))
+                Spacer(modifier = Modifier.weight(1f))
                 SegmentedButtonUnitPicker(
                     viewModel,
                     precipitationUnitChoices,

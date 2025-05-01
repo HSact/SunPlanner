@@ -50,7 +50,7 @@
         <item>км/ч</item>
         <item>м/с</item>
         <item>ми/ч</item>
-        <item>уз</item>
+        <item>узел</item>
     </string-array>
     <string-array name="precipitation_unit_choices">
         <item>мм</item>
