@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -40,7 +43,9 @@ import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
+import kotlinx.coroutines.FlowPreview
 
+@OptIn(FlowPreview::class)
 class SearchUI {
     private val minCityLetters = 2
     private lateinit var focusManager: FocusManager
@@ -55,6 +60,7 @@ class SearchUI {
         isSearchExpanded: Boolean,
         onSearchExpandedChange: (Boolean) -> Unit
     ) {
+        val keyboardController = LocalSoftwareKeyboardController.current
         val interactionSource = remember { MutableInteractionSource() }
         val isFocused by interactionSource.collectIsFocusedAsState()
         val focusRequester = remember { FocusRequester() }
@@ -98,8 +104,13 @@ class SearchUI {
                                 unfocusedIndicatorColor = Color.Transparent,
                                 focusedIndicatorColor = Color.Transparent
                             ),
-                            interactionSource = interactionSource
-                        )
+                            interactionSource = interactionSource,
+                            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    keyboardController?.hide()
+                                }
+                            ))
                     }
                 },
                 expanded = isSearchExpanded,
@@ -107,9 +118,6 @@ class SearchUI {
                 modifier = Modifier,
                 shape = searchBarShape,
                 colors = SearchBarDefaults.colors(),
-                //colors = SearchBarDefaults.colors(containerColor = Color.Transparent),
-                //tonalElevation = 0.dp,
-                //shadowElevation = 0.dp
             ) {
                 Box(
                     modifier = Modifier

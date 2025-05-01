@@ -14,15 +14,7 @@ class FetchFilteredWeatherUseCase @Inject constructor(
         startLD: LocalDate,
         endLD: LocalDate
     ): WeatherResponse {
-        val response = repository.getWeather(
-            latitude = params.latitude,
-            longitude = params.longitude,
-            startDate = params.startDate,
-            endDate = params.endDate,
-            temperatureUnit = params.temperatureUnit,
-            windSpeedUnit = params.windSpeedUnit,
-            precipitationUnit = params.precipitationUnit
-        )
+        val response = repository.getWeather(params)
         val filtered = WeatherUtils.filterDailyWeatherByDateRange(
             response.daily, startLD, endLD
         )

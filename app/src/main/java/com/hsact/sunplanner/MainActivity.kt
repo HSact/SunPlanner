@@ -28,6 +28,7 @@ import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.settings.LocalizedContextWrapper
 import com.hsact.sunplanner.ui.settings.ThemeMode
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -35,6 +36,7 @@ import javax.inject.Inject
 
 val LocalAppLocale = staticCompositionLocalOf { Locale.getDefault() }
 val LocalAppContext = staticCompositionLocalOf<Context> { error("No Context provided") }
+@OptIn(FlowPreview::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()

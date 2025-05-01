@@ -6,5 +6,6 @@ data class DailyAggregatedData(
     val avgMinTemp: Double,
     val avgSunshineSeconds: Double,
     val avgPrecipitation: Double,
-    val avgWindSpeed: Double
+    val avgWindSpeed: Double,
+    val avgWindGustSpeed: Double
 )

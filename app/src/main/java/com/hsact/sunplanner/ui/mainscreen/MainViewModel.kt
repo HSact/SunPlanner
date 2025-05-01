@@ -12,12 +12,7 @@ import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
-import com.hsact.sunplanner.ui.settings.LanguageMode
-import com.hsact.sunplanner.ui.settings.ThemeMode
 import com.hsact.sunplanner.ui.settings.toName
-import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.toName
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
@@ -26,13 +21,17 @@ import com.hsact.sunplanner.ui.theme.sunShineLineColor
 import com.hsact.sunplanner.ui.theme.windGustsSpeedColor
 import com.hsact.sunplanner.ui.theme.windSpeedColor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
+@FlowPreview
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: WeatherRepository,
@@ -49,28 +48,25 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getSettingsUseCase.language.collect { language: LanguageMode ->
-                _searchDataUI.value = _searchDataUI.value.copy(languageMode = language)
-            }
-        }
-        viewModelScope.launch {
-            getSettingsUseCase.theme.collect { theme: ThemeMode ->
-                _searchDataUI.value = _searchDataUI.value.copy(themeMode = theme)
-            }
-        }
-        viewModelScope.launch {
-            getSettingsUseCase.temperatureUnit.collect { tempUnit: TemperatureUnitMode ->
-                _searchDataUI.value = _searchDataUI.value.copy(temperatureUnitMode = tempUnit)
-            }
-        }
-        viewModelScope.launch {
-            getSettingsUseCase.windUnit.collect { windUnit: WindSpeedUnitMode ->
-                _searchDataUI.value = _searchDataUI.value.copy(windUnitMode = windUnit)
-            }
-        }
-        viewModelScope.launch {
-            getSettingsUseCase.precipitationUnit.collect { precipitationUnit: PrecipitationUnitMode ->
-                _searchDataUI.value = _searchDataUI.value.copy(precipitationUnitMode = precipitationUnit)
+            combine(
+                getSettingsUseCase.language,
+                getSettingsUseCase.theme,
+                getSettingsUseCase.temperatureUnit,
+                getSettingsUseCase.windUnit,
+                getSettingsUseCase.precipitationUnit
+            ) { language, theme, tempUnit, windUnit, precipitationUnit ->
+                _searchDataUI.value.copy(
+                    languageMode = language,
+                    themeMode = theme,
+                    temperatureUnitMode = tempUnit,
+                    windUnitMode = windUnit,
+                    precipitationUnitMode = precipitationUnit
+                )
+            }.debounce(200).collect { updatedUiState ->
+                _searchDataUI.value = updatedUiState
+                if (_searchDataUI.value.weatherData != null && !_searchDataUI.value.isLoading) {
+                    fetchWeather(prepareParamsForRequest(updatedUiState)?: return@collect)
+                }
             }
         }
     }
@@ -151,19 +147,19 @@ class MainViewModel @Inject constructor(
             updateError(stringProvider.yearsRangeTooBig())
             return
         }
-        val params = prepareParamsForRequest()
+        val params = prepareParamsForRequest(_searchDataUI.value)
         if (params != null) {
             fetchWeather(params)
         }
     }
 
-    fun prepareParamsForRequest(): WeatherRequestParams? {
-        val location = _searchDataUI.value.location ?: return null
-        val startDate = _searchDataUI.value.startLD
-        val endDate = _searchDataUI.value.endLD
-        val temperatureUnit = _searchDataUI.value.temperatureUnitMode.toName()
-        val windSpeedUnit = _searchDataUI.value.windUnitMode.toName()
-        val precipitationUnit = _searchDataUI.value.precipitationUnitMode.toName()
+    fun prepareParamsForRequest(state: MainUIState): WeatherRequestParams? {
+        val location = state.location ?: return null
+        val startDate = state.startLD
+        val endDate = state.endLD
+        val temperatureUnit = state.temperatureUnitMode.toName()
+        val windSpeedUnit = state.windUnitMode.toName()
+        val precipitationUnit = state.precipitationUnitMode.toName()
 
         return WeatherRequestParams().apply {
             latitude = location.latitude
@@ -220,6 +216,8 @@ class MainViewModel @Inject constructor(
         var sunshine = _searchDataUI.value.weatherData!!.daily.sunshineDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
         var precipitation = _searchDataUI.value.weatherData!!.daily.precipitationSum
+        var windSpeed = _searchDataUI.value.weatherData!!.daily.windSpeedMax
+        var gustSpeed = _searchDataUI.value.weatherData!!.daily.windGustsMax
 
         if (_searchDataUI.value.startLD.year == _searchDataUI.value.endLD.year) {
             _searchDataUI.value = _searchDataUI.value.copy(isOneYear = true)
@@ -236,6 +234,8 @@ class MainViewModel @Inject constructor(
             minTemps = aggregated.map { it.avgMinTemp }
             sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
             precipitation = aggregated.map { it.avgPrecipitation }
+            windSpeed = aggregated.map { it.avgWindSpeed }
+            gustSpeed = aggregated.map { it.avgWindGustSpeed }
         } else {
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
@@ -262,13 +262,13 @@ class MainViewModel @Inject constructor(
 
         _searchDataUI.value.windSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.wind(), data.daily.windSpeedMax,
+                stringProvider.wind(), windSpeed,
                 windSpeedColor, _searchDataUI.value.isOneYear
             )
 
         _searchDataUI.value.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.gusts(), data.daily.windGustsMax,
+                stringProvider.gusts(), gustSpeed,
                 windGustsSpeedColor, _searchDataUI.value.isOneYear
             )
     }

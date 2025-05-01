@@ -24,8 +24,8 @@
     <string name="error_location_empty">Локация не указана</string>
     <string name="error_invalid_date_range">Неправильный диапазон дат</string>
     <string name="error_years_range_too_big">Диапазон лет слишком большой (max 20)</string>
-    <string name="error_fetching_cities">Ощибка получения списка городов: %1$s</string>
-    <string name="error_fetching_weather">Ощибка получения погоды: %1$s</string>
+    <string name="error_fetching_cities">Ошибка получения списка городов: %1$s</string>
+    <string name="error_fetching_weather">Ошибка получения погоды: %1$s</string>
     <string name="settings">Настройки</string>
     <string name="cancel">Отмена</string>
     <string name="language">Язык</string>
@@ -50,7 +50,7 @@
         <item>км/ч</item>
         <item>м/с</item>
         <item>ми/ч</item>
-        <item>уз</item>
+        <item>узел</item>
     </string-array>
     <string-array name="precipitation_unit_choices">
         <item>мм</item>

@@ -59,12 +59,13 @@ import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.settings.ThemeMode
 import com.hsact.sunplanner.ui.settings.unitModes.toIndex
+import kotlinx.coroutines.FlowPreview
 import java.util.Locale
 import kotlin.collections.toList
 
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 class MainScreenUI(val viewModel: MainViewModel) {
     @SuppressLint("LocalContextConfigurationRead")
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun MainScreen(
         modifier: Modifier = Modifier,
@@ -322,7 +323,6 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 }
             }
         }
-        //}
     }
 
     @Composable

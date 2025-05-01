@@ -2,6 +2,8 @@ package com.hsact.sunplanner.di
 
 import com.hsact.sunplanner.data.network.OpenMeteoGeo
 import com.hsact.sunplanner.data.network.OpenMeteoService
+import com.hsact.sunplanner.data.repository.WeatherRepository
+import com.hsact.sunplanner.data.repository.WeatherRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -48,5 +50,14 @@ object NetworkModule {
         @Named("GeoRetrofit") geoRetrofit: Retrofit
     ): OpenMeteoGeo {
         return geoRetrofit.create(OpenMeteoGeo::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideWeatherRepository(
+        service: OpenMeteoService,
+        geoService: OpenMeteoGeo
+    ): WeatherRepository {
+        return WeatherRepositoryImpl(service, geoService)
     }
 }
