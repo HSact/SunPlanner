@@ -27,6 +27,7 @@ class AggregateWeatherByDateUseCase @Inject constructor() {
                 avgSunshineSeconds = (avgHours(daily.sunshineDuration) * 10).roundToInt() / 10.0,
                 avgPrecipitation = (avg(daily.precipitationSum) * 10).roundToInt() / 10.0,
                 avgWindSpeed = (avg(daily.windSpeedMax) * 10).roundToInt() / 10.0,
+                avgWindGustSpeed = (avg(daily.windGustsMax) * 10).roundToInt() / 10.0
             )
         }.sortedBy { it.date }
     }

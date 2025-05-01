@@ -220,6 +220,8 @@ class MainViewModel @Inject constructor(
         var sunshine = _searchDataUI.value.weatherData!!.daily.sunshineDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
         var precipitation = _searchDataUI.value.weatherData!!.daily.precipitationSum
+        var windSpeed = _searchDataUI.value.weatherData!!.daily.windSpeedMax
+        var gustSpeed = _searchDataUI.value.weatherData!!.daily.windGustsMax
 
         if (_searchDataUI.value.startLD.year == _searchDataUI.value.endLD.year) {
             _searchDataUI.value = _searchDataUI.value.copy(isOneYear = true)
@@ -236,6 +238,8 @@ class MainViewModel @Inject constructor(
             minTemps = aggregated.map { it.avgMinTemp }
             sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
             precipitation = aggregated.map { it.avgPrecipitation }
+            windSpeed = aggregated.map { it.avgWindSpeed }
+            gustSpeed = aggregated.map { it.avgWindGustSpeed }
         } else {
             _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
         }
@@ -262,13 +266,13 @@ class MainViewModel @Inject constructor(
 
         _searchDataUI.value.windSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.wind(), data.daily.windSpeedMax,
+                stringProvider.wind(), windSpeed,
                 windSpeedColor, _searchDataUI.value.isOneYear
             )
 
         _searchDataUI.value.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.gusts(), data.daily.windGustsMax,
+                stringProvider.gusts(), gustSpeed,
                 windGustsSpeedColor, _searchDataUI.value.isOneYear
             )
     }
