@@ -60,8 +60,6 @@ Obtainium — это приложение для автоматического 
 
 🔹 Альтернативный способ
 
-Перейдите в раздел [Releases](https://github.com/HSact/SunPlanner/releases).
-
-Скачайте последнюю версию APK.
-
-Установите на своё устройство.
+1. Перейдите в раздел [Releases](https://github.com/HSact/SunPlanner/releases).
+2. Скачайте последнюю версию APK.
+3. Установите на своё устройство.
