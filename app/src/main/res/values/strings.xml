@@ -43,8 +43,8 @@
         <item>Russian</item>
     </string-array>
     <string-array name="temp_unit_choices">
-        <item>Celsius</item>
-        <item>Fahrenheit</item>
+        <item>°C</item>
+        <item>°F</item>
     </string-array>
     <string-array name="speed_unit_choices">
         <item>km/h</item>

@@ -6,8 +6,8 @@ import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
 
 data class SettingsUIState(
     var currentTheme: ThemeMode = ThemeMode.SYSTEM,
-    var currentLanguage: LanguageMode = LanguageMode.ENGLISH,
     var selectedTheme: ThemeMode = currentTheme,
+    var currentLanguage: LanguageMode = LanguageMode.ENGLISH,
     var selectedLanguage: LanguageMode = currentLanguage,
     var currentTemperatureUnit: TemperatureUnitMode = TemperatureUnitMode.CELSIUS,
     var selectedTemperatureUnit: TemperatureUnitMode = currentTemperatureUnit,

@@ -58,7 +58,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.settings.ThemeMode
+import com.hsact.sunplanner.ui.settings.unitModes.toIndex
 import java.util.Locale
+import kotlin.collections.toList
 
 class MainScreenUI(val viewModel: MainViewModel) {
     @SuppressLint("LocalContextConfigurationRead")
@@ -228,6 +230,12 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         }
                     }
                     if (mainDataUI.weatherData != null && !mainDataUI.isLoading) {
+                        val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
+                            .toList()[mainDataUI.temperatureUnitMode.toIndex()]
+                        val speedUnit = context.resources.getStringArray(R.array.speed_unit_choices)
+                            .toList()[mainDataUI.windUnitMode.toIndex()]
+                        val precipitationUnit = context.resources.getStringArray(R.array.precipitation_unit_choices)
+                            .toList()[mainDataUI.precipitationUnitMode.toIndex()]
                         Row(
                             modifier
                                 .fillMaxWidth()
@@ -256,7 +264,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         ) {
                             //Text("Weather: ${searchDataUI.weatherData}")
                             WeatherGraphLineCard().WeatherCard(
-                                stringResource(R.string.temperature),
+                                stringResource(R.string.temperature)
+                                        + " (" + tempUnit + ")",
                                 listOf(
                                     mainDataUI.maxTemperature!!,
                                     mainDataUI.minTemperature!!
@@ -280,7 +289,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         Row(modifier.fillMaxWidth())
                         {
                             WeatherGraphBarsLineCard().WeatherCard(
-                                stringResource(R.string.precipitation),
+                                stringResource(R.string.precipitation)
+                                        + " (" + precipitationUnit + ")",
                                 listOf(mainDataUI.precipitation!!),
                                 mainDataUI.confirmedStartLD,
                                 mainDataUI.confirmedEndLD,
@@ -289,7 +299,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         }
                         Row(modifier.fillMaxWidth()) {
                             WeatherGraphLineCard().WeatherCard(
-                                stringResource(R.string.wind_speed),
+                                stringResource(R.string.wind_speed)
+                                        + " (" + speedUnit + ")",
                                 listOf(
                                     mainDataUI.windSpeed!!,
                                     mainDataUI.windGustsSpeed!!
