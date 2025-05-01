@@ -6,10 +6,10 @@ object LocationUtils {
     fun buildCityFullName(city: Location): String {
         return listOfNotNull(
             city.name,
-            city.admin1,
             city.admin2,
             city.admin3,
             city.admin4,
+            city.admin1,
             city.country
         ).joinToString(", ")
     }

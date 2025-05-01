@@ -12,11 +12,12 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
     operator fun invoke(
         label: String,
         values: List<Double>,
-        color: Color
+        color: Color,
+        isOneYear: Boolean = false
     ): Line {
         return Line(
             label = label,
-            values = values,
+            values = if (!isOneYear) values else values + values,
             color = SolidColor(color),
             firstGradientFillColor = color.copy(alpha = .5f),
             secondGradientFillColor = Color.Transparent,

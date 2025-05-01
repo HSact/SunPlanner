@@ -3,15 +3,24 @@ package com.hsact.sunplanner.ui.mainscreen
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.ui.settings.LanguageMode
+import com.hsact.sunplanner.ui.settings.ThemeMode
+import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
 import ir.ehsannarmani.compose_charts.models.Bars
 import ir.ehsannarmani.compose_charts.models.Line
 import java.time.LocalDate
 
 data class MainUIState (
     var languageMode: LanguageMode = LanguageMode.ENGLISH,
+    var themeMode: ThemeMode = ThemeMode.SYSTEM,
+    var temperatureUnitMode: TemperatureUnitMode = TemperatureUnitMode.CELSIUS,
+    var windUnitMode: WindSpeedUnitMode = WindSpeedUnitMode.MS,
+    var precipitationUnitMode: PrecipitationUnitMode = PrecipitationUnitMode.MM,
     var error : String = "",
     var isLoading: Boolean = false,
     var isOneDay: Boolean = true,
+    var isOneYear: Boolean = false,
     val cityName: String = "",
     var cities: List<Location> = emptyList(),
     val location: Location? = null,
@@ -27,5 +36,7 @@ data class MainUIState (
     var maxTemperature: Line? = null,
     var minTemperature: Line? = null,
     var sunDuration: Line? = null,
-    var precipitation: Bars? = null
+    var precipitation: Bars? = null,
+    var windSpeed: Line? = null,
+    var windGustsSpeed: Line? = null
 )

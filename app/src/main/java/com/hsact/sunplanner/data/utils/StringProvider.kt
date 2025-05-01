@@ -8,4 +8,7 @@ interface StringProvider {
     fun fetchWeatherError(e: Exception): String
     fun max(): String
     fun min(): String
+    fun windSpeed(): String
+    fun wind(): String
+    fun gusts(): String
 }

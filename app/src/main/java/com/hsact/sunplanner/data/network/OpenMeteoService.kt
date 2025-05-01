@@ -12,6 +12,9 @@ interface OpenMeteoService {
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
         @Query("daily") daily: String = "weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum,precipitation_hours,sunshine_duration,wind_speed_10m_max,wind_gusts_10m_max",
+        @Query("temperature_unit") temperatureUnit: String = "celsius",
+        @Query("wind_speed_unit") windSpeedUnit: String = "ms",
+        @Query("precipitation_unit") precipitationUnit: String = "mm",
         @Query("timezone") timezone: String = "auto"
     ): WeatherResponse
 }

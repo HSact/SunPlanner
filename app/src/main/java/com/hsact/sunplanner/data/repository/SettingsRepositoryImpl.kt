@@ -6,6 +6,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.settings.ThemeMode
+import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -22,6 +25,9 @@ class SettingsRepositoryImpl @Inject constructor(
     companion object {
         private val THEME_KEY = intPreferencesKey("theme")
         private val LANGUAGE_KEY = intPreferencesKey("language")
+        private val TEMPERATURE_UNIT_KEY = intPreferencesKey("temperature_unit")
+        private val WIND_SPEED_UNIT_KEY = intPreferencesKey("wind_unit")
+        private val PRECIPITATION_UNIT_KEY = intPreferencesKey("precipitation_unit")
     }
 
     override val theme: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
@@ -31,6 +37,21 @@ class SettingsRepositoryImpl @Inject constructor(
     override val language: Flow<LanguageMode> = context.dataStore.data.map { preferences ->
         preferences[LANGUAGE_KEY]?.let { LanguageMode.entries[it] } ?: LanguageMode.ENGLISH
     }
+    override val temperatureUnit: Flow<TemperatureUnitMode> =
+        context.dataStore.data.map { preferences ->
+            preferences[TEMPERATURE_UNIT_KEY]?.let { TemperatureUnitMode.entries[it] }
+                ?: TemperatureUnitMode.CELSIUS
+        }
+    override val windSpeedUnit: Flow<WindSpeedUnitMode> =
+        context.dataStore.data.map { preferences ->
+            preferences[WIND_SPEED_UNIT_KEY]?.let { WindSpeedUnitMode.entries[it] }
+                ?: WindSpeedUnitMode.MS
+        }
+    override val precipitationUnit: Flow<PrecipitationUnitMode> =
+        context.dataStore.data.map { preferences ->
+            preferences[PRECIPITATION_UNIT_KEY]?.let { PrecipitationUnitMode.entries[it] }
+                ?: PrecipitationUnitMode.MM
+        }
 
     override suspend fun setTheme(themeMode: ThemeMode) {
         context.dataStore.edit { preferences ->
@@ -41,6 +62,24 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun setLanguage(languageMode: LanguageMode) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = languageMode.ordinal
+        }
+    }
+
+    override suspend fun setTemperatureUnit(temperatureMode: TemperatureUnitMode) {
+        context.dataStore.edit { preferences ->
+            preferences[TEMPERATURE_UNIT_KEY] = temperatureMode.ordinal
+        }
+    }
+
+    override suspend fun setWindSpeedUnit(windSpeedMode: WindSpeedUnitMode) {
+        context.dataStore.edit { preferences ->
+            preferences[WIND_SPEED_UNIT_KEY] = windSpeedMode.ordinal
+        }
+    }
+
+    override suspend fun setPrecipitationUnit(precipitationMode: PrecipitationUnitMode) {
+        context.dataStore.edit { preferences ->
+            preferences[PRECIPITATION_UNIT_KEY] = precipitationMode.ordinal
         }
     }
 }

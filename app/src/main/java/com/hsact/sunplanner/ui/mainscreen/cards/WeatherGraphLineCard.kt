@@ -23,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.data.utils.DateUtils
+import com.hsact.sunplanner.ui.settings.ThemeMode
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
@@ -39,6 +40,7 @@ class WeatherGraphLineCard {
         lineList: List<Line>,
         startDate: LocalDate,
         endDate: LocalDate,
+        theme: ThemeMode = ThemeMode.SYSTEM,
         minIsZero: Boolean = false
     ) {
 
@@ -56,16 +58,25 @@ class WeatherGraphLineCard {
             lineList.any { it.label.isNotBlank() }
         }
 
-        val isDarkTheme = isSystemInDarkTheme()
+        val isDarkTheme =
+            if (theme == ThemeMode.SYSTEM) isSystemInDarkTheme()
+            else {
+                theme == ThemeMode.DARK
+            }
         val textStyle = remember(isDarkTheme) {
             if (isDarkTheme) TextStyle(color = Color.White)
             else TextStyle(color = Color.Black)
+        }
+        var labels = DateUtils.labelsForCard(startDate, endDate)
+        if (labels.size < 2)
+        {
+            labels = labels + labels
         }
 
         val labelProperties = LabelProperties(
             enabled = true,
             textStyle = textStyle,
-            labels = DateUtils.labelsForCard(startDate, endDate),
+            labels = labels,
                 /*if (useYearsAsLabels) (startDate.year..endDate.year).map
             { "'${(it % 100).toString().padStart(2, '0')}" }
                 else (startDate.dayOfMonth..endDate.dayOfMonth).map { it.toString() },*/

@@ -1,0 +1,13 @@
+package com.hsact.sunplanner.domain.usecase.settings
+
+import com.hsact.sunplanner.data.repository.SettingsRepository
+import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
+import javax.inject.Inject
+
+class UpdateTemperatureUnitUseCase @Inject constructor(
+    private val repository: SettingsRepository
+) {
+    suspend operator fun invoke(temperatureUnit: TemperatureUnitMode) {
+        repository.setTemperatureUnit(temperatureUnit)
+    }
+}
