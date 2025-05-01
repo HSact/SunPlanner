@@ -1,17 +1,12 @@
 package com.hsact.sunplanner.data.repository
 
+import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 
 interface WeatherRepository {
     suspend fun getWeather(
-        latitude: Double,
-        longitude: Double,
-        startDate: String,
-        endDate: String,
-        temperatureUnit: String,
-        windSpeedUnit: String,
-        precipitationUnit: String
+        params: WeatherRequestParams
     ): WeatherResponse
 
     suspend fun getCoordinatesByCity(cityName: String): Location?

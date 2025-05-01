@@ -2,6 +2,7 @@ package com.hsact.sunplanner.data.repository
 
 import com.hsact.sunplanner.data.network.OpenMeteoGeo
 import com.hsact.sunplanner.data.network.OpenMeteoService
+import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import javax.inject.Inject
 
@@ -10,23 +11,15 @@ class WeatherRepositoryImpl @Inject constructor(
     private val geolocationService: OpenMeteoGeo
 ) : WeatherRepository {
 
-    override suspend fun getWeather(
-        latitude: Double,
-        longitude: Double,
-        startDate: String,
-        endDate: String,
-        temperatureUnit: String,
-        windSpeedUnit: String,
-        precipitationUnit: String
-    ) =
+    override suspend fun getWeather(params: WeatherRequestParams) =
         service.getHistoricalWeather(
-            latitude,
-            longitude,
-            startDate,
-            endDate,
-            temperatureUnit = temperatureUnit,
-            windSpeedUnit = windSpeedUnit,
-            precipitationUnit = precipitationUnit
+            latitude = params.latitude,
+            longitude = params.longitude,
+            startDate = params.startDate,
+            endDate = params.endDate,
+            temperatureUnit = params.temperatureUnit,
+            windSpeedUnit = params.windSpeedUnit,
+            precipitationUnit = params.precipitationUnit
         )
 
     override suspend fun getCoordinatesByCity(cityName: String): Location? {
@@ -34,8 +27,7 @@ class WeatherRepositoryImpl @Inject constructor(
             val response = geolocationService.getCityCoordinates(cityName)
             response.results?.firstOrNull()
         } catch (e: Exception) {
-            println("Error fetching coordinates: ${e.message}")
-            null
+            throw Exception("Error fetching coordinates: ${e.message}")
         }
     }
 
@@ -44,8 +36,7 @@ class WeatherRepositoryImpl @Inject constructor(
             val response = geolocationService.getCityCoordinates(cityName, language = language)
             response.results
         } catch (e: Exception) {
-            println("Error fetching list of cities: ${e.message}")
-            null
+            throw Exception("Error fetching cities: ${e.message}")
         }
     }
 }
