@@ -3,12 +3,15 @@ package com.hsact.sunplanner.data.repository
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.settings.ThemeMode
 import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,6 +31,7 @@ class SettingsRepositoryImpl @Inject constructor(
         private val TEMPERATURE_UNIT_KEY = intPreferencesKey("temperature_unit")
         private val WIND_SPEED_UNIT_KEY = intPreferencesKey("wind_unit")
         private val PRECIPITATION_UNIT_KEY = intPreferencesKey("precipitation_unit")
+        private val LOCATION_KEY = stringPreferencesKey("location")
     }
 
     override val theme: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
@@ -52,6 +56,12 @@ class SettingsRepositoryImpl @Inject constructor(
             preferences[PRECIPITATION_UNIT_KEY]?.let { PrecipitationUnitMode.entries[it] }
                 ?: PrecipitationUnitMode.MM
         }
+    override val location: Flow<Location?> =
+        context.dataStore.data.map { prefs ->
+        prefs[LOCATION_KEY]?.let { json ->
+            runCatching { Moshi.Builder().build().adapter(Location::class.java).fromJson(json) }.getOrNull()
+        }
+    }
 
     override suspend fun setTheme(themeMode: ThemeMode) {
         context.dataStore.edit { preferences ->
@@ -80,6 +90,14 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun setPrecipitationUnit(precipitationMode: PrecipitationUnitMode) {
         context.dataStore.edit { preferences ->
             preferences[PRECIPITATION_UNIT_KEY] = precipitationMode.ordinal
+        }
+    }
+
+    override suspend fun setLocation (location: Location) {
+        val adapter = Moshi.Builder().build().adapter(Location::class.java)
+        val json = adapter.toJson(location)
+        context.dataStore.edit { preferences ->
+            preferences[LOCATION_KEY] = json
         }
     }
 }

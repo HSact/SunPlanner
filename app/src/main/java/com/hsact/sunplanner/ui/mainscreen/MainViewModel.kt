@@ -4,14 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.repository.WeatherRepository
-import com.hsact.sunplanner.domain.usecase.AggregateWeatherByDateUseCase
-import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphBarsUseCase
-import com.hsact.sunplanner.domain.usecase.CreateWeatherGraphLineUseCase
-import com.hsact.sunplanner.domain.usecase.FetchFilteredWeatherUseCase
+import com.hsact.sunplanner.domain.usecase.weather.AggregateWeatherByDateUseCase
+import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphBarsUseCase
+import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphLineUseCase
+import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.ui.settings.toName
 import com.hsact.sunplanner.ui.settings.unitModes.toName
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
@@ -37,16 +38,22 @@ class MainViewModel @Inject constructor(
     private val repository: WeatherRepository,
     private val stringProvider: StringProvider,
     private val getSettingsUseCase: GetSettingsUseCase,
+    private val updateLocationUseCase: UpdateLocationUseCase,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
     private val createWeatherGraphLineUseCase: CreateWeatherGraphLineUseCase,
     private val createWeatherGraphBarsUseCase: CreateWeatherGraphBarsUseCase
 ) : ViewModel() {
 
-    private val _searchDataUI = MutableStateFlow(MainUIState())
-    val searchDataUI: StateFlow<MainUIState> get() = _searchDataUI
+    private val _mainUiState = MutableStateFlow(MainUIState())
+    val mainUiState: StateFlow<MainUIState> get() = _mainUiState
 
     init {
+        viewModelScope.launch {
+            getSettingsUseCase.location.collect { location ->
+                _mainUiState.value = _mainUiState.value.copy(location = location)
+            }
+        }
         viewModelScope.launch {
             combine(
                 getSettingsUseCase.language,
@@ -54,8 +61,8 @@ class MainViewModel @Inject constructor(
                 getSettingsUseCase.temperatureUnit,
                 getSettingsUseCase.windUnit,
                 getSettingsUseCase.precipitationUnit
-            ) { language, theme, tempUnit, windUnit, precipitationUnit ->
-                _searchDataUI.value.copy(
+            ) { language, theme,tempUnit, windUnit, precipitationUnit ->
+                _mainUiState.value.copy(
                     languageMode = language,
                     themeMode = theme,
                     temperatureUnitMode = tempUnit,
@@ -63,8 +70,8 @@ class MainViewModel @Inject constructor(
                     precipitationUnitMode = precipitationUnit
                 )
             }.debounce(200).collect { updatedUiState ->
-                _searchDataUI.value = updatedUiState
-                if (_searchDataUI.value.weatherData != null && !_searchDataUI.value.isLoading) {
+                _mainUiState.value = updatedUiState
+                if (_mainUiState.value.weatherData != null && !_mainUiState.value.isLoading) {
                     fetchWeather(prepareParamsForRequest(updatedUiState)?: return@collect)
                 }
             }
@@ -72,47 +79,50 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateLocation(city: Location) {
-        _searchDataUI.value = _searchDataUI.value.copy(location = city)
+        //_searchDataUI.value = _searchDataUI.value.copy(location = city)
+        viewModelScope.launch {
+            updateLocationUseCase.invoke(city)
+        }
     }
 
     fun updateStartYear(year: Int) {
-        val old = _searchDataUI.value.startLD
+        val old = _mainUiState.value.startLD
         val newDate = old.withYear(year).coerceDay()
-        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+        _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
     }
 
     fun updateStartMonth(month: Int) {
-        val old = _searchDataUI.value.startLD
+        val old = _mainUiState.value.startLD
         val newDate = old.withMonth(month).coerceDay()
-        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+        _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
     }
 
     fun updateStartDay(day: Int) {
-        val old = _searchDataUI.value.startLD
+        val old = _mainUiState.value.startLD
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
         val newDate = old.withDayOfMonth(validDay)
-        _searchDataUI.value = _searchDataUI.value.copy(startLD = newDate)
+        _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
     }
 
     fun updateEndYear(year: Int) {
-        val old = _searchDataUI.value.endLD
+        val old = _mainUiState.value.endLD
         val newDate = old.withYear(year).coerceDay()
-        _searchDataUI.value = _searchDataUI.value.copy(endLD = newDate)
+        _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
     }
 
     fun updateEndMonth(month: Int) {
-        val old = _searchDataUI.value.endLD
+        val old = _mainUiState.value.endLD
         val newDate = old.withMonth(month).coerceDay()
-        _searchDataUI.value = _searchDataUI.value.copy(endLD = newDate)
+        _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
     }
 
     fun updateEndDay(day: Int) {
-        val old = _searchDataUI.value.endLD
+        val old = _mainUiState.value.endLD
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
         val newDate = old.withDayOfMonth(validDay)
-        _searchDataUI.value = _searchDataUI.value.copy(endLD = newDate)
+        _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
     }
 
     private fun LocalDate.coerceDay(): LocalDate {
@@ -121,33 +131,33 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateError(error: String) {
-        _searchDataUI.value = _searchDataUI.value.copy(error = error)
+        _mainUiState.value = _mainUiState.value.copy(error = error)
     }
 
     fun cleanError() {
-        _searchDataUI.value = _searchDataUI.value.copy(error = "")
+        _mainUiState.value = _mainUiState.value.copy(error = "")
     }
 
     fun updateConfirmedLD(start: LocalDate, end: LocalDate) {
-        _searchDataUI.value =
-            _searchDataUI.value.copy(confirmedStartLD = start, confirmedEndLD = end)
+        _mainUiState.value =
+            _mainUiState.value.copy(confirmedStartLD = start, confirmedEndLD = end)
     }
 
     fun onSearchClick() {
-        if (_searchDataUI.value.location == null) {
+        if (_mainUiState.value.location == null) {
             updateError(stringProvider.locationEmpty())
             return
         }
-        if (_searchDataUI.value.startLD > _searchDataUI.value.endLD) {
+        if (_mainUiState.value.startLD > _mainUiState.value.endLD) {
             updateError(stringProvider.invalidDateRange())
             return
         }
-        if (_searchDataUI.value.endLD.year - _searchDataUI.value.startLD.year > 20) {
+        if (_mainUiState.value.endLD.year - _mainUiState.value.startLD.year > 20) {
             //updateError("Years range is too big (max 20)")
             updateError(stringProvider.yearsRangeTooBig())
             return
         }
-        val params = prepareParamsForRequest(_searchDataUI.value)
+        val params = prepareParamsForRequest(_mainUiState.value)
         if (params != null) {
             fetchWeather(params)
         }
@@ -178,57 +188,57 @@ class MainViewModel @Inject constructor(
             try {
                 cities = repository.getCitiesList(
                     cityName = cityName,
-                    language = _searchDataUI.value.languageMode.toName(),
+                    language = _mainUiState.value.languageMode.toName(),
                 )
             } catch (e: Exception) {
                 //updateError("Error fetching cities: ${e.message}")
                 updateError(stringProvider.fetchCitiesError(e))
             }
             if (cities != null) {
-                _searchDataUI.value = _searchDataUI.value.copy(cities = cities!!)
+                _mainUiState.value = _mainUiState.value.copy(cities = cities!!)
                 println(cities)
             }
         }
     }
 
     private fun fetchWeather(params: WeatherRequestParams) {
-        updateConfirmedLD(_searchDataUI.value.startLD, _searchDataUI.value.endLD)
-        _searchDataUI.value = _searchDataUI.value.copy(isLoading = true)
+        updateConfirmedLD(_mainUiState.value.startLD, _mainUiState.value.endLD)
+        _mainUiState.value = _mainUiState.value.copy(isLoading = true)
         viewModelScope.launch {
             try {
                 val filteredWeather = fetchFilteredWeatherUseCase.execute(
                     params,
-                    _searchDataUI.value.startLD,
-                    _searchDataUI.value.endLD
+                    _mainUiState.value.startLD,
+                    _mainUiState.value.endLD
                 )
                 saveWeatherData(filteredWeather)
             } catch (e: Exception) {
                 updateError(stringProvider.fetchWeatherError(e))
             }
-            _searchDataUI.value = _searchDataUI.value.copy(isLoading = false)
+            _mainUiState.value = _mainUiState.value.copy(isLoading = false)
         }
     }
 
     fun saveWeatherData(data: WeatherResponse) {
-        _searchDataUI.value = _searchDataUI.value.copy(weatherData = data)
-        var maxTemps = _searchDataUI.value.weatherData!!.daily.maxTemperature
-        var minTemps = _searchDataUI.value.weatherData!!.daily.minTemperature
-        var sunshine = _searchDataUI.value.weatherData!!.daily.sunshineDuration
+        _mainUiState.value = _mainUiState.value.copy(weatherData = data)
+        var maxTemps = _mainUiState.value.weatherData!!.daily.maxTemperature
+        var minTemps = _mainUiState.value.weatherData!!.daily.minTemperature
+        var sunshine = _mainUiState.value.weatherData!!.daily.sunshineDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-        var precipitation = _searchDataUI.value.weatherData!!.daily.precipitationSum
-        var windSpeed = _searchDataUI.value.weatherData!!.daily.windSpeedMax
-        var gustSpeed = _searchDataUI.value.weatherData!!.daily.windGustsMax
+        var precipitation = _mainUiState.value.weatherData!!.daily.precipitationSum
+        var windSpeed = _mainUiState.value.weatherData!!.daily.windSpeedMax
+        var gustSpeed = _mainUiState.value.weatherData!!.daily.windGustsMax
 
-        if (_searchDataUI.value.startLD.year == _searchDataUI.value.endLD.year) {
-            _searchDataUI.value = _searchDataUI.value.copy(isOneYear = true)
+        if (_mainUiState.value.startLD.year == _mainUiState.value.endLD.year) {
+            _mainUiState.value = _mainUiState.value.copy(isOneYear = true)
         } else {
-            _searchDataUI.value = _searchDataUI.value.copy(isOneYear = false)
+            _mainUiState.value = _mainUiState.value.copy(isOneYear = false)
         }
 
-        if (_searchDataUI.value.startLD.dayOfMonth != _searchDataUI.value.endLD.dayOfMonth ||
-            _searchDataUI.value.startLD.monthValue != _searchDataUI.value.endLD.monthValue
+        if (_mainUiState.value.startLD.dayOfMonth != _mainUiState.value.endLD.dayOfMonth ||
+            _mainUiState.value.startLD.monthValue != _mainUiState.value.endLD.monthValue
         ) {
-            _searchDataUI.value = _searchDataUI.value.copy(isOneDay = false)
+            _mainUiState.value = _mainUiState.value.copy(isOneDay = false)
             val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
             maxTemps = aggregated.map { it.avgMaxTemp }
             minTemps = aggregated.map { it.avgMinTemp }
@@ -237,39 +247,39 @@ class MainViewModel @Inject constructor(
             windSpeed = aggregated.map { it.avgWindSpeed }
             gustSpeed = aggregated.map { it.avgWindGustSpeed }
         } else {
-            _searchDataUI.value = _searchDataUI.value.copy(isOneDay = true)
+            _mainUiState.value = _mainUiState.value.copy(isOneDay = true)
         }
-        _searchDataUI.value.maxTemperature =
+        _mainUiState.value.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
                 stringProvider.max(), maxTemps,
-                maxTempLineColor, _searchDataUI.value.isOneYear
+                maxTempLineColor, _mainUiState.value.isOneYear
             )
 
-        _searchDataUI.value.minTemperature =
+        _mainUiState.value.minTemperature =
             createWeatherGraphLineUseCase.invoke(
                 stringProvider.min(), minTemps,
-                minTempLineColor, _searchDataUI.value.isOneYear
+                minTempLineColor, _mainUiState.value.isOneYear
             )
 
-        _searchDataUI.value.sunDuration =
+        _mainUiState.value.sunDuration =
             createWeatherGraphLineUseCase.invoke(
                 "", sunshine,
-                sunShineLineColor, _searchDataUI.value.isOneYear
+                sunShineLineColor, _mainUiState.value.isOneYear
             )
 
-        _searchDataUI.value.precipitation =
+        _mainUiState.value.precipitation =
             createWeatherGraphBarsUseCase.invoke("", precipitation, precipitationBarColor)
 
-        _searchDataUI.value.windSpeed =
+        _mainUiState.value.windSpeed =
             createWeatherGraphLineUseCase.invoke(
                 stringProvider.wind(), windSpeed,
-                windSpeedColor, _searchDataUI.value.isOneYear
+                windSpeedColor, _mainUiState.value.isOneYear
             )
 
-        _searchDataUI.value.windGustsSpeed =
+        _mainUiState.value.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
                 stringProvider.gusts(), gustSpeed,
-                windGustsSpeedColor, _searchDataUI.value.isOneYear
+                windGustsSpeedColor, _mainUiState.value.isOneYear
             )
     }
 }

@@ -51,7 +51,7 @@ import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphBarsLineCard
 import com.hsact.sunplanner.ui.mainscreen.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.DropDownPicker
-import com.hsact.sunplanner.ui.mainscreen.searchUiKit.SearchUI
+import com.hsact.sunplanner.ui.mainscreen.searchUiKit.LocationSearchUI
 import java.time.LocalDate
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -72,7 +72,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
         onApplyTheme: (ThemeMode) -> Unit,
         onChangeLanguage: (LanguageMode) -> Unit
     ) {
-        val mainDataUI by viewModel.searchDataUI.collectAsState()
+        val mainDataUI by viewModel.mainUiState.collectAsState()
         val context = LocalContext.current
         var showSettingsDialog by remember { mutableStateOf(false) }
         var cityName by remember { mutableStateOf("") }
@@ -80,8 +80,8 @@ class MainScreenUI(val viewModel: MainViewModel) {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
         val scrollState = rememberScrollState()
         val canScroll = remember { mutableStateOf(false) }
-        val searchUI = SearchUI()
-        var query by remember { mutableStateOf("") }
+        val searchUI = LocationSearchUI()
+        var query by remember { mutableStateOf("")  }
         val date1 = mainDataUI.startLD
         var years1 by remember {
             mutableStateOf(
@@ -106,6 +106,11 @@ class MainScreenUI(val viewModel: MainViewModel) {
             if (mainDataUI.error.isNotEmpty()) {
                 Toast.makeText(context, mainDataUI.error, Toast.LENGTH_SHORT).show()
                 viewModel.cleanError()
+            }
+        }
+        LaunchedEffect(mainDataUI.location) {
+            if (query.isBlank() && mainDataUI.location != null) {
+                query = LocationUtils.buildCityFullName(mainDataUI.location?:return@LaunchedEffect)
             }
         }
         Scaffold(

@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.domain.usecase
+package com.hsact.sunplanner.domain.usecase.weather
 
 import com.hsact.sunplanner.data.repository.WeatherRepository
 import com.hsact.sunplanner.data.responses.WeatherResponse

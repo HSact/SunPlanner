@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.domain.usecase
+package com.hsact.sunplanner.domain.usecase.weather
 
 import androidx.compose.animation.core.tween
 import androidx.compose.ui.graphics.Color
