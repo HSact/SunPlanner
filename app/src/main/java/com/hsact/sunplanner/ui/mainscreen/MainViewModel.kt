@@ -12,6 +12,7 @@ import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.ui.settings.toName
 import com.hsact.sunplanner.ui.settings.unitModes.toName
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
@@ -37,6 +38,7 @@ class MainViewModel @Inject constructor(
     private val repository: WeatherRepository,
     private val stringProvider: StringProvider,
     private val getSettingsUseCase: GetSettingsUseCase,
+    private val updateLocationUseCase: UpdateLocationUseCase,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
     private val createWeatherGraphLineUseCase: CreateWeatherGraphLineUseCase,
@@ -48,13 +50,18 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            getSettingsUseCase.location.collect { location ->
+                _searchDataUI.value = _searchDataUI.value.copy(location = location)
+            }
+        }
+        viewModelScope.launch {
             combine(
                 getSettingsUseCase.language,
                 getSettingsUseCase.theme,
                 getSettingsUseCase.temperatureUnit,
                 getSettingsUseCase.windUnit,
                 getSettingsUseCase.precipitationUnit
-            ) { language, theme, tempUnit, windUnit, precipitationUnit ->
+            ) { language, theme,tempUnit, windUnit, precipitationUnit ->
                 _searchDataUI.value.copy(
                     languageMode = language,
                     themeMode = theme,
@@ -72,7 +79,10 @@ class MainViewModel @Inject constructor(
     }
 
     fun updateLocation(city: Location) {
-        _searchDataUI.value = _searchDataUI.value.copy(location = city)
+        //_searchDataUI.value = _searchDataUI.value.copy(location = city)
+        viewModelScope.launch {
+            updateLocationUseCase.invoke(city)
+        }
     }
 
     fun updateStartYear(year: Int) {

@@ -1,0 +1,13 @@
+package com.hsact.sunplanner.domain.usecase.settings
+
+import com.hsact.sunplanner.data.repository.SettingsRepository
+import com.hsact.sunplanner.data.responses.Location
+import javax.inject.Inject
+
+class UpdateLocationUseCase @Inject constructor(
+    private val repository: SettingsRepository
+) {
+    suspend operator fun invoke (location: Location) {
+        repository.setLocation(location)
+    }
+}

@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.hsact.sunplanner.R
@@ -46,7 +47,7 @@ import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 import kotlinx.coroutines.FlowPreview
 
 @OptIn(FlowPreview::class)
-class SearchUI {
+class LocationSearchUI {
     private val minCityLetters = 2
     private lateinit var focusManager: FocusManager
 
@@ -60,6 +61,7 @@ class SearchUI {
         isSearchExpanded: Boolean,
         onSearchExpandedChange: (Boolean) -> Unit
     ) {
+        val queryOrigin = remember { mutableStateOf(query) }
         val keyboardController = LocalSoftwareKeyboardController.current
         val interactionSource = remember { MutableInteractionSource() }
         val isFocused by interactionSource.collectIsFocusedAsState()
@@ -72,6 +74,18 @@ class SearchUI {
                 onSearchExpandedChange(isFocused)
             }
         }
+        LaunchedEffect(isSearchExpanded) {
+            if (isSearchExpanded) {
+                queryOrigin.value = query
+                onQueryChange("")
+            } else {
+                if (query.isBlank()) {
+                    onQueryChange(queryOrigin.value)
+                }
+                focusManager.clearFocus(force = true)
+            }
+        }
+
         Box(modifier = Modifier.zIndex(1f))
         {
             SearchBar(
