@@ -150,7 +150,7 @@ class LocationSearchUI {
         viewModel: MainViewModel, onCitySelected: (Location) -> Unit,
         onSearchExpandedChange: (Boolean) -> Unit
     ) {
-        val searchDataUI by viewModel.searchDataUI.collectAsState()
+        val searchDataUI by viewModel.mainUiState.collectAsState()
         if (searchDataUI.cities.isNotEmpty()) {
             LazyColumn(
                 modifier = Modifier

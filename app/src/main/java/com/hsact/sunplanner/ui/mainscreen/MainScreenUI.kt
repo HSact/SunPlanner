@@ -72,7 +72,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
         onApplyTheme: (ThemeMode) -> Unit,
         onChangeLanguage: (LanguageMode) -> Unit
     ) {
-        val mainDataUI by viewModel.searchDataUI.collectAsState()
+        val mainDataUI by viewModel.mainUiState.collectAsState()
         val context = LocalContext.current
         var showSettingsDialog by remember { mutableStateOf(false) }
         var cityName by remember { mutableStateOf("") }
