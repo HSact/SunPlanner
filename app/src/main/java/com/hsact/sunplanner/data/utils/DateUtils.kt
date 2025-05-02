@@ -27,8 +27,7 @@ object DateUtils {
                     monthName,
                     startDate.year
                 )
-            }
-            else {
+            } else {
                 String.format(
                     singleDaySting,
                     startDate.dayOfMonth,
@@ -53,8 +52,7 @@ object DateUtils {
                     monthName2,
                     startDate.year,
                 )
-            }
-            else {
+            } else {
                 String.format(
                     dateRangeString,
                     startDate.dayOfMonth,
@@ -76,19 +74,56 @@ object DateUtils {
                 startDate.month == endDate.month
 
         val rawLabels = if (useYearsAsLabels) {
-            (startDate.year..endDate.year).map {
-                "'${(it % 100).toString().padStart(2, '0')}"
-            }
+            yearLabels(startDate, endDate)
         } else {
-            val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
-            generateSequence(startDate) { it.plusDays(1) }
-                .takeWhile { !it.isAfter(singleYearEndDate) }
-                .map { it.dayOfMonth.toString() }
-                .toList()
+            if (endDate.dayOfYear - startDate.withYear(endDate.year).dayOfYear <= 92) {
+                dayLabels(startDate, endDate)
+            }
+            else {
+                monthLabels(startDate, endDate)
+            }
         }
-        if (rawLabels.size <= 20) return rawLabels
-        val step = (rawLabels.size / 20.0).toInt().coerceAtLeast(1) + 1
+        if (rawLabels.size <= 10) return rawLabels
+        val step = (rawLabels.size / 10.0).toInt().coerceAtLeast(2)
         val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
         return filteredLabels
+    }
+
+    private fun yearLabels(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<String> {
+        return (startDate.year..endDate.year).map { "'${(it % 100).toString().padStart(2, '0')}" }
+    }
+
+    private fun monthLabels(startDate: LocalDate, endDate: LocalDate): List<String> {
+        val locale = Locale.getDefault()
+        val russianMonthLabels = listOf(
+            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
+            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+        )
+        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
+        val labels = mutableListOf<String>()
+        var current = startDate.withDayOfMonth(1)
+        while (!current.isAfter(singleYearEndDate)) {
+            var label = current.month.getDisplayName(TextStyle.SHORT, locale)
+            if (locale.language == "ru") {
+                label = russianMonthLabels[current.monthValue - 1]
+            }
+            labels.add(label)
+            current = current.plusMonths(1)
+        }
+        return labels
+    }
+
+    private fun dayLabels(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): List<String> {
+        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
+        return generateSequence(startDate) { it.plusDays(1) }
+            .takeWhile { !it.isAfter(singleYearEndDate) }
+            .map { it.dayOfMonth.toString() }
+            .toList()
     }
 }
