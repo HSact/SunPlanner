@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -119,22 +120,9 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 .fillMaxSize(),
             topBar = {
                 if (!isSearchExpanded) {
-                    TopAppBar(
-                        title = {
-                            Text(
-                                stringResource(R.string.app_name),
-                                style = MaterialTheme.typography.titleLarge
-                            )
-                        },
-                        actions = {
-                            IconButton(onClick = { showSettingsDialog = true }) {
-                                Icon(
-                                    imageVector = Icons.Default.Settings,
-                                    contentDescription = "Settings"
-                                )
-                            }
-                        },
-                        scrollBehavior = if (canScroll.value) scrollBehavior else null
+                    CollapsibleTopBar(
+                        scrollBehavior = scrollBehavior,
+                        onSettingsClick = { showSettingsDialog = true }
                     )
                 }
             }
@@ -328,6 +316,30 @@ class MainScreenUI(val viewModel: MainViewModel) {
                 }
             }
         }
+    }
+
+    @Composable
+    fun CollapsibleTopBar(
+        scrollBehavior: TopAppBarScrollBehavior,
+        onSettingsClick: () -> Unit
+    ) {
+        TopAppBar(
+            title = {
+                Text(
+                    stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.titleLarge
+                )
+            },
+            actions = {
+                IconButton(onClick = onSettingsClick) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings"
+                    )
+                }
+            },
+            scrollBehavior = scrollBehavior
+        )
     }
 
     @Composable
