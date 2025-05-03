@@ -18,7 +18,7 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
     ): Line {
         return Line(
             label = label,
-            values = if (!isOneYear) values else values + values,
+            values = if (isOneYear && values.size < 2) values + values else values,
             color = SolidColor(color),
             firstGradientFillColor = color.copy(alpha = .5f),
             secondGradientFillColor = Color.Transparent,

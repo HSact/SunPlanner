@@ -233,7 +233,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                         Row(
                             modifier
                                 .fillMaxWidth()
-                                .padding(top = 10.dp),
+                                .padding(top = 10.dp, start = 10.dp, end = 10.dp),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
