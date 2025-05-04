@@ -67,7 +67,7 @@ class WeatherGraphLineCard {
             if (isDarkTheme) TextStyle(color = Color.White)
             else TextStyle(color = Color.Black)
         }
-        var labels = DateUtils.labelsForCard(startDate, endDate)
+        var labels = DateUtils.generateAxisXLabels(startDate, endDate)
         if (labels.size < 2)
         {
             labels = labels + labels

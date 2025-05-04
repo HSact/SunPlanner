@@ -11,6 +11,7 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val maxTempLineColor = Color(0xFFFF5555)
+val avgTempLineColor = Color(0xFFAAAAAA)
 val minTempLineColor = Color(0xFF4646FF)
 val sunShineLineColor = Color(0xFFFFFF50)
 val precipitationBarColor = Color(0xFF5555FF)

@@ -52,7 +52,7 @@ class WeatherGraphBarsLineCard {
         val labelProperties = LabelProperties(
             enabled = true,
             textStyle = textStyle,
-            labels = DateUtils.labelsForCard(startDate, endDate),
+            labels = DateUtils.generateAxisXLabels(startDate, endDate),
             rotation = LabelProperties.Rotation(degree = 0f)
         )
 

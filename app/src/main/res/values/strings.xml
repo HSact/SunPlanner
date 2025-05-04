@@ -33,6 +33,7 @@
     <string name="wind_speed">Wind speed</string>
     <string name="wind">Wind</string>
     <string name="gusts">Gusts</string>
+    <string name="avg">Average</string>
     <string-array name="theme_choices">
         <item>Auto</item>
         <item>Day</item>

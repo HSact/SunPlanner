@@ -262,6 +262,7 @@ class MainScreenUI(val viewModel: MainViewModel) {
                                         + " (" + tempUnit + ")",
                                 listOf(
                                     mainDataUI.maxTemperature!!,
+                                    mainDataUI.avgTemperature!!,
                                     mainDataUI.minTemperature!!
                                 ),
                                 mainDataUI.confirmedStartLD,

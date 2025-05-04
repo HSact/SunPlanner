@@ -66,9 +66,43 @@ object DateUtils {
         }
     }
 
-    fun labelsForCard(
+    fun generatePopUpLabels(
         startDate: LocalDate,
         endDate: LocalDate
+    ): List<String> {
+        val locale = Locale.getDefault()
+        val russianMonthLabels = listOf(
+            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
+            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+        )
+        val isOneDay = startDate.dayOfMonth == endDate.dayOfMonth &&
+                startDate.month == endDate.month
+
+        if (isOneDay) {
+            return (startDate.year..endDate.year).map { it.toString() }
+        }
+        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
+        val labels = mutableListOf<String>()
+        var current = startDate
+
+        while (!current.isAfter(singleYearEndDate)) {
+            val day = current.dayOfMonth
+            val month = if (locale.language == "ru") {
+                russianMonthLabels[current.monthValue - 1]
+            } else {
+                current.month.getDisplayName(TextStyle.SHORT, locale)
+            }
+            labels.add("$day $month")
+            current = current.plusDays(1)
+        }
+        return labels
+    }
+
+
+    fun generateAxisXLabels(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        count: Int = 10
     ): List<String> {
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
@@ -83,8 +117,8 @@ object DateUtils {
                 monthLabels(startDate, endDate)
             }
         }
-        if (rawLabels.size <= 10) return rawLabels
-        val step = (rawLabels.size / 10.0).toInt().coerceAtLeast(2)
+        if (rawLabels.size <= count) return rawLabels
+        val step = (rawLabels.size / count).toInt().coerceAtLeast(2)
         val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
         return filteredLabels
     }

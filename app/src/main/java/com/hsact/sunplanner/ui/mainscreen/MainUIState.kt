@@ -34,6 +34,7 @@ data class MainUIState (
     var confirmedEndLD: LocalDate = LocalDate.now().minusYears(1),
     var weatherData: WeatherResponse? = null,
     var maxTemperature: Line? = null,
+    var avgTemperature: Line? = null,
     var minTemperature: Line? = null,
     var sunDuration: Line? = null,
     var precipitation: Bars? = null,
