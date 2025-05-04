@@ -7,7 +7,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ir.ehsannarmani.compose_charts.extensions.format
 import ir.ehsannarmani.compose_charts.models.DotProperties
 import ir.ehsannarmani.compose_charts.models.DrawStyle
 import ir.ehsannarmani.compose_charts.models.Line
@@ -31,7 +30,7 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
         //val values1 = points.map { it.value }
         return Line(
             label = label,
-            values = values,
+            values = if (isOneYear && values.size < 2) values + values else values,
             color = SolidColor(color),
             firstGradientFillColor = color.copy(alpha = .5f),
             secondGradientFillColor = Color.Transparent,

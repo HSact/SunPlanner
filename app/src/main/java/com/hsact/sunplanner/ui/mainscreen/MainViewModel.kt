@@ -248,7 +248,7 @@ class MainViewModel @Inject constructor(
             _mainUiState.value = _mainUiState.value.copy(isOneDay = false)
             val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
             maxTemps = aggregated.map { it.avgMaxTemp }
-            averageTemps = aggregated.map { it.avgMaxTemp }
+            averageTemps = aggregated.map { it.avgAvgTemp }
             minTemps = aggregated.map { it.avgMinTemp }
             sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
             precipitation = aggregated.map { it.avgPrecipitation }
