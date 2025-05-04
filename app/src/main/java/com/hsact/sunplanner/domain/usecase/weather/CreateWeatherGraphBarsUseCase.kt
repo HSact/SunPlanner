@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import ir.ehsannarmani.compose_charts.models.Bars
 import javax.inject.Inject
+import kotlin.math.ceil
 
 class CreateWeatherGraphBarsUseCase @Inject constructor() {
     operator fun invoke(
@@ -13,22 +14,34 @@ class CreateWeatherGraphBarsUseCase @Inject constructor() {
         color: Color
     ): Bars {
         val brush = SolidColor(color)
-
-        val dataList = values.mapIndexed { index, value ->
+        val reducedValues = if (values.size > 50) {
+            reduceValues(values)
+        } else {
+            values
+        }
+        val dataList = reducedValues.map { avg ->
             Bars.Data(
-                value = value,
+                value = avg,
                 color = brush,
-                animationSpec = tween(durationMillis = 1000),
+                animationSpec = tween(durationMillis = 1000)
                 /*properties = BarProperties(
                     width = 16.dp,
                     cornerRadius = 4.dp
                 )*/
             )
         }
-
         return Bars(
             label = label,
             values = dataList
         )
+    }
+
+    private fun reduceValues(values: List<Double>): List<Double> {
+        val targetSize = 50
+        val chunkSize = ceil(values.size / targetSize.toDouble()).toInt()
+
+        return values.chunked(chunkSize).map { chunk ->
+            chunk.average()
+        }
     }
 }

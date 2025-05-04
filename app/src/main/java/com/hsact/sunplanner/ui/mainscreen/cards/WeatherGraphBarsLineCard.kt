@@ -52,7 +52,7 @@ class WeatherGraphBarsLineCard {
         val labelProperties = LabelProperties(
             enabled = true,
             textStyle = textStyle,
-            labels = DateUtils.labelsForCard(startDate, endDate),
+            labels = DateUtils.generateAxisXLabels(startDate, endDate),
             rotation = LabelProperties.Rotation(degree = 0f)
         )
 
@@ -74,7 +74,7 @@ class WeatherGraphBarsLineCard {
                 val totalBars = barGroups[0].values.size
                 val spacing = 2.dp
                 val totalSpacing = spacing * (totalBars - 1)
-                val barThickness = (maxWidth - (15 * 2).dp - totalSpacing) / totalBars
+                val barThickness = (maxWidth - (18 * 2).dp - totalSpacing) / totalBars
                 val barProperties = BarProperties(
                     thickness = barThickness,
                     spacing = spacing,

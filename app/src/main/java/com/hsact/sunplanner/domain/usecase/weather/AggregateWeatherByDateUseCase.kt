@@ -23,6 +23,7 @@ class AggregateWeatherByDateUseCase @Inject constructor() {
             DailyAggregatedData(
                 date = day,
                 avgMaxTemp = (avg(daily.maxTemperature) * 10).roundToInt() / 10.0,
+                avgAvgTemp = (((avg(daily.maxTemperature) + avg(daily.minTemperature)) / 2) * 10).roundToInt() / 10.0,
                 avgMinTemp = (avg(daily.minTemperature) * 10).roundToInt() / 10.0,
                 avgSunshineSeconds = (avgHours(daily.sunshineDuration) * 10).roundToInt() / 10.0,
                 avgPrecipitation = (avg(daily.precipitationSum) * 10).roundToInt() / 10.0,

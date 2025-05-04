@@ -23,6 +23,8 @@ class DefaultStringProvider @Inject constructor(
 
     override fun max() = context.getString(R.string.max)
 
+    override fun avg() = context.getString(R.string.avg)
+
     override fun min() = context.getString(R.string.min)
 
     override fun windSpeed() = context.getString(R.string.wind_speed)

@@ -10,11 +10,13 @@ import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.ui.settings.toName
 import com.hsact.sunplanner.ui.settings.unitModes.toName
+import com.hsact.sunplanner.ui.theme.avgTempLineColor
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
 import com.hsact.sunplanner.ui.theme.precipitationBarColor
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
+import kotlin.math.round
 import kotlin.math.roundToInt
 
 @FlowPreview
@@ -223,6 +226,10 @@ class MainViewModel @Inject constructor(
         _mainUiState.value = _mainUiState.value.copy(weatherData = data)
         var maxTemps = _mainUiState.value.weatherData!!.daily.maxTemperature
         var minTemps = _mainUiState.value.weatherData!!.daily.minTemperature
+        var averageTemps = maxTemps.indices.map { i ->
+            val avg = (maxTemps[i] + minTemps[i]) / 2
+            round(avg * 10) / 10
+        }
         var sunshine = _mainUiState.value.weatherData!!.daily.sunshineDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
         var precipitation = _mainUiState.value.weatherData!!.daily.precipitationSum
@@ -241,6 +248,7 @@ class MainViewModel @Inject constructor(
             _mainUiState.value = _mainUiState.value.copy(isOneDay = false)
             val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
             maxTemps = aggregated.map { it.avgMaxTemp }
+            averageTemps = aggregated.map { it.avgAvgTemp }
             minTemps = aggregated.map { it.avgMinTemp }
             sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
             precipitation = aggregated.map { it.avgPrecipitation }
@@ -249,21 +257,27 @@ class MainViewModel @Inject constructor(
         } else {
             _mainUiState.value = _mainUiState.value.copy(isOneDay = true)
         }
+        val popUpLabels = DateUtils.generatePopUpLabels(_mainUiState.value.startLD, _mainUiState.value.endLD)
         _mainUiState.value.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.max(), maxTemps,
+                stringProvider.max(), maxTemps, /*popUpLabels*/ emptyList(),
                 maxTempLineColor, _mainUiState.value.isOneYear
+            )
+        _mainUiState.value.avgTemperature =
+            createWeatherGraphLineUseCase.invoke(
+                stringProvider.avg(), averageTemps, /*popUpLabels*/ emptyList(),
+                avgTempLineColor, _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.minTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.min(), minTemps,
+                stringProvider.min(), minTemps, /*popUpLabels*/ emptyList(),
                 minTempLineColor, _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.sunDuration =
             createWeatherGraphLineUseCase.invoke(
-                "", sunshine,
+                "", sunshine, popUpLabels,
                 sunShineLineColor, _mainUiState.value.isOneYear
             )
 
@@ -272,13 +286,13 @@ class MainViewModel @Inject constructor(
 
         _mainUiState.value.windSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.wind(), windSpeed,
+                stringProvider.wind(), windSpeed, popUpLabels,
                 windSpeedColor, _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.gusts(), gustSpeed,
+                stringProvider.gusts(), gustSpeed, popUpLabels,
                 windGustsSpeedColor, _mainUiState.value.isOneYear
             )
     }

@@ -20,7 +20,7 @@
     <string name="temperature">Температура</string>
     <string name="sunshine_hours">Солнечные часы</string>
     <string name="precipitation">Осадки</string>
-    <string name="data_source">Данные: Open-Meteo (CC BY 4.0)</string>
+    <string name="data_source">Данные: Open-Meteo.com (CC BY 4.0)</string>
     <string name="error_location_empty">Локация не указана</string>
     <string name="error_invalid_date_range">Неправильный диапазон дат</string>
     <string name="error_years_range_too_big">Диапазон лет слишком большой (max 20)</string>
@@ -33,6 +33,7 @@
     <string name="wind_speed">Скорость ветра</string>
     <string name="wind">Ветер</string>
     <string name="gusts">Порывы</string>
+    <string name="avg">Среднее</string>
     <string-array name="theme_choices">
         <item>Авто</item>
         <item>День</item>
