@@ -22,6 +22,7 @@
     <string name="precipitation">Осадки</string>
     <string name="data_source">Данные: Open-Meteo.com (CC BY 4.0)</string>
     <string name="error_location_empty">Локация не указана</string>
+    <string name="error_invalid_year_range">Неправильный диапазон лет</string>
     <string name="error_invalid_date_range">Неправильный диапазон дат</string>
     <string name="error_years_range_too_big">Диапазон лет слишком большой (max 20)</string>
     <string name="error_fetching_cities">Ошибка получения списка городов: %1$s</string>

@@ -11,6 +11,8 @@ class DefaultStringProvider @Inject constructor(
 
     override fun locationEmpty() = context.getString(R.string.error_location_empty)
 
+    override fun invalidYearRange() = context.getString(R.string.error_invalid_year_range)
+
     override fun invalidDateRange() = context.getString(R.string.error_invalid_date_range)
 
     override fun yearsRangeTooBig() = context.getString(R.string.error_years_range_too_big)
