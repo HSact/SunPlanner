@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui.settings
+package com.hsact.sunplanner.ui.settings.modes
 
 enum class LanguageMode
 {ENGLISH, RUSSIAN}

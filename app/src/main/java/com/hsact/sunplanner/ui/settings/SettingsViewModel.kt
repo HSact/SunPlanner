@@ -8,9 +8,11 @@ import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCa
 import com.hsact.sunplanner.domain.usecase.settings.UpdateTemperatureUnitUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateThemeUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateWindSpeedUnitUseCase
-import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

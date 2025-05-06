@@ -14,8 +14,8 @@ import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
-import com.hsact.sunplanner.ui.settings.toName
-import com.hsact.sunplanner.ui.settings.unitModes.toName
+import com.hsact.sunplanner.ui.settings.modes.toName
+import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import com.hsact.sunplanner.ui.theme.avgTempLineColor
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor

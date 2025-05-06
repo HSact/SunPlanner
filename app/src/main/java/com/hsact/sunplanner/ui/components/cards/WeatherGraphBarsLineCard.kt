@@ -15,7 +15,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.data.utils.DateUtils
-import com.hsact.sunplanner.ui.settings.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.models.*
 import java.time.LocalDate

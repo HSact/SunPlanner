@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui.settings.unitModes
+package com.hsact.sunplanner.ui.settings.modes.unitModes
 
 enum class TemperatureUnitMode { CELSIUS, FAHRENHEIT }
 fun TemperatureUnitMode.toName(): String = when (this) {

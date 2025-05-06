@@ -27,10 +27,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.ui.components.DropdownPicker
-import com.hsact.sunplanner.ui.settings.unitModes.indexToPrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.indexToTemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.indexToWindSpeedUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.toIndex
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.indexToLanguageMode
+import com.hsact.sunplanner.ui.settings.modes.indexToThemeMode
+import com.hsact.sunplanner.ui.settings.modes.toIndex
+import com.hsact.sunplanner.ui.settings.modes.unitModes.indexToPrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.indexToTemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.indexToWindSpeedUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
 
 @Composable
 fun SettingsDialog(

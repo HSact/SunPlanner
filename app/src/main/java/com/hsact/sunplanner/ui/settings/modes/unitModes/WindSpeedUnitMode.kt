@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui.settings.unitModes
+package com.hsact.sunplanner.ui.settings.modes.unitModes
 
 enum class WindSpeedUnitMode { KMH, MS, MPH, KN }
 fun WindSpeedUnitMode.toName(): String = when (this) {

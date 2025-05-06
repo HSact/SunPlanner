@@ -2,7 +2,7 @@ package com.hsact.sunplanner
 
 import android.app.Application
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
-import com.hsact.sunplanner.ui.settings.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking

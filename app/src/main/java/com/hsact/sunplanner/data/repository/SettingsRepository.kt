@@ -1,11 +1,11 @@
 package com.hsact.sunplanner.data.repository
 
 import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.ui.settings.LanguageMode
-import com.hsact.sunplanner.ui.settings.ThemeMode
-import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {

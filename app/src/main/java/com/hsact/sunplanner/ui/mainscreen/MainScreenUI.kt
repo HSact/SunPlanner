@@ -52,10 +52,10 @@ import com.hsact.sunplanner.ui.components.CollapsibleTopBar
 import com.hsact.sunplanner.ui.components.DropdownPicker
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.LocationSearch
-import com.hsact.sunplanner.ui.settings.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.SettingsDialog
-import com.hsact.sunplanner.ui.settings.ThemeMode
-import com.hsact.sunplanner.ui.settings.unitModes.toIndex
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
 import kotlinx.coroutines.FlowPreview
 import java.util.Locale
 import kotlin.collections.toList
@@ -191,26 +191,7 @@ fun MainScreen(
                     }
                 }
                 if (mainDataUI.weatherData != null && !mainDataUI.isLoading) {
-                    Row(
-                        modifier
-                            .fillMaxWidth()
-                            .padding(top = 10.dp, start = 10.dp, end = 10.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = DateUtils.formatDateRange(
-                                startDate = mainDataUI.confirmedStartLD,
-                                endDate = mainDataUI.confirmedEndLD,
-                                isOneDay = mainDataUI.isOneDay,
-                                isOneYear = mainDataUI.isOneYear,
-                                locale = Locale.getDefault(),
-                                singleDayOneYearString = stringResource(R.string.single_day_one_year),
-                                singleDaySting = stringResource(R.string.single_day_range),
-                                dateRangeOneYearSting = stringResource(R.string.date_range_one_year),
-                                dateRangeString = stringResource(R.string.date_range)
-                            ),
-                        )
-                    }
+                    DateText(modifier, mainDataUI)
                     WeatherCards(context, mainDataUI, modifier)
                     Row(
                         modifier
@@ -260,76 +241,6 @@ private fun YearsRangeSelection(
             modifier = Modifier
                 .weight(0.5f)
                 .padding(start = 3.dp)
-        )
-    }
-}
-
-@Composable
-private fun WeatherCards(
-    context: Context,
-    mainDataUI: MainUIState,
-    modifier: Modifier
-) {
-    val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
-        .toList()[mainDataUI.temperatureUnitMode.toIndex()]
-    val speedUnit = context.resources.getStringArray(R.array.speed_unit_choices)
-        .toList()[mainDataUI.windUnitMode.toIndex()]
-    val precipitationUnit = context.resources.getStringArray(R.array.precipitation_unit_choices)
-        .toList()[mainDataUI.precipitationUnitMode.toIndex()]
-
-    Row(
-        modifier
-            .fillMaxWidth()
-            .padding(top = 20.dp)
-    ) {
-        //Text("Weather: ${searchDataUI.weatherData}")
-        WeatherGraphLineCard(
-            stringResource(R.string.temperature)
-                    + " (" + tempUnit + ")",
-            listOf(
-                mainDataUI.maxTemperature!!,
-                mainDataUI.avgTemperature!!,
-                mainDataUI.minTemperature!!
-            ),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            mainDataUI.themeMode
-        )
-    }
-    Row(modifier.fillMaxWidth())
-    {
-        WeatherGraphLineCard(
-            stringResource(R.string.sunshine_hours),
-            listOf(mainDataUI.sunDuration!!),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            mainDataUI.themeMode,
-            true              //set min value 0
-        )
-    }
-    Row(modifier.fillMaxWidth())
-    {
-        WeatherGraphBarsCard(
-            stringResource(R.string.precipitation)
-                    + " (" + precipitationUnit + ")",
-            listOf(mainDataUI.precipitation!!),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            mainDataUI.themeMode
-        )
-    }
-    Row(modifier.fillMaxWidth()) {
-        WeatherGraphLineCard(
-            stringResource(R.string.wind_speed)
-                    + " (" + speedUnit + ")",
-            listOf(
-                mainDataUI.windSpeed!!,
-                mainDataUI.windGustsSpeed!!
-            ),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            mainDataUI.themeMode,
-            true
         )
     }
 }
@@ -455,13 +366,113 @@ private fun ColumnScope.DatesRangeSection(
     }
 }
 
+@Composable
+private fun DateText(
+    modifier: Modifier,
+    mainDataUI: MainUIState
+) {
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp, start = 10.dp, end = 10.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = DateUtils.formatDateRange(
+                startDate = mainDataUI.confirmedStartLD,
+                endDate = mainDataUI.confirmedEndLD,
+                isOneDay = mainDataUI.isOneDay,
+                isOneYear = mainDataUI.isOneYear,
+                locale = Locale.getDefault(),
+                singleDayOneYearString = stringResource(R.string.single_day_one_year),
+                singleDaySting = stringResource(R.string.single_day_range),
+                dateRangeOneYearSting = stringResource(R.string.date_range_one_year),
+                dateRangeString = stringResource(R.string.date_range)
+            ),
+        )
+    }
+}
 
-/*@Preview(showBackground = true)
+@Composable
+private fun WeatherCards(
+    context: Context,
+    mainDataUI: MainUIState,
+    modifier: Modifier
+) {
+    val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
+        .toList()[mainDataUI.temperatureUnitMode.toIndex()]
+    val speedUnit = context.resources.getStringArray(R.array.speed_unit_choices)
+        .toList()[mainDataUI.windUnitMode.toIndex()]
+    val precipitationUnit = context.resources.getStringArray(R.array.precipitation_unit_choices)
+        .toList()[mainDataUI.precipitationUnitMode.toIndex()]
+
+    Row(
+        modifier
+            .fillMaxWidth()
+            .padding(top = 20.dp)
+    ) {
+        //Text("Weather: ${searchDataUI.weatherData}")
+        WeatherGraphLineCard(
+            stringResource(R.string.temperature)
+                    + " (" + tempUnit + ")",
+            listOf(
+                mainDataUI.maxTemperature!!,
+                mainDataUI.avgTemperature!!,
+                mainDataUI.minTemperature!!
+            ),
+            mainDataUI.confirmedStartLD,
+            mainDataUI.confirmedEndLD,
+            mainDataUI.themeMode
+        )
+    }
+    Row(modifier.fillMaxWidth())
+    {
+        WeatherGraphLineCard(
+            stringResource(R.string.sunshine_hours),
+            listOf(mainDataUI.sunDuration!!),
+            mainDataUI.confirmedStartLD,
+            mainDataUI.confirmedEndLD,
+            mainDataUI.themeMode,
+            true              //set min value 0
+        )
+    }
+    Row(modifier.fillMaxWidth())
+    {
+        WeatherGraphBarsCard(
+            stringResource(R.string.precipitation)
+                    + " (" + precipitationUnit + ")",
+            listOf(mainDataUI.precipitation!!),
+            mainDataUI.confirmedStartLD,
+            mainDataUI.confirmedEndLD,
+            mainDataUI.themeMode
+        )
+    }
+    Row(modifier.fillMaxWidth()) {
+        WeatherGraphLineCard(
+            stringResource(R.string.wind_speed)
+                    + " (" + speedUnit + ")",
+            listOf(
+                mainDataUI.windSpeed!!,
+                mainDataUI.windGustsSpeed!!
+            ),
+            mainDataUI.confirmedStartLD,
+            mainDataUI.confirmedEndLD,
+            mainDataUI.themeMode,
+            true
+        )
+    }
+}
+
+/*@OptIn(FlowPreview::class)
+@Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    val fakeUseCase = null
-    val viewModel = MainViewModel(fakeUseCase!!)
+    val fakeViewModel = MainViewModel()
     SunPlannerTheme {
-        MainScreenUI(viewModel = viewModel).MainScreen()
+        MainScreen(
+            viewModel = fakeViewModel,
+            onApplyTheme = {},
+            onChangeLanguage = {}
+        )
     }
 }*/

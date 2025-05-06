@@ -6,11 +6,11 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.ui.settings.LanguageMode
-import com.hsact.sunplanner.ui.settings.ThemeMode
-import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
