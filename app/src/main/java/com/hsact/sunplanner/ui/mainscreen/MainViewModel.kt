@@ -160,7 +160,7 @@ class MainViewModel @Inject constructor(
             updateError(stringProvider.invalidDateRange())
             return
         }
-        if (_mainUiState.value.endLD.year - _mainUiState.value.startLD.year > 20) {
+        if (_mainUiState.value.endLD.year - _mainUiState.value.startLD.year >= 20) {
             //updateError("Years range is too big (max 20)")
             updateError(stringProvider.yearsRangeTooBig())
             return
