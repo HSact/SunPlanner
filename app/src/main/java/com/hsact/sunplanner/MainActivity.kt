@@ -21,8 +21,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.ThemeViewModel
+import com.hsact.sunplanner.ui.mainscreen.MainScreen
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
-import com.hsact.sunplanner.ui.mainscreen.MainScreenUI
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 import com.hsact.sunplanner.ui.settings.LanguageMode
 import com.hsact.sunplanner.ui.settings.LocalizedContextWrapper
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(LocalAppLocale provides localeState.value,
                 LocalAppContext provides localizedContext) {
                 SunPlannerTheme(darkTheme = isDarkTheme) {
-                    MainScreenUI(viewModel).MainScreen(onApplyTheme = onApplyTheme, onChangeLanguage = onChangeLanguage)
+                    MainScreen(viewModel, onApplyTheme = onApplyTheme, onChangeLanguage = onChangeLanguage)
                 }
             }
         }

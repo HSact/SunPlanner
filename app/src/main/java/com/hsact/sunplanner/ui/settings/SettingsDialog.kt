@@ -26,220 +26,217 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
-import com.hsact.sunplanner.ui.DropDownPicker
+import com.hsact.sunplanner.ui.components.DropdownPicker
 import com.hsact.sunplanner.ui.settings.unitModes.indexToPrecipitationUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.indexToTemperatureUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.indexToWindSpeedUnitMode
 import com.hsact.sunplanner.ui.settings.unitModes.toIndex
 
-class SettingsDialog(
-    val viewModel: SettingsViewModel,
-    val onApplyTheme: (ThemeMode) -> Unit,
-    val onChangeLanguage: (LanguageMode) -> Unit
+@Composable
+fun SettingsDialog(
+    viewModel: SettingsViewModel,
+    onApplyTheme: (ThemeMode) -> Unit,
+    onChangeLanguage: (LanguageMode) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    @Composable
-    fun ShowDialog(
-        onDismiss: () -> Unit
-    ) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            confirmButton = {
-                TextButton(onClick = {
-                    if (viewModel.uiState.value.selectedLanguage != viewModel.uiState.value.currentLanguage) {
-                        onChangeLanguage(viewModel.uiState.value.selectedLanguage)
-                    }
-                    viewModel.handleIntent(SettingsIntents.ApplySettings)
-                    onDismiss()
-                }) {
-                    Text("OK")
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                if (viewModel.uiState.value.selectedLanguage != viewModel.uiState.value.currentLanguage) {
+                    onChangeLanguage(viewModel.uiState.value.selectedLanguage)
                 }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            dismissButton = {
-                TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.cancel))
-                }
-            },
-            title = {
-                Text(stringResource(R.string.settings))
-            },
-            text = {
-                DialogContainer(viewModel, onApplyTheme)
+                viewModel.handleIntent(SettingsIntents.ApplySettings)
+                onDismiss()
+            }) {
+                Text("OK")
             }
-        )
+        },
+        modifier = Modifier.fillMaxWidth(),
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        },
+        title = {
+            Text(stringResource(R.string.settings))
+        },
+        text = {
+            DialogContainer(viewModel, onApplyTheme)
+        }
+    )
+}
+
+@Composable
+private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
+    val uiState by viewModel.uiState.collectAsState()
+    var selectedThemeIndex by remember(uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
+    val themeChoices =
+        LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
+    var selectedLanguageIndex = remember(uiState.currentLanguage) {
+        mutableIntStateOf(uiState.currentLanguage.toIndex())
+    }
+    val languageChoices =
+        LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
+
+    val tempUnitChoices =
+        LocalContext.current.resources.getStringArray(R.array.temp_unit_choices).toList()
+    var selectedTempUnitIndex = remember(uiState.currentTemperatureUnit) {
+        mutableIntStateOf(uiState.currentTemperatureUnit.toIndex())
     }
 
-    @Composable
-    private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
-        val uiState by viewModel.uiState.collectAsState()
-        var selectedThemeIndex by remember(uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
-        val themeChoices =
-            LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
-        var selectedLanguageIndex = remember(uiState.currentLanguage) {
-            mutableIntStateOf(uiState.currentLanguage.toIndex())
-        }
-        val languageChoices =
-            LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
+    val windUnitChoices =
+        LocalContext.current.resources.getStringArray(R.array.speed_unit_choices).toList()
+    var selectedWindUnitIndex = remember(uiState.currentWindSpeedUnit) {
+        mutableIntStateOf(uiState.currentWindSpeedUnit.toIndex())
+    }
 
-        val tempUnitChoices =
-            LocalContext.current.resources.getStringArray(R.array.temp_unit_choices).toList()
-        var selectedTempUnitIndex = remember(uiState.currentTemperatureUnit) {
-            mutableIntStateOf(uiState.currentTemperatureUnit.toIndex())
-        }
-
-        val windUnitChoices =
-            LocalContext.current.resources.getStringArray(R.array.speed_unit_choices).toList()
-        var selectedWindUnitIndex = remember(uiState.currentWindSpeedUnit) {
-            mutableIntStateOf(uiState.currentWindSpeedUnit.toIndex())
-        }
-
-        val precipitationUnitChoices =
-            LocalContext.current.resources.getStringArray(R.array.precipitation_unit_choices)
-                .toList()
-        var selectedPrecipitationUnitIndex = remember(uiState.currentPrecipitationUnit) {
-            mutableIntStateOf(uiState.currentPrecipitationUnit.toIndex())
-        }
-        Column {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+    val precipitationUnitChoices =
+        LocalContext.current.resources.getStringArray(R.array.precipitation_unit_choices)
+            .toList()
+    var selectedPrecipitationUnitIndex = remember(uiState.currentPrecipitationUnit) {
+        mutableIntStateOf(uiState.currentPrecipitationUnit.toIndex())
+    }
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.theme))
+            Spacer(modifier = Modifier.weight(1f))
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier.padding(start = 20.dp),
             ) {
-                Text(stringResource(R.string.theme))
-                Spacer(modifier = Modifier.weight(1f))
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.padding(start = 20.dp),
-                ) {
-                    themeChoices.forEachIndexed { index, label ->
-                        SegmentedButton(
-                            shape = SegmentedButtonDefaults.itemShape(
-                                index = index,
-                                count = themeChoices.size
-                            ),
-                            onClick = {
-                                selectedThemeIndex = index
-                                viewModel.handleIntent(
-                                    SettingsIntents.UpdateTheme(
-                                        indexToThemeMode(
-                                            index
-                                        )
+                themeChoices.forEachIndexed { index, label ->
+                    SegmentedButton(
+                        shape = SegmentedButtonDefaults.itemShape(
+                            index = index,
+                            count = themeChoices.size
+                        ),
+                        onClick = {
+                            selectedThemeIndex = index
+                            viewModel.handleIntent(
+                                SettingsIntents.UpdateTheme(
+                                    indexToThemeMode(
+                                        index
                                     )
                                 )
-                                onApplyTheme(viewModel.uiState.value.selectedTheme)
-                            },
-                            selected = index == selectedThemeIndex,
-                            label = { Text(label) }
-                        )
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 15.dp)
-                    .align(Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(R.string.language))
-                Spacer(modifier = Modifier.weight(1f))
-                DropDownPicker().ItemsDropdown(
-                    "",
-                    languageChoices,
-                    selected = languageChoices[selectedLanguageIndex.intValue],
-                    onSelected = {
-                        selectedLanguageIndex.intValue = languageChoices.indexOf(it)
-                        viewModel.handleIntent(
-                            SettingsIntents.UpdateLanguage(
-                                indexToLanguageMode(
-                                    selectedLanguageIndex.intValue
-                                )
                             )
-                        )
-                    },
-                    modifier = Modifier.padding(start = 20.dp)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(R.string.temperature))
-                Spacer(modifier = Modifier.weight(1f))
-                SegmentedButtonUnitPicker(
-                    viewModel,
-                    tempUnitChoices,
-                    selectedTempUnitIndex
-                ) { index ->
-                    SettingsIntents.UpdateTemperatureUnit(indexToTemperatureUnitMode(index))
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(R.string.wind))
-                Spacer(modifier = Modifier.weight(1f))
-                SegmentedButtonUnitPicker(
-                    viewModel,
-                    windUnitChoices,
-                    selectedWindUnitIndex
-                ) { index ->
-                    SettingsIntents.UpdateWindSpeedUnit(indexToWindSpeedUnitMode(index))
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(R.string.precipitation))
-                Spacer(modifier = Modifier.weight(1f))
-                SegmentedButtonUnitPicker(
-                    viewModel,
-                    precipitationUnitChoices,
-                    selectedPrecipitationUnitIndex
-                ) { index ->
-                    SettingsIntents.UpdatePrecipitationUnit(indexToPrecipitationUnitMode(index))
+                            onApplyTheme(viewModel.uiState.value.selectedTheme)
+                        },
+                        selected = index == selectedThemeIndex,
+                        label = { Text(label) }
+                    )
                 }
             }
         }
-    }
-
-    @Composable
-    private fun SegmentedButtonUnitPicker(
-        viewModel: SettingsViewModel,
-        choices: List<String>,
-        selectedIndex: MutableState<Int>,
-        onIndexSelected: (Int) -> SettingsIntents
-    ) {
-        SingleChoiceSegmentedButtonRow(
-            modifier = Modifier.padding(start = 20.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 15.dp)
+                .align(Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            choices.forEachIndexed { index, label ->
-                SegmentedButton(
-                    shape = SegmentedButtonDefaults.itemShape(
-                        index = index,
-                        count = choices.size
-                    ),
-                    onClick = {
-                        selectedIndex.value = index
-                        viewModel.handleIntent(onIndexSelected(index))
-                    },
-                    selected = index == selectedIndex.value,
-                    label = {
-                        Text(
-                            text = label,
-                            maxLines = 1,
-                            overflow = TextOverflow.Clip,
-                            style = MaterialTheme.typography.bodySmall
+            Text(stringResource(R.string.language))
+            Spacer(modifier = Modifier.weight(1f))
+            DropdownPicker(
+                "",
+                languageChoices,
+                selected = languageChoices[selectedLanguageIndex.intValue],
+                onSelected = {
+                    selectedLanguageIndex.intValue = languageChoices.indexOf(it)
+                    viewModel.handleIntent(
+                        SettingsIntents.UpdateLanguage(
+                            indexToLanguageMode(
+                                selectedLanguageIndex.intValue
+                            )
                         )
-                    }
-                )
+                    )
+                },
+                modifier = Modifier.padding(start = 20.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.temperature))
+            Spacer(modifier = Modifier.weight(1f))
+            SegmentedButtonUnitPicker(
+                viewModel,
+                tempUnitChoices,
+                selectedTempUnitIndex
+            ) { index ->
+                SettingsIntents.UpdateTemperatureUnit(indexToTemperatureUnitMode(index))
             }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.wind))
+            Spacer(modifier = Modifier.weight(1f))
+            SegmentedButtonUnitPicker(
+                viewModel,
+                windUnitChoices,
+                selectedWindUnitIndex
+            ) { index ->
+                SettingsIntents.UpdateWindSpeedUnit(indexToWindSpeedUnitMode(index))
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.precipitation))
+            Spacer(modifier = Modifier.weight(1f))
+            SegmentedButtonUnitPicker(
+                viewModel,
+                precipitationUnitChoices,
+                selectedPrecipitationUnitIndex
+            ) { index ->
+                SettingsIntents.UpdatePrecipitationUnit(indexToPrecipitationUnitMode(index))
+            }
+        }
+    }
+}
+
+@Composable
+private fun SegmentedButtonUnitPicker(
+    viewModel: SettingsViewModel,
+    choices: List<String>,
+    selectedIndex: MutableState<Int>,
+    onIndexSelected: (Int) -> SettingsIntents
+) {
+    SingleChoiceSegmentedButtonRow(
+        modifier = Modifier.padding(start = 20.dp),
+    ) {
+        choices.forEachIndexed { index, label ->
+            SegmentedButton(
+                shape = SegmentedButtonDefaults.itemShape(
+                    index = index,
+                    count = choices.size
+                ),
+                onClick = {
+                    selectedIndex.value = index
+                    viewModel.handleIntent(onIndexSelected(index))
+                },
+                selected = index == selectedIndex.value,
+                label = {
+                    Text(
+                        text = label,
+                        maxLines = 1,
+                        overflow = TextOverflow.Clip,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            )
         }
     }
 }
