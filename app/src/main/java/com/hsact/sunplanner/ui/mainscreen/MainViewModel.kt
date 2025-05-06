@@ -167,6 +167,7 @@ class MainViewModel @Inject constructor(
         }
         val params = prepareParamsForRequest(_mainUiState.value)
         if (params != null) {
+            updateConfirmedLD(_mainUiState.value.startLD, _mainUiState.value.endLD)
             fetchWeather(params)
         }
     }
@@ -210,7 +211,6 @@ class MainViewModel @Inject constructor(
     }
 
     private fun fetchWeather(params: WeatherRequestParams) {
-        updateConfirmedLD(_mainUiState.value.startLD, _mainUiState.value.endLD)
         _mainUiState.value = _mainUiState.value.copy(isLoading = true)
         viewModelScope.launch {
             try {
