@@ -2,6 +2,7 @@ package com.hsact.sunplanner.data.utils
 
 interface StringProvider {
     fun locationEmpty(): String
+    fun invalidYearRange(): String
     fun invalidDateRange(): String
     fun yearsRangeTooBig(): String
     fun fetchCitiesError(e: Exception): String

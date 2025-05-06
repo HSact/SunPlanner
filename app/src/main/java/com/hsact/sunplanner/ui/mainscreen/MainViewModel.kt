@@ -146,12 +146,17 @@ class MainViewModel @Inject constructor(
             _mainUiState.value.copy(confirmedStartLD = start, confirmedEndLD = end)
     }
 
-    fun onSearchClick() {
+    fun onWeatherSearchClick() {
         if (_mainUiState.value.location == null) {
             updateError(stringProvider.locationEmpty())
             return
         }
-        if (_mainUiState.value.startLD > _mainUiState.value.endLD) {
+        if (_mainUiState.value.startLD.year > _mainUiState.value.endLD.year) {
+            updateError(stringProvider.invalidYearRange())
+            return
+        }
+        if (_mainUiState.value.startLD.withYear(_mainUiState.value.endLD.year).dayOfYear >
+            _mainUiState.value.endLD.dayOfYear) {
             updateError(stringProvider.invalidDateRange())
             return
         }
@@ -162,6 +167,7 @@ class MainViewModel @Inject constructor(
         }
         val params = prepareParamsForRequest(_mainUiState.value)
         if (params != null) {
+            updateConfirmedLD(_mainUiState.value.startLD, _mainUiState.value.endLD)
             fetchWeather(params)
         }
     }
@@ -205,7 +211,6 @@ class MainViewModel @Inject constructor(
     }
 
     private fun fetchWeather(params: WeatherRequestParams) {
-        updateConfirmedLD(_mainUiState.value.startLD, _mainUiState.value.endLD)
         _mainUiState.value = _mainUiState.value.copy(isLoading = true)
         viewModelScope.launch {
             try {
