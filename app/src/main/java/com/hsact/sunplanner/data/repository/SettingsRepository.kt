@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
     val theme: Flow<ThemeMode>
-    val language: Flow<LanguageMode>
+    val language: Flow<LanguageMode?>
     val temperatureUnit: Flow<TemperatureUnitMode>
     val windSpeedUnit: Flow<WindSpeedUnitMode>
     val precipitationUnit: Flow<PrecipitationUnitMode>

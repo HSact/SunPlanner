@@ -79,21 +79,7 @@ fun MainScreen(
     val canScroll = remember { mutableStateOf(false) }
     var query by remember { mutableStateOf("") }
     val date1 = mainDataUI.startLD
-    val years1 by remember {
-        mutableStateOf(
-            (1940..LocalDate.now().minusYears(1).year).toList().reversed()
-        )
-    }
-    val months1 by remember { mutableStateOf((1..12).toList()) }
-    val days1 = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     val date2 = mainDataUI.endLD
-    val years2 by remember {
-        mutableStateOf(
-            (1940..LocalDate.now().minusYears(1).year).toList().reversed()
-        )
-    }
-    val months2 by remember { mutableStateOf((1..12).toList()) }
-    val days2 = remember(date2) { (1..date2.lengthOfMonth()).toList() }
 
     LaunchedEffect(scrollState.maxValue) {
         canScroll.value = scrollState.maxValue > 0 && !mainDataUI.isLoading
@@ -161,8 +147,8 @@ fun MainScreen(
                 )
             }
             if (!isSearchExpanded) {
-                YearsRangeSelection(viewModel, date1, date2, years1, years2)
-                DatesRangeSection(viewModel, date1, months1, days1, date2, months2, days2)
+                YearsRangeSelection(viewModel, date1, date2)
+                DatesRangeSection(viewModel, context, date1, date2)
                 Row(
                     modifier = Modifier
                         .padding(top = 10.dp, start = 10.dp, end = 10.dp)
@@ -211,10 +197,13 @@ fun MainScreen(
 private fun YearsRangeSelection(
     viewModel: MainViewModel,
     date1: LocalDate,
-    date2: LocalDate,
-    years1: List<Int>,
-    years2: List<Int>
+    date2: LocalDate
 ) {
+    val yearChoices by remember {
+        mutableStateOf(
+            (1940..LocalDate.now().minusYears(1).year).toList().reversed()
+        )
+    }
     Row(
         modifier = Modifier
             .padding(top = 10.dp, start = 10.dp, end = 10.dp)
@@ -222,7 +211,7 @@ private fun YearsRangeSelection(
     ) {
         DropdownPicker(
             label = stringResource(R.string.start_year),
-            list = years1,
+            list = yearChoices,
             selected = date1.year,
             onSelected = {
                 viewModel.updateStartYear(it)
@@ -233,7 +222,7 @@ private fun YearsRangeSelection(
         )
         DropdownPicker(
             label = stringResource(R.string.end_year),
-            list = years2,
+            list = yearChoices,
             selected = date2.year,
             onSelected = {
                 viewModel.updateEndYear(it)
@@ -249,13 +238,12 @@ private fun YearsRangeSelection(
 @Composable
 private fun ColumnScope.DatesRangeSection(
     viewModel: MainViewModel,
+    context: Context,
     date1: LocalDate,
-    months1: List<Int>,
-    days1: List<Int>,
     date2: LocalDate,
-    months2: List<Int>,
-    days2: List<Int>
 ) {
+    val monthChoices = remember {context.resources.getStringArray(R.array.month_choices).toList()}
+    val dayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -314,10 +302,10 @@ private fun ColumnScope.DatesRangeSection(
                     ) {
                         DropdownPicker(
                             label = stringResource(R.string.start_month),
-                            list = months1,
-                            selected = date1.monthValue,
+                            list = monthChoices,
+                            selected = monthChoices[date1.monthValue-1],
                             onSelected = {
-                                viewModel.updateStartMonth(it)
+                                viewModel.updateStartMonth(monthChoices.indexOf(it)+1)
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -325,10 +313,10 @@ private fun ColumnScope.DatesRangeSection(
                         )
                         DropdownPicker(
                             label = stringResource(R.string.end_month),
-                            list = months2,
-                            selected = date2.monthValue,
+                            list = monthChoices,
+                            selected = monthChoices[date2.monthValue-1],
                             onSelected = {
-                                viewModel.updateEndMonth(it)
+                                viewModel.updateEndMonth(monthChoices.indexOf(it)+1)
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -339,7 +327,7 @@ private fun ColumnScope.DatesRangeSection(
                     {
                         DropdownPicker(
                             label = stringResource(R.string.start_day),
-                            list = days1,
+                            list = dayChoices,
                             selected = date1.dayOfMonth,
                             onSelected = {
                                 viewModel.updateStartDay(it)
@@ -350,7 +338,7 @@ private fun ColumnScope.DatesRangeSection(
                         )
                         DropdownPicker(
                             label = stringResource(R.string.end_day),
-                            list = days2,
+                            list = dayChoices,
                             selected = date2.dayOfMonth,
                             onSelected = {
                                 viewModel.updateEndDay(it)

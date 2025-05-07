@@ -38,8 +38,8 @@ class SettingsRepositoryImpl @Inject constructor(
         preferences[THEME_KEY]?.let { ThemeMode.entries[it] } ?: ThemeMode.SYSTEM
     }
 
-    override val language: Flow<LanguageMode> = context.dataStore.data.map { preferences ->
-        preferences[LANGUAGE_KEY]?.let { LanguageMode.entries[it] } ?: LanguageMode.ENGLISH
+    override val language: Flow<LanguageMode?> = context.dataStore.data.map { preferences ->
+        preferences[LANGUAGE_KEY]?.let { LanguageMode.entries[it] }
     }
     override val temperatureUnit: Flow<TemperatureUnitMode> =
         context.dataStore.data.map { preferences ->

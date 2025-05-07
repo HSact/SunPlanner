@@ -14,6 +14,7 @@ import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
+import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
 import com.hsact.sunplanner.ui.settings.modes.toName
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import com.hsact.sunplanner.ui.theme.avgTempLineColor
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -66,7 +68,7 @@ class MainViewModel @Inject constructor(
                 getSettingsUseCase.precipitationUnit
             ) { language, theme,tempUnit, windUnit, precipitationUnit ->
                 _mainUiState.value.copy(
-                    languageMode = language,
+                    languageMode = language?: nameToLanguageMode(Locale.getDefault().language),
                     themeMode = theme,
                     temperatureUnitMode = tempUnit,
                     windUnitMode = windUnit,

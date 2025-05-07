@@ -35,6 +35,20 @@
     <string name="wind">Ветер</string>
     <string name="gusts">Порывы</string>
     <string name="avg">Среднее</string>
+    <string-array name="month_choices">
+        <item>Январь</item>
+        <item>Февраль</item>
+        <item>Март</item>
+        <item>Апрель</item>
+        <item>Май</item>
+        <item>Июнь</item>
+        <item>Июль</item>
+        <item>Август</item>
+        <item>Сентябрь</item>
+        <item>Октябрь</item>
+        <item>Ноябрь</item>
+        <item>Декабрь</item>
+    </string-array>
     <string-array name="theme_choices">
         <item>Авто</item>
         <item>День</item>

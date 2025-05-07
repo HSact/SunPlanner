@@ -17,3 +17,9 @@ fun indexToLanguageMode(index: Int): LanguageMode = when (index) {
     1 -> LanguageMode.RUSSIAN
     else -> LanguageMode.ENGLISH
 }
+
+fun nameToLanguageMode(name: String): LanguageMode = when (name) {
+    "en" -> LanguageMode.ENGLISH
+    "ru" -> LanguageMode.RUSSIAN
+    else -> LanguageMode.ENGLISH
+}

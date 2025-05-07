@@ -14,7 +14,7 @@ class GetSettingsUseCase @Inject constructor(
     private val repository: SettingsRepository
 ) {
     val theme: Flow<ThemeMode> get() = repository.theme
-    val language: Flow<LanguageMode> get() = repository.language
+    val language: Flow<LanguageMode?> get() = repository.language
     val location: Flow<Location?> get() = repository.location
     val temperatureUnit: Flow<TemperatureUnitMode> get() = repository.temperatureUnit
     val windUnit: Flow<WindSpeedUnitMode> get() = repository.windSpeedUnit

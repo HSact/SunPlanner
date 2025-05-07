@@ -10,6 +10,7 @@ import com.hsact.sunplanner.domain.usecase.settings.UpdateThemeUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateWindSpeedUnitUseCase
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,12 +51,12 @@ class SettingsViewModel @Inject constructor(
             ) { theme, language, temperatureUnit, windUnit, precipitationUnit ->
                 _uiState.value.copy(
                     currentTheme = theme,
-                    currentLanguage = language,
+                    currentLanguage = language?: nameToLanguageMode(Locale.getDefault().language),
                     currentTemperatureUnit = temperatureUnit,
                     currentWindSpeedUnit = windUnit,
                     currentPrecipitationUnit = precipitationUnit,
                     //selectedTheme = theme,
-                    selectedLanguage = language,
+                    selectedLanguage = language?: nameToLanguageMode(Locale.getDefault().language),
                     //selectedTemperatureUnit = temperatureUnit,
                     //selectedWindSpeedUnit = windUnit,
                     //selectedPrecipitationUnit = precipitationUnit,

@@ -35,6 +35,20 @@
     <string name="wind">Wind</string>
     <string name="gusts">Gusts</string>
     <string name="avg">Average</string>
+    <string-array name="month_choices">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
     <string-array name="theme_choices">
         <item>Auto</item>
         <item>Day</item>
