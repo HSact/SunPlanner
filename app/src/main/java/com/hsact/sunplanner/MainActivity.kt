@@ -21,12 +21,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.ThemeViewModel
+import com.hsact.sunplanner.ui.mainscreen.MainScreen
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
-import com.hsact.sunplanner.ui.mainscreen.MainScreenUI
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
-import com.hsact.sunplanner.ui.settings.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.LocalizedContextWrapper
-import com.hsact.sunplanner.ui.settings.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.firstOrNull
@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
             CompositionLocalProvider(LocalAppLocale provides localeState.value,
                 LocalAppContext provides localizedContext) {
                 SunPlannerTheme(darkTheme = isDarkTheme) {
-                    MainScreenUI(viewModel).MainScreen(onApplyTheme = onApplyTheme, onChangeLanguage = onChangeLanguage)
+                    MainScreen(viewModel, onApplyTheme = onApplyTheme, onChangeLanguage = onChangeLanguage)
                 }
             }
         }

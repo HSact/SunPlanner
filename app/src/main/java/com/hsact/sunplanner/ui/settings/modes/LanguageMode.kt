@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui.settings
+package com.hsact.sunplanner.ui.settings.modes
 
 enum class LanguageMode
 {ENGLISH, RUSSIAN}
@@ -15,5 +15,11 @@ fun LanguageMode.toName(): String = when (this) {
 fun indexToLanguageMode(index: Int): LanguageMode = when (index) {
     0 -> LanguageMode.ENGLISH
     1 -> LanguageMode.RUSSIAN
+    else -> LanguageMode.ENGLISH
+}
+
+fun nameToLanguageMode(name: String): LanguageMode = when (name) {
+    "en" -> LanguageMode.ENGLISH
+    "ru" -> LanguageMode.RUSSIAN
     else -> LanguageMode.ENGLISH
 }

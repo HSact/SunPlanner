@@ -1,8 +1,10 @@
 package com.hsact.sunplanner.ui.settings
 
-import com.hsact.sunplanner.ui.settings.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.unitModes.WindSpeedUnitMode
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
+import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
+import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 
 data class SettingsUIState(
     var currentTheme: ThemeMode = ThemeMode.SYSTEM,

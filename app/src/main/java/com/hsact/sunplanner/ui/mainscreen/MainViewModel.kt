@@ -14,8 +14,9 @@ import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
-import com.hsact.sunplanner.ui.settings.toName
-import com.hsact.sunplanner.ui.settings.unitModes.toName
+import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
+import com.hsact.sunplanner.ui.settings.modes.toName
+import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import com.hsact.sunplanner.ui.theme.avgTempLineColor
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.util.Locale
 import javax.inject.Inject
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -66,7 +68,7 @@ class MainViewModel @Inject constructor(
                 getSettingsUseCase.precipitationUnit
             ) { language, theme,tempUnit, windUnit, precipitationUnit ->
                 _mainUiState.value.copy(
-                    languageMode = language,
+                    languageMode = language?: nameToLanguageMode(Locale.getDefault().language),
                     themeMode = theme,
                     temperatureUnitMode = tempUnit,
                     windUnitMode = windUnit,
@@ -160,7 +162,7 @@ class MainViewModel @Inject constructor(
             updateError(stringProvider.invalidDateRange())
             return
         }
-        if (_mainUiState.value.endLD.year - _mainUiState.value.startLD.year > 20) {
+        if (_mainUiState.value.endLD.year - _mainUiState.value.startLD.year >= 20) {
             //updateError("Years range is too big (max 20)")
             updateError(stringProvider.yearsRangeTooBig())
             return
