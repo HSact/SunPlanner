@@ -405,9 +405,9 @@ private fun WeatherCards(
             stringResource(R.string.temperature)
                     + " (" + tempUnit + ")",
             listOf(
-                mainDataUI.maxTemperature!!,
-                mainDataUI.avgTemperature!!,
-                mainDataUI.minTemperature!!
+                mainDataUI.weatherGraphData.maxTemperature!!,
+                mainDataUI.weatherGraphData.avgTemperature!!,
+                mainDataUI.weatherGraphData.minTemperature!!
             ),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
@@ -419,7 +419,7 @@ private fun WeatherCards(
     {
         WeatherGraphLineCard(
             stringResource(R.string.sunshine_hours),
-            listOf(mainDataUI.sunDuration!!),
+            listOf(mainDataUI.weatherGraphData.sunDuration!!),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,
@@ -432,7 +432,7 @@ private fun WeatherCards(
         WeatherGraphBarsCard(
             stringResource(R.string.precipitation)
                     + " (" + precipitationUnit + ")",
-            listOf(mainDataUI.precipitation!!),
+            listOf(mainDataUI.weatherGraphData.precipitation!!),
             DateUtils.generatePopUpLabels(mainDataUI.startLD, mainDataUI.endLD, locale),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
@@ -445,8 +445,8 @@ private fun WeatherCards(
             stringResource(R.string.wind_speed)
                     + " (" + speedUnit + ")",
             listOf(
-                mainDataUI.windSpeed!!,
-                mainDataUI.windGustsSpeed!!
+                mainDataUI.weatherGraphData.windSpeed!!,
+                mainDataUI.weatherGraphData.windGustsSpeed!!
             ),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,

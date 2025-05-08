@@ -42,7 +42,7 @@ fun WeatherGraphLineCard(
     lineList: List<Line>,
     startDate: LocalDate,
     endDate: LocalDate,
-    locale: Locale = Locale.getDefault(),
+    locale: Locale,
     theme: ThemeMode = ThemeMode.SYSTEM,
     minIsZero: Boolean = false
 ) {
@@ -146,6 +146,7 @@ private fun WeatherGraphLineCardPreview() {
         lineList = listOf(previewLine),
         header = "Temperature",
         startDate = LocalDate.now().minusDays(14),
-        endDate = LocalDate.now()
+        endDate = LocalDate.now(),
+        locale = Locale.getDefault()
     )
 }

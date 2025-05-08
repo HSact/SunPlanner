@@ -31,7 +31,7 @@ fun WeatherGraphBarsCard(
     dates: List<String>,
     startDate: LocalDate,
     endDate: LocalDate,
-    locale: Locale = Locale.getDefault(),
+    locale: Locale,
     theme: ThemeMode = ThemeMode.SYSTEM
 ) {
     val max = remember(barGroups) {
@@ -142,6 +142,7 @@ private fun CardPreview() {
         barGroups = listOf(previewBars),
         dates = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
         startDate = LocalDate.now().minusDays(10),
-        endDate = LocalDate.now()
+        endDate = LocalDate.now(),
+        locale = Locale.getDefault()
     )
 }
