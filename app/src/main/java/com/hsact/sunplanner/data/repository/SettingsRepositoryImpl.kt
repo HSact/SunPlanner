@@ -1,6 +1,7 @@
 package com.hsact.sunplanner.data.repository
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -31,6 +32,7 @@ class SettingsRepositoryImpl @Inject constructor(
         private val TEMPERATURE_UNIT_KEY = intPreferencesKey("temperature_unit")
         private val WIND_SPEED_UNIT_KEY = intPreferencesKey("wind_unit")
         private val PRECIPITATION_UNIT_KEY = intPreferencesKey("precipitation_unit")
+        private val IS_DOTS_VISIBLE_KEY = booleanPreferencesKey("is_dots_visible")
         private val LOCATION_KEY = stringPreferencesKey("location")
     }
 
@@ -56,12 +58,20 @@ class SettingsRepositoryImpl @Inject constructor(
             preferences[PRECIPITATION_UNIT_KEY]?.let { PrecipitationUnitMode.entries[it] }
                 ?: PrecipitationUnitMode.MM
         }
+
+    @Suppress("NullableBooleanElvis")
+    override val isDotsVisible: Flow<Boolean> =
+        context.dataStore.data.map { preferences ->
+            preferences[IS_DOTS_VISIBLE_KEY] ?: true
+        }
     override val location: Flow<Location?> =
         context.dataStore.data.map { prefs ->
-        prefs[LOCATION_KEY]?.let { json ->
-            runCatching { Moshi.Builder().build().adapter(Location::class.java).fromJson(json) }.getOrNull()
+            prefs[LOCATION_KEY]?.let { json ->
+                runCatching {
+                    Moshi.Builder().build().adapter(Location::class.java).fromJson(json)
+                }.getOrNull()
+            }
         }
-    }
 
     override suspend fun setTheme(themeMode: ThemeMode) {
         context.dataStore.edit { preferences ->
@@ -93,7 +103,13 @@ class SettingsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun setLocation (location: Location) {
+    override suspend fun setDotsVisibility(isDotsVisible: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_DOTS_VISIBLE_KEY] = isDotsVisible
+        }
+    }
+
+    override suspend fun setLocation(location: Location) {
         val adapter = Moshi.Builder().build().adapter(Location::class.java)
         val json = adapter.toJson(location)
         context.dataStore.edit { preferences ->

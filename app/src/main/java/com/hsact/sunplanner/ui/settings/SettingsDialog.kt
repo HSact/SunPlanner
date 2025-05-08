@@ -83,6 +83,11 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
     }
     val languageChoices =
         LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
+    val dotsChoices =
+        LocalContext.current.resources.getStringArray(R.array.dots_display_choices).toList()
+    var selectedDotsOption = remember(uiState.currentDotsOption) {
+        mutableIntStateOf(uiState.currentDotsOption)
+    }
 
     val tempUnitChoices =
         LocalContext.current.resources.getStringArray(R.array.temp_unit_choices).toList()
@@ -160,6 +165,22 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                 },
                 modifier = Modifier.padding(start = 20.dp)
             )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.show_graph_dots))
+            Spacer(modifier = Modifier.weight(1f))
+            SegmentedButtonUnitPicker(
+                viewModel,
+                dotsChoices,
+                selectedDotsOption
+            ) { index ->
+                SettingsIntents.UpdateDotsOption(index)
+            }
         }
         Row(
             modifier = Modifier

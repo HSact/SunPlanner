@@ -3,6 +3,7 @@ package com.hsact.sunplanner.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdateDotsOptionUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLanguageUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateTemperatureUnitUseCase
@@ -27,6 +28,7 @@ class SettingsViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateThemeUseCase: UpdateThemeUseCase,
     private val updateLanguageUseCase: UpdateLanguageUseCase,
+    private val updateDotsOptionUseCase: UpdateDotsOptionUseCase,
     private val updateTemperatureUnitUseCase: UpdateTemperatureUnitUseCase,
     private val updateWindSpeedUnitUseCase: UpdateWindSpeedUnitUseCase,
     private val updatePrecipitationUnitUseCase: UpdatePrecipitationUnitUseCase
@@ -78,6 +80,10 @@ class SettingsViewModel @Inject constructor(
                     changeLanguage(intent.language)
                 }
 
+                is SettingsIntents.UpdateDotsOption -> {
+                    changeDotsOption(intent.dots)
+                }
+
                 is SettingsIntents.UpdateTemperatureUnit -> {
                     changeTemperatureUnit(intent.unitTemp)
                 }
@@ -118,8 +124,13 @@ class SettingsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
     }
 
+    private fun changeDotsOption(dotsOption: Int) {
+        _uiState.value = _uiState.value.copy(selectedDotsOption = dotsOption)
+    }
+
     private suspend fun applySettings() {
         updateLanguageUseCase(_uiState.value.selectedLanguage)
+        updateDotsOptionUseCase(_uiState.value.selectedDotsOption)
         updateTemperatureUnitUseCase(_uiState.value.selectedTemperatureUnit)
         updateWindSpeedUnitUseCase(_uiState.value.selectedWindSpeedUnit)
         updatePrecipitationUnitUseCase(_uiState.value.selectedPrecipitationUnit)
