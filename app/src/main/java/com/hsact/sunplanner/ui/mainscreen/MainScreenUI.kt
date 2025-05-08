@@ -178,7 +178,7 @@ fun MainScreen(
                 }
                 if (mainDataUI.weatherData != null && !mainDataUI.isLoading) {
                     DateText(modifier, mainDataUI)
-                    WeatherCards(context, mainDataUI, modifier)
+                    WeatherCards(context, mainDataUI, modifier, Locale.getDefault())
                     Row(
                         modifier
                             .fillMaxWidth()
@@ -385,7 +385,8 @@ private fun DateText(
 private fun WeatherCards(
     context: Context,
     mainDataUI: MainUIState,
-    modifier: Modifier
+    modifier: Modifier,
+    locale: Locale
 ) {
     val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
         .toList()[mainDataUI.temperatureUnitMode.toIndex()]
@@ -410,6 +411,7 @@ private fun WeatherCards(
             ),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
+            locale,
             mainDataUI.themeMode
         )
     }
@@ -420,6 +422,7 @@ private fun WeatherCards(
             listOf(mainDataUI.sunDuration!!),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
+            locale,
             mainDataUI.themeMode,
             true              //set min value 0
         )
@@ -430,9 +433,10 @@ private fun WeatherCards(
             stringResource(R.string.precipitation)
                     + " (" + precipitationUnit + ")",
             listOf(mainDataUI.precipitation!!),
-            DateUtils.generatePopUpLabels(mainDataUI.startLD, mainDataUI.endLD),
+            DateUtils.generatePopUpLabels(mainDataUI.startLD, mainDataUI.endLD, locale),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
+            locale,
             mainDataUI.themeMode
         )
     }
@@ -446,6 +450,7 @@ private fun WeatherCards(
             ),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
+            locale,
             mainDataUI.themeMode,
             true
         )

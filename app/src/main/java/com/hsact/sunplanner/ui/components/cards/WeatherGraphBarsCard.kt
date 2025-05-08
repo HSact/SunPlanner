@@ -21,6 +21,7 @@ import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.extensions.format
 import ir.ehsannarmani.compose_charts.models.*
 import java.time.LocalDate
+import java.util.Locale
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -30,6 +31,7 @@ fun WeatherGraphBarsCard(
     dates: List<String>,
     startDate: LocalDate,
     endDate: LocalDate,
+    locale: Locale = Locale.getDefault(),
     theme: ThemeMode = ThemeMode.SYSTEM
 ) {
     val max = remember(barGroups) {
@@ -54,7 +56,7 @@ fun WeatherGraphBarsCard(
     val labelProperties = LabelProperties(
         enabled = true,
         textStyle = textStyle,
-        labels = DateUtils.generateAxisXLabels(startDate, endDate),
+        labels = DateUtils.generateAxisXLabels(startDate, endDate, locale),
         rotation = LabelProperties.Rotation(degree = 0f)
     )
 

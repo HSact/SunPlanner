@@ -10,7 +10,7 @@ object DateUtils {
         endDate: LocalDate,
         isOneDay: Boolean,
         isOneYear: Boolean,
-        locale: Locale = Locale.getDefault(),
+        locale: Locale,
         singleDayOneYearString: String = "",
         singleDaySting: String = "",
         dateRangeOneYearSting: String = "",
@@ -68,9 +68,9 @@ object DateUtils {
 
     fun generatePopUpLabels(
         startDate: LocalDate,
-        endDate: LocalDate
+        endDate: LocalDate,
+        locale: Locale
     ): List<String> {
-        val locale = Locale.getDefault()
         val russianMonthLabels = listOf(
             "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
             "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
@@ -102,6 +102,7 @@ object DateUtils {
     fun generateAxisXLabels(
         startDate: LocalDate,
         endDate: LocalDate,
+        locale: Locale,
         count: Int = 10
     ): List<String> {
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
@@ -112,9 +113,8 @@ object DateUtils {
         } else {
             if (endDate.dayOfYear - startDate.withYear(endDate.year).dayOfYear <= 92) {
                 dayLabels(startDate, endDate)
-            }
-            else {
-                monthLabels(startDate, endDate)
+            } else {
+                monthLabels(startDate, endDate, locale)
             }
         }
         if (rawLabels.size <= count) return rawLabels
@@ -130,8 +130,11 @@ object DateUtils {
         return (startDate.year..endDate.year).map { "'${(it % 100).toString().padStart(2, '0')}" }
     }
 
-    private fun monthLabels(startDate: LocalDate, endDate: LocalDate): List<String> {
-        val locale = Locale.getDefault()
+    private fun monthLabels(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        locale: Locale
+    ): List<String> {
         val russianMonthLabels = listOf(
             "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
             "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"

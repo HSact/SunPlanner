@@ -34,6 +34,7 @@ import ir.ehsannarmani.compose_charts.models.LabelProperties
 import ir.ehsannarmani.compose_charts.models.Line
 import ir.ehsannarmani.compose_charts.models.ZeroLineProperties
 import java.time.LocalDate
+import java.util.Locale
 
 @Composable
 fun WeatherGraphLineCard(
@@ -41,6 +42,7 @@ fun WeatherGraphLineCard(
     lineList: List<Line>,
     startDate: LocalDate,
     endDate: LocalDate,
+    locale: Locale = Locale.getDefault(),
     theme: ThemeMode = ThemeMode.SYSTEM,
     minIsZero: Boolean = false
 ) {
@@ -68,7 +70,7 @@ fun WeatherGraphLineCard(
         if (isDarkTheme) TextStyle(color = Color.White)
         else TextStyle(color = Color.Black)
     }
-    var labels = DateUtils.generateAxisXLabels(startDate, endDate)
+    var labels = DateUtils.generateAxisXLabels(startDate, endDate, locale)
     if (labels.size < 2) {
         labels = labels + labels
     }

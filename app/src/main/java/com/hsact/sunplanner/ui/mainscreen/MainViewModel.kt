@@ -264,7 +264,8 @@ class MainViewModel @Inject constructor(
         } else {
             _mainUiState.value = _mainUiState.value.copy(isOneDay = true)
         }
-        val popUpLabels = DateUtils.generatePopUpLabels(_mainUiState.value.startLD, _mainUiState.value.endLD)
+        val popUpLabels = DateUtils.generatePopUpLabels(_mainUiState.value.startLD, _mainUiState.value.endLD,
+            Locale.getDefault())
         _mainUiState.value.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
                 stringProvider.max(), maxTemps, popUpLabels,
