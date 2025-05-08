@@ -430,6 +430,7 @@ private fun WeatherCards(
             stringResource(R.string.precipitation)
                     + " (" + precipitationUnit + ")",
             listOf(mainDataUI.precipitation!!),
+            DateUtils.generatePopUpLabels(mainDataUI.startLD, mainDataUI.endLD),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             mainDataUI.themeMode

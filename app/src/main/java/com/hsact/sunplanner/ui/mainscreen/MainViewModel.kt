@@ -267,18 +267,18 @@ class MainViewModel @Inject constructor(
         val popUpLabels = DateUtils.generatePopUpLabels(_mainUiState.value.startLD, _mainUiState.value.endLD)
         _mainUiState.value.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.max(), maxTemps, /*popUpLabels*/ emptyList(),
+                stringProvider.max(), maxTemps, popUpLabels,
                 maxTempLineColor, _mainUiState.value.isOneYear
             )
         _mainUiState.value.avgTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.avg(), averageTemps, /*popUpLabels*/ emptyList(),
+                stringProvider.avg(), averageTemps, popUpLabels,
                 avgTempLineColor, _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.minTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.min(), minTemps, /*popUpLabels*/ emptyList(),
+                stringProvider.min(), minTemps, popUpLabels,
                 minTempLineColor, _mainUiState.value.isOneYear
             )
 
