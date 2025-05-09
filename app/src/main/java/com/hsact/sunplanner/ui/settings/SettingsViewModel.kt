@@ -3,6 +3,7 @@ package com.hsact.sunplanner.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdateDotsOptionUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLanguageUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateTemperatureUnitUseCase
@@ -27,6 +28,7 @@ class SettingsViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateThemeUseCase: UpdateThemeUseCase,
     private val updateLanguageUseCase: UpdateLanguageUseCase,
+    private val updateDotsOptionUseCase: UpdateDotsOptionUseCase,
     private val updateTemperatureUnitUseCase: UpdateTemperatureUnitUseCase,
     private val updateWindSpeedUnitUseCase: UpdateWindSpeedUnitUseCase,
     private val updatePrecipitationUnitUseCase: UpdatePrecipitationUnitUseCase
@@ -40,26 +42,36 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private data class UnitsData(
+        val temperatureUnit: TemperatureUnitMode,
+        val windUnit: WindSpeedUnitMode,
+        val precipitationUnit: PrecipitationUnitMode
+    )
+
     private fun observeSettings() {
         viewModelScope.launch {
-            combine(
-                getSettingsUseCase.theme,
-                getSettingsUseCase.language,
+            val unitsFlow = combine(
                 getSettingsUseCase.temperatureUnit,
                 getSettingsUseCase.windUnit,
                 getSettingsUseCase.precipitationUnit
-            ) { theme, language, temperatureUnit, windUnit, precipitationUnit ->
+            ) { temperatureUnit, windUnit, precipitationUnit ->
+                UnitsData(temperatureUnit, windUnit, precipitationUnit)
+            }
+
+            combine(
+                getSettingsUseCase.theme,
+                getSettingsUseCase.language,
+                unitsFlow,
+                getSettingsUseCase.isDotsVisible
+            ) { theme, language, units, showDots ->
                 _uiState.value.copy(
                     currentTheme = theme,
-                    currentLanguage = language?: nameToLanguageMode(Locale.getDefault().language),
-                    currentTemperatureUnit = temperatureUnit,
-                    currentWindSpeedUnit = windUnit,
-                    currentPrecipitationUnit = precipitationUnit,
-                    //selectedTheme = theme,
-                    selectedLanguage = language?: nameToLanguageMode(Locale.getDefault().language),
-                    //selectedTemperatureUnit = temperatureUnit,
-                    //selectedWindSpeedUnit = windUnit,
-                    //selectedPrecipitationUnit = precipitationUnit,
+                    currentLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
+                    currentTemperatureUnit = units.temperatureUnit,
+                    currentWindSpeedUnit = units.windUnit,
+                    currentPrecipitationUnit = units.precipitationUnit,
+                    currentDotsOption = if (showDots) 1 else 0,
+                    selectedLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
                 )
             }.collect { newState ->
                 _uiState.value = newState
@@ -76,6 +88,10 @@ class SettingsViewModel @Inject constructor(
 
                 is SettingsIntents.UpdateLanguage -> {
                     changeLanguage(intent.language)
+                }
+
+                is SettingsIntents.UpdateDotsOption -> {
+                    changeDotsOption(intent.dots)
                 }
 
                 is SettingsIntents.UpdateTemperatureUnit -> {
@@ -118,8 +134,13 @@ class SettingsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedLanguage = language)
     }
 
+    private fun changeDotsOption(dotsOption: Int) {
+        _uiState.value = _uiState.value.copy(selectedDotsOption = dotsOption)
+    }
+
     private suspend fun applySettings() {
         updateLanguageUseCase(_uiState.value.selectedLanguage)
+        updateDotsOptionUseCase(_uiState.value.selectedDotsOption)
         updateTemperatureUnitUseCase(_uiState.value.selectedTemperatureUnit)
         updateWindSpeedUnitUseCase(_uiState.value.selectedWindSpeedUnit)
         updatePrecipitationUnitUseCase(_uiState.value.selectedPrecipitationUnit)

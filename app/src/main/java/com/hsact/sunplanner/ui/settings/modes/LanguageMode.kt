@@ -1,5 +1,7 @@
 package com.hsact.sunplanner.ui.settings.modes
 
+import java.util.Locale
+
 enum class LanguageMode
 {ENGLISH, RUSSIAN}
 
@@ -11,6 +13,8 @@ fun LanguageMode.toName(): String = when (this) {
     LanguageMode.ENGLISH -> "en"
     LanguageMode.RUSSIAN -> "ru"
 }
+
+fun LanguageMode.toLocale(): Locale = Locale(this.toName())
 
 fun indexToLanguageMode(index: Int): LanguageMode = when (index) {
     0 -> LanguageMode.ENGLISH

@@ -11,6 +11,8 @@ data class SettingsUIState(
     var selectedTheme: ThemeMode = currentTheme,
     var currentLanguage: LanguageMode = LanguageMode.ENGLISH,
     var selectedLanguage: LanguageMode = currentLanguage,
+    var currentDotsOption: Int = 1,
+    var selectedDotsOption: Int = currentDotsOption,
     var currentTemperatureUnit: TemperatureUnitMode = TemperatureUnitMode.CELSIUS,
     var selectedTemperatureUnit: TemperatureUnitMode = currentTemperatureUnit,
     var currentWindSpeedUnit: WindSpeedUnitMode = WindSpeedUnitMode.MS,
