@@ -66,6 +66,11 @@ class MainViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            getSettingsUseCase.isEdgesCurved.collect { edgesOption ->
+                _mainUiState.value = _mainUiState.value.copy(isEdgesCurved = edgesOption)
+            }
+        }
+        viewModelScope.launch {
             combine(
                 getSettingsUseCase.language,
                 getSettingsUseCase.theme,

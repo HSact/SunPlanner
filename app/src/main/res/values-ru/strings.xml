@@ -36,6 +36,7 @@
     <string name="wind">Ветер</string>
     <string name="gusts">Порывы</string>
     <string name="avg">Среднее</string>
+    <string name="curved_edges">Скруглённые углы</string>
     <string-array name="month_choices">
         <item>Январь</item>
         <item>Февраль</item>
@@ -59,7 +60,7 @@
         <item>Английский</item>
         <item>Русский</item>
     </string-array>
-    <string-array name="dots_display_choices">
+    <string-array name="off_on_choices">
         <item>Выкл</item>
         <item>Вкл</item>
     </string-array>

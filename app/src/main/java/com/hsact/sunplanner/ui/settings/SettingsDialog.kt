@@ -85,10 +85,14 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
     }
     val languageChoices =
         LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
-    val dotsChoices =
-        LocalContext.current.resources.getStringArray(R.array.dots_display_choices).toList()
+    val offOnChoices =
+        LocalContext.current.resources.getStringArray(R.array.off_on_choices).toList()
     var selectedDotsOptionIndex = remember(uiState.currentDotsOption) {
         mutableIntStateOf(uiState.currentDotsOption)
+    }
+
+    var selectedCurveOptionIndex = remember(uiState.currentCurvedOption) {
+        mutableIntStateOf(uiState.currentCurvedOption)
     }
 
     val tempUnitChoices =
@@ -182,10 +186,26 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
             Spacer(modifier = Modifier.weight(1f))
             SegmentedButtonUnitPicker(
                 viewModel,
-                dotsChoices,
+                offOnChoices,
                 selectedDotsOptionIndex
             ) { index ->
                 SettingsIntents.UpdateDotsOption(index)
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.curved_edges))
+            Spacer(modifier = Modifier.weight(1f))
+            SegmentedButtonUnitPicker(
+                viewModel,
+                offOnChoices,
+                selectedCurveOptionIndex
+            ) { index ->
+                SettingsIntents.UpdateCurveOption(index)
             }
         }
         Row(
