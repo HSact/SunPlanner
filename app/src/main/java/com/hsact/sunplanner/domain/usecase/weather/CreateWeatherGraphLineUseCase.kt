@@ -19,6 +19,8 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
         label: String,
         values: List<Double>,
         dates: List<String>? = null,
+        isDotsVisible: Boolean,
+        isEdgesCurved: Boolean,
         color: Color,
         isOneYear: Boolean = false
     ): Line {
@@ -40,7 +42,7 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
                 width = 2.dp
             ),
             dotProperties = DotProperties(
-                enabled = true,
+                enabled = isDotsVisible,
                 //color = SolidColor(Color(0xFFFFFFFF)),
                 color = SolidColor(color),
             ),
@@ -54,7 +56,7 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
                     }
                 )
             } else null,
-            curvedEdges = true
+            curvedEdges = isEdgesCurved
         )
     }
 }

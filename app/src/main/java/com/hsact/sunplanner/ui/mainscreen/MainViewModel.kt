@@ -61,15 +61,20 @@ class MainViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            getSettingsUseCase.isDotsVisible.collect { dotsOption ->
+                _mainUiState.value = _mainUiState.value.copy(isDotsVisible = dotsOption)
+            }
+        }
+        viewModelScope.launch {
             combine(
                 getSettingsUseCase.language,
                 getSettingsUseCase.theme,
                 getSettingsUseCase.temperatureUnit,
                 getSettingsUseCase.windUnit,
                 getSettingsUseCase.precipitationUnit
-            ) { language, theme,tempUnit, windUnit, precipitationUnit ->
+            ) { language, theme, tempUnit, windUnit, precipitationUnit ->
                 _mainUiState.value.copy(
-                    languageMode = language?: nameToLanguageMode(Locale.getDefault().language),
+                    languageMode = language ?: nameToLanguageMode(Locale.getDefault().language),
                     themeMode = theme,
                     temperatureUnitMode = tempUnit,
                     windUnitMode = windUnit,
@@ -78,7 +83,7 @@ class MainViewModel @Inject constructor(
             }.debounce(200).collect { updatedUiState ->
                 _mainUiState.value = updatedUiState
                 if (_mainUiState.value.weatherData != null && !_mainUiState.value.isLoading) {
-                    fetchWeather(prepareParamsForRequest(updatedUiState)?: return@collect)
+                    fetchWeather(prepareParamsForRequest(updatedUiState) ?: return@collect)
                 }
             }
         }
@@ -159,7 +164,8 @@ class MainViewModel @Inject constructor(
             return
         }
         if (_mainUiState.value.startLD.withYear(_mainUiState.value.endLD.year).dayOfYear >
-            _mainUiState.value.endLD.dayOfYear) {
+            _mainUiState.value.endLD.dayOfYear
+        ) {
             updateError(stringProvider.invalidDateRange())
             return
         }
@@ -264,29 +270,51 @@ class MainViewModel @Inject constructor(
         } else {
             _mainUiState.value = _mainUiState.value.copy(isOneDay = true)
         }
-        val popUpLabels = DateUtils.generatePopUpLabels(_mainUiState.value.startLD, _mainUiState.value.endLD,
-            _mainUiState.value.languageMode.toLocale())
+        val popUpLabels = DateUtils.generatePopUpLabels(
+            _mainUiState.value.startLD, _mainUiState.value.endLD,
+            _mainUiState.value.languageMode.toLocale()
+        )
         _mainUiState.value.weatherGraphData.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.max(), maxTemps, popUpLabels,
-                maxTempLineColor, _mainUiState.value.isOneYear
+                stringProvider.max(),
+                maxTemps,
+                popUpLabels,
+                _mainUiState.value.isDotsVisible,
+                _mainUiState.value.isEdgesCurved,
+                maxTempLineColor,
+                _mainUiState.value.isOneYear
             )
         _mainUiState.value.weatherGraphData.avgTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.avg(), averageTemps, popUpLabels,
-                avgTempLineColor, _mainUiState.value.isOneYear
+                stringProvider.avg(),
+                averageTemps,
+                popUpLabels,
+                _mainUiState.value.isDotsVisible,
+                _mainUiState.value.isEdgesCurved,
+                avgTempLineColor,
+                _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.minTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.min(), minTemps, popUpLabels,
-                minTempLineColor, _mainUiState.value.isOneYear
+                stringProvider.min(),
+                minTemps,
+                popUpLabels,
+                _mainUiState.value.isDotsVisible,
+                _mainUiState.value.isEdgesCurved,
+                minTempLineColor,
+                _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.sunDuration =
             createWeatherGraphLineUseCase.invoke(
-                "", sunshine, popUpLabels,
-                sunShineLineColor, _mainUiState.value.isOneYear
+                "",
+                sunshine,
+                popUpLabels,
+                _mainUiState.value.isDotsVisible,
+                _mainUiState.value.isEdgesCurved,
+                sunShineLineColor,
+                _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.precipitation =
@@ -294,14 +322,24 @@ class MainViewModel @Inject constructor(
 
         _mainUiState.value.weatherGraphData.windSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.wind(), windSpeed, popUpLabels,
-                windSpeedColor, _mainUiState.value.isOneYear
+                stringProvider.wind(),
+                windSpeed,
+                popUpLabels,
+                _mainUiState.value.isDotsVisible,
+                _mainUiState.value.isEdgesCurved,
+                windSpeedColor,
+                _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.gusts(), gustSpeed, popUpLabels,
-                windGustsSpeedColor, _mainUiState.value.isOneYear
+                stringProvider.gusts(),
+                gustSpeed,
+                popUpLabels,
+                _mainUiState.value.isDotsVisible,
+                _mainUiState.value.isEdgesCurved,
+                windGustsSpeedColor,
+                _mainUiState.value.isOneYear
             )
     }
 }

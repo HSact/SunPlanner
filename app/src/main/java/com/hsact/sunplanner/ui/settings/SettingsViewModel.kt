@@ -42,26 +42,36 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private data class UnitsData(
+        val temperatureUnit: TemperatureUnitMode,
+        val windUnit: WindSpeedUnitMode,
+        val precipitationUnit: PrecipitationUnitMode
+    )
+
     private fun observeSettings() {
         viewModelScope.launch {
-            combine(
-                getSettingsUseCase.theme,
-                getSettingsUseCase.language,
+            val unitsFlow = combine(
                 getSettingsUseCase.temperatureUnit,
                 getSettingsUseCase.windUnit,
                 getSettingsUseCase.precipitationUnit
-            ) { theme, language, temperatureUnit, windUnit, precipitationUnit ->
+            ) { temperatureUnit, windUnit, precipitationUnit ->
+                UnitsData(temperatureUnit, windUnit, precipitationUnit)
+            }
+
+            combine(
+                getSettingsUseCase.theme,
+                getSettingsUseCase.language,
+                unitsFlow,
+                getSettingsUseCase.isDotsVisible
+            ) { theme, language, units, showDots ->
                 _uiState.value.copy(
                     currentTheme = theme,
-                    currentLanguage = language?: nameToLanguageMode(Locale.getDefault().language),
-                    currentTemperatureUnit = temperatureUnit,
-                    currentWindSpeedUnit = windUnit,
-                    currentPrecipitationUnit = precipitationUnit,
-                    //selectedTheme = theme,
-                    selectedLanguage = language?: nameToLanguageMode(Locale.getDefault().language),
-                    //selectedTemperatureUnit = temperatureUnit,
-                    //selectedWindSpeedUnit = windUnit,
-                    //selectedPrecipitationUnit = precipitationUnit,
+                    currentLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
+                    currentTemperatureUnit = units.temperatureUnit,
+                    currentWindSpeedUnit = units.windUnit,
+                    currentPrecipitationUnit = units.precipitationUnit,
+                    currentDotsOption = if (showDots) 1 else 0,
+                    selectedLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
                 )
             }.collect { newState ->
                 _uiState.value = newState

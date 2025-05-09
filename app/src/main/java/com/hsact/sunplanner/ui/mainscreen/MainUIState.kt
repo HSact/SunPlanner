@@ -13,6 +13,8 @@ import java.time.LocalDate
 data class MainUIState (
     val languageMode: LanguageMode = LanguageMode.ENGLISH,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val isDotsVisible: Boolean = true,
+    val isEdgesCurved: Boolean = true,
     val temperatureUnitMode: TemperatureUnitMode = TemperatureUnitMode.CELSIUS,
     val windUnitMode: WindSpeedUnitMode = WindSpeedUnitMode.MS,
     val precipitationUnitMode: PrecipitationUnitMode = PrecipitationUnitMode.MM,

@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
@@ -85,7 +87,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
         LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
     val dotsChoices =
         LocalContext.current.resources.getStringArray(R.array.dots_display_choices).toList()
-    var selectedDotsOption = remember(uiState.currentDotsOption) {
+    var selectedDotsOptionIndex = remember(uiState.currentDotsOption) {
         mutableIntStateOf(uiState.currentDotsOption)
     }
 
@@ -107,7 +109,11 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
     var selectedPrecipitationUnitIndex = remember(uiState.currentPrecipitationUnit) {
         mutableIntStateOf(uiState.currentPrecipitationUnit.toIndex())
     }
-    Column {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(end = 4.dp)
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -177,7 +183,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
             SegmentedButtonUnitPicker(
                 viewModel,
                 dotsChoices,
-                selectedDotsOption
+                selectedDotsOptionIndex
             ) { index ->
                 SettingsIntents.UpdateDotsOption(index)
             }
