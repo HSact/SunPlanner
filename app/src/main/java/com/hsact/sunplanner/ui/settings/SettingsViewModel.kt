@@ -3,6 +3,7 @@ package com.hsact.sunplanner.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
+import com.hsact.sunplanner.domain.usecase.settings.UpdateCurveOptionUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateDotsOptionUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLanguageUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCase
@@ -29,6 +30,7 @@ class SettingsViewModel @Inject constructor(
     private val updateThemeUseCase: UpdateThemeUseCase,
     private val updateLanguageUseCase: UpdateLanguageUseCase,
     private val updateDotsOptionUseCase: UpdateDotsOptionUseCase,
+    private val updateCurveOptionUseCase: UpdateCurveOptionUseCase,
     private val updateTemperatureUnitUseCase: UpdateTemperatureUnitUseCase,
     private val updateWindSpeedUnitUseCase: UpdateWindSpeedUnitUseCase,
     private val updatePrecipitationUnitUseCase: UpdatePrecipitationUnitUseCase
@@ -62,8 +64,9 @@ class SettingsViewModel @Inject constructor(
                 getSettingsUseCase.theme,
                 getSettingsUseCase.language,
                 unitsFlow,
-                getSettingsUseCase.isDotsVisible
-            ) { theme, language, units, showDots ->
+                getSettingsUseCase.isDotsVisible,
+                getSettingsUseCase.isEdgesCurved
+            ) { theme, language, units, showDots, isCurved ->
                 _uiState.value.copy(
                     currentTheme = theme,
                     currentLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
@@ -71,6 +74,7 @@ class SettingsViewModel @Inject constructor(
                     currentWindSpeedUnit = units.windUnit,
                     currentPrecipitationUnit = units.precipitationUnit,
                     currentDotsOption = if (showDots) 1 else 0,
+                    currentCurvedOption = if (isCurved) 1 else 0,
                     selectedLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
                 )
             }.collect { newState ->
@@ -92,6 +96,10 @@ class SettingsViewModel @Inject constructor(
 
                 is SettingsIntents.UpdateDotsOption -> {
                     changeDotsOption(intent.dots)
+                }
+
+                is SettingsIntents.UpdateCurveOption -> {
+                    changeCurveOption(intent.curve)
                 }
 
                 is SettingsIntents.UpdateTemperatureUnit -> {
@@ -138,9 +146,14 @@ class SettingsViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedDotsOption = dotsOption)
     }
 
+    private fun changeCurveOption(curveOption: Int) {
+        _uiState.value = _uiState.value.copy(selectedCurvedOption = curveOption)
+    }
+
     private suspend fun applySettings() {
         updateLanguageUseCase(_uiState.value.selectedLanguage)
         updateDotsOptionUseCase(_uiState.value.selectedDotsOption)
+        updateCurveOptionUseCase(_uiState.value.selectedCurvedOption)
         updateTemperatureUnitUseCase(_uiState.value.selectedTemperatureUnit)
         updateWindSpeedUnitUseCase(_uiState.value.selectedWindSpeedUnit)
         updatePrecipitationUnitUseCase(_uiState.value.selectedPrecipitationUnit)

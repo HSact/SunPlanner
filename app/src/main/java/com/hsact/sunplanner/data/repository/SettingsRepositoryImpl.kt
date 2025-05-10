@@ -33,6 +33,7 @@ class SettingsRepositoryImpl @Inject constructor(
         private val WIND_SPEED_UNIT_KEY = intPreferencesKey("wind_unit")
         private val PRECIPITATION_UNIT_KEY = intPreferencesKey("precipitation_unit")
         private val IS_DOTS_VISIBLE_KEY = booleanPreferencesKey("is_dots_visible")
+        private val IS_GRAPH_CURVED_KEY = booleanPreferencesKey("is_graph_curved")
         private val LOCATION_KEY = stringPreferencesKey("location")
     }
 
@@ -64,6 +65,13 @@ class SettingsRepositoryImpl @Inject constructor(
         context.dataStore.data.map { preferences ->
             preferences[IS_DOTS_VISIBLE_KEY] ?: true
         }
+
+    @Suppress("NullableBooleanElvis")
+    override val isGraphCurved: Flow<Boolean> =
+        context.dataStore.data.map { preferences ->
+            preferences[IS_GRAPH_CURVED_KEY] ?: true
+        }
+
     override val location: Flow<Location?> =
         context.dataStore.data.map { prefs ->
             prefs[LOCATION_KEY]?.let { json ->
@@ -106,6 +114,12 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun setDotsVisibility(isDotsVisible: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[IS_DOTS_VISIBLE_KEY] = isDotsVisible
+        }
+    }
+
+    override suspend fun setGraphCurved(isGraphCurved: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_GRAPH_CURVED_KEY] = isGraphCurved
         }
     }
 

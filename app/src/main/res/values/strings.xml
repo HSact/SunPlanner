@@ -36,6 +36,7 @@
     <string name="wind">Wind</string>
     <string name="gusts">Gusts</string>
     <string name="avg">Average</string>
+    <string name="curved_edges">Curved edges</string>
     <string-array name="month_choices">
         <item>January</item>
         <item>February</item>
@@ -59,7 +60,7 @@
         <item>English</item>
         <item>Russian</item>
     </string-array>
-    <string-array name="dots_display_choices">
+    <string-array name="off_on_choices">
         <item>Off</item>
         <item>On</item>
     </string-array>

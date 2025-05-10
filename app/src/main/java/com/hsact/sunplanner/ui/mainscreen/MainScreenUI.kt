@@ -77,7 +77,9 @@ fun MainScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scrollState = rememberScrollState()
     val canScroll = remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf("") }
+    var query by remember { mutableStateOf(
+        if (mainDataUI.settingsBundle.location != null)
+            LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else "") }
     val date1 = mainDataUI.startLD
     val date2 = mainDataUI.endLD
 
@@ -90,10 +92,10 @@ fun MainScreen(
             viewModel.cleanError()
         }
     }
-    LaunchedEffect(mainDataUI.location) {
-        if (query.isBlank() && mainDataUI.location != null) {
+    LaunchedEffect(mainDataUI.settingsBundle.location) {
+        if (query.isBlank() && mainDataUI.settingsBundle.location != null) {
             query =
-                LocationUtils.buildCityFullName(mainDataUI.location ?: return@LaunchedEffect)
+                LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location ?: return@LaunchedEffect)
         }
     }
     Scaffold(
@@ -389,11 +391,11 @@ private fun WeatherCards(
     locale: Locale
 ) {
     val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
-        .toList()[mainDataUI.temperatureUnitMode.toIndex()]
+        .toList()[mainDataUI.settingsBundle.temperatureUnitMode.toIndex()]
     val speedUnit = context.resources.getStringArray(R.array.speed_unit_choices)
-        .toList()[mainDataUI.windUnitMode.toIndex()]
+        .toList()[mainDataUI.settingsBundle.windUnitMode.toIndex()]
     val precipitationUnit = context.resources.getStringArray(R.array.precipitation_unit_choices)
-        .toList()[mainDataUI.precipitationUnitMode.toIndex()]
+        .toList()[mainDataUI.settingsBundle.precipitationUnitMode.toIndex()]
 
     Row(
         modifier
@@ -412,7 +414,7 @@ private fun WeatherCards(
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,
-            mainDataUI.themeMode
+            mainDataUI.settingsBundle.themeMode
         )
     }
     Row(modifier.fillMaxWidth())
@@ -423,7 +425,7 @@ private fun WeatherCards(
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,
-            mainDataUI.themeMode,
+            mainDataUI.settingsBundle.themeMode,
             true              //set min value 0
         )
     }
@@ -437,7 +439,7 @@ private fun WeatherCards(
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,
-            mainDataUI.themeMode
+            mainDataUI.settingsBundle.themeMode
         )
     }
     Row(modifier.fillMaxWidth()) {
@@ -451,7 +453,7 @@ private fun WeatherCards(
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,
-            mainDataUI.themeMode,
+            mainDataUI.settingsBundle.themeMode,
             true
         )
     }

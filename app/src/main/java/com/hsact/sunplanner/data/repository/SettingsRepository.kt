@@ -15,6 +15,7 @@ interface SettingsRepository {
     val windSpeedUnit: Flow<WindSpeedUnitMode>
     val precipitationUnit: Flow<PrecipitationUnitMode>
     val isDotsVisible: Flow<Boolean>
+    val isGraphCurved: Flow<Boolean>
     val location: Flow<Location?>
     suspend fun setTheme(themeMode: ThemeMode)
     suspend fun setLanguage(languageMode: LanguageMode)
@@ -22,5 +23,6 @@ interface SettingsRepository {
     suspend fun setWindSpeedUnit(windMode: WindSpeedUnitMode)
     suspend fun setPrecipitationUnit(precipitationMode: PrecipitationUnitMode)
     suspend fun setDotsVisibility(isVisible: Boolean)
+    suspend fun setGraphCurved(isVisible: Boolean)
     suspend fun setLocation(location: Location)
 }

@@ -13,6 +13,8 @@ data class SettingsUIState(
     var selectedLanguage: LanguageMode = currentLanguage,
     var currentDotsOption: Int = 1,
     var selectedDotsOption: Int = currentDotsOption,
+    var currentCurvedOption: Int = 1,
+    var selectedCurvedOption: Int = currentCurvedOption,
     var currentTemperatureUnit: TemperatureUnitMode = TemperatureUnitMode.CELSIUS,
     var selectedTemperatureUnit: TemperatureUnitMode = currentTemperatureUnit,
     var currentWindSpeedUnit: WindSpeedUnitMode = WindSpeedUnitMode.MS,
