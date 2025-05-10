@@ -2,7 +2,8 @@
 
 
 SunPlanner is an app for planning and analyzing weather conditions that helps you choose the best time for a vacation or an important event.
-Weather data by [Open Weather](https://openweathermap.org/) 
+Weather data by [Open-Meteo](https://open-meteo.com/) 
+Graphs by [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts) 
 
 
 ---
@@ -42,6 +43,8 @@ Obtainium is an app that allows automatic APK updates from GitHub. If you have O
 
 <h1 align="center">🌞 SunPlanner</h1>
 SunPlanner — это приложение для планирования и анализа погодных условий, которое поможет вам выбрать наилучшее время для отдыха или важного события.
+Данные от [Open-Meteo](https://open-meteo.com/) 
+Библиотека для графиков [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts)
 
 ---
 
