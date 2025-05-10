@@ -4,11 +4,6 @@ import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherGraphData
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 import java.time.LocalDate
 
 data class MainUIState (
