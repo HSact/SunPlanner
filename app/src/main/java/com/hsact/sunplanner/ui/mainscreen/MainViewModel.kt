@@ -12,6 +12,7 @@ import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
+import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
@@ -56,18 +57,20 @@ class MainViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getSettingsUseCase.location.collect { location ->
-                _mainUiState.value = _mainUiState.value.copy(location = location)
-            }
-        }
-        viewModelScope.launch {
-            getSettingsUseCase.isDotsVisible.collect { dotsOption ->
-                _mainUiState.value = _mainUiState.value.copy(isDotsVisible = dotsOption)
-            }
-        }
-        viewModelScope.launch {
-            getSettingsUseCase.isEdgesCurved.collect { edgesOption ->
-                _mainUiState.value = _mainUiState.value.copy(isEdgesCurved = edgesOption)
+            combine(
+                getSettingsUseCase.location,
+                getSettingsUseCase.isDotsVisible,
+                getSettingsUseCase.isEdgesCurved
+            ) { location, isDotsVisible, isEdgesCurved ->
+                _mainUiState.value.copy(
+                    settingsBundle = _mainUiState.value.settingsBundle.copy(
+                        location = location,
+                        isDotsVisible = isDotsVisible,
+                        isEdgesCurved = isEdgesCurved
+                    )
+                )
+            }.collect { updatedUiState ->
+                _mainUiState.value = updatedUiState
             }
         }
         viewModelScope.launch {
@@ -78,17 +81,20 @@ class MainViewModel @Inject constructor(
                 getSettingsUseCase.windUnit,
                 getSettingsUseCase.precipitationUnit
             ) { language, theme, tempUnit, windUnit, precipitationUnit ->
-                _mainUiState.value.copy(
+                SettingsBundle(
+                    location = _mainUiState.value.settingsBundle.location,
+                    isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
+                    isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
                     languageMode = language ?: nameToLanguageMode(Locale.getDefault().language),
                     themeMode = theme,
                     temperatureUnitMode = tempUnit,
                     windUnitMode = windUnit,
                     precipitationUnitMode = precipitationUnit
                 )
-            }.debounce(200).collect { updatedUiState ->
-                _mainUiState.value = updatedUiState
+            }.debounce(200).collect { updatedBundle ->
+                _mainUiState.value = _mainUiState.value.copy(settingsBundle = updatedBundle)
                 if (_mainUiState.value.weatherData != null && !_mainUiState.value.isLoading) {
-                    fetchWeather(prepareParamsForRequest(updatedUiState) ?: return@collect)
+                    fetchWeather(prepareParamsForRequest(_mainUiState.value) ?: return@collect)
                 }
             }
         }
@@ -160,7 +166,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun onWeatherSearchClick() {
-        if (_mainUiState.value.location == null) {
+        if (_mainUiState.value.settingsBundle.location == null) {
             updateError(stringProvider.locationEmpty())
             return
         }
@@ -187,12 +193,12 @@ class MainViewModel @Inject constructor(
     }
 
     fun prepareParamsForRequest(state: MainUIState): WeatherRequestParams? {
-        val location = state.location ?: return null
+        val location = state.settingsBundle.location ?: return null
         val startDate = state.startLD
         val endDate = state.endLD
-        val temperatureUnit = state.temperatureUnitMode.toName()
-        val windSpeedUnit = state.windUnitMode.toName()
-        val precipitationUnit = state.precipitationUnitMode.toName()
+        val temperatureUnit = state.settingsBundle.temperatureUnitMode.toName()
+        val windSpeedUnit = state.settingsBundle.windUnitMode.toName()
+        val precipitationUnit = state.settingsBundle.precipitationUnitMode.toName()
 
         return WeatherRequestParams().apply {
             latitude = location.latitude
@@ -211,7 +217,7 @@ class MainViewModel @Inject constructor(
             try {
                 cities = repository.getCitiesList(
                     cityName = cityName,
-                    language = _mainUiState.value.languageMode.toName(),
+                    language = _mainUiState.value.settingsBundle.languageMode.toName(),
                 )
             } catch (e: Exception) {
                 //updateError("Error fetching cities: ${e.message}")
@@ -277,15 +283,15 @@ class MainViewModel @Inject constructor(
         }
         val popUpLabels = DateUtils.generatePopUpLabels(
             _mainUiState.value.startLD, _mainUiState.value.endLD,
-            _mainUiState.value.languageMode.toLocale()
+            _mainUiState.value.settingsBundle.languageMode.toLocale()
         )
         _mainUiState.value.weatherGraphData.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
                 stringProvider.max(),
                 maxTemps,
                 popUpLabels,
-                _mainUiState.value.isDotsVisible,
-                _mainUiState.value.isEdgesCurved,
+                _mainUiState.value.settingsBundle.isDotsVisible,
+                _mainUiState.value.settingsBundle.isEdgesCurved,
                 maxTempLineColor,
                 _mainUiState.value.isOneYear
             )
@@ -294,8 +300,8 @@ class MainViewModel @Inject constructor(
                 stringProvider.avg(),
                 averageTemps,
                 popUpLabels,
-                _mainUiState.value.isDotsVisible,
-                _mainUiState.value.isEdgesCurved,
+                _mainUiState.value.settingsBundle.isDotsVisible,
+                _mainUiState.value.settingsBundle.isEdgesCurved,
                 avgTempLineColor,
                 _mainUiState.value.isOneYear
             )
@@ -305,8 +311,8 @@ class MainViewModel @Inject constructor(
                 stringProvider.min(),
                 minTemps,
                 popUpLabels,
-                _mainUiState.value.isDotsVisible,
-                _mainUiState.value.isEdgesCurved,
+                _mainUiState.value.settingsBundle.isDotsVisible,
+                _mainUiState.value.settingsBundle.isEdgesCurved,
                 minTempLineColor,
                 _mainUiState.value.isOneYear
             )
@@ -316,8 +322,8 @@ class MainViewModel @Inject constructor(
                 "",
                 sunshine,
                 popUpLabels,
-                _mainUiState.value.isDotsVisible,
-                _mainUiState.value.isEdgesCurved,
+                _mainUiState.value.settingsBundle.isDotsVisible,
+                _mainUiState.value.settingsBundle.isEdgesCurved,
                 sunShineLineColor,
                 _mainUiState.value.isOneYear
             )
@@ -330,8 +336,8 @@ class MainViewModel @Inject constructor(
                 stringProvider.wind(),
                 windSpeed,
                 popUpLabels,
-                _mainUiState.value.isDotsVisible,
-                _mainUiState.value.isEdgesCurved,
+                _mainUiState.value.settingsBundle.isDotsVisible,
+                _mainUiState.value.settingsBundle.isEdgesCurved,
                 windSpeedColor,
                 _mainUiState.value.isOneYear
             )
@@ -341,8 +347,8 @@ class MainViewModel @Inject constructor(
                 stringProvider.gusts(),
                 gustSpeed,
                 popUpLabels,
-                _mainUiState.value.isDotsVisible,
-                _mainUiState.value.isEdgesCurved,
+                _mainUiState.value.settingsBundle.isDotsVisible,
+                _mainUiState.value.settingsBundle.isEdgesCurved,
                 windGustsSpeedColor,
                 _mainUiState.value.isOneYear
             )

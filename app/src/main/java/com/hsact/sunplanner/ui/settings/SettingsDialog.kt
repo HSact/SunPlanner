@@ -145,7 +145,12 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                             onApplyTheme(viewModel.uiState.value.selectedTheme)
                         },
                         selected = index == selectedThemeIndex,
-                        label = { Text(label) }
+                        label = { Text (
+                            text = label,
+                            maxLines = 1,
+                            overflow = TextOverflow.Clip,
+                            style = MaterialTheme.typography.bodySmall
+                        ) }
                     )
                 }
             }
