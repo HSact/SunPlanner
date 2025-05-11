@@ -21,6 +21,7 @@ data class DailyWeather(
     @Json(name = "precipitation_sum") val precipitationSum: List<Double>,
     @Json(name = "precipitation_hours") val precipitationHours: List<Double>,
     @Json(name = "sunshine_duration") val sunshineDuration: List<Double>,
+    @Json(name = "daylight_duration") val daylightDuration: List<Double>,
     @Json(name = "wind_speed_10m_max") val windSpeedMax: List<Double>,
     @Json(name = "wind_gusts_10m_max") val windGustsMax: List<Double>,
 )

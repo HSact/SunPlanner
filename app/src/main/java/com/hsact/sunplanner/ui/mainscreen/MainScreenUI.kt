@@ -421,7 +421,10 @@ private fun WeatherCards(
     {
         WeatherGraphLineCard(
             stringResource(R.string.sun_hours),
-            listOf(mainDataUI.weatherGraphData.sunShineDuration!!),
+            listOf(
+                mainDataUI.weatherGraphData.dayLightDuration!!,
+                mainDataUI.weatherGraphData.sunShineDuration!!,
+            ),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,

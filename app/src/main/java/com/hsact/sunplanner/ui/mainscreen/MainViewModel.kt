@@ -20,6 +20,7 @@ import com.hsact.sunplanner.ui.settings.modes.toLocale
 import com.hsact.sunplanner.ui.settings.modes.toName
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import com.hsact.sunplanner.ui.theme.avgTempLineColor
+import com.hsact.sunplanner.ui.theme.daylightLineColor
 import com.hsact.sunplanner.ui.theme.maxTempLineColor
 import com.hsact.sunplanner.ui.theme.minTempLineColor
 import com.hsact.sunplanner.ui.theme.precipitationBarColor
@@ -256,6 +257,8 @@ class MainViewModel @Inject constructor(
         }
         var sunshine = _mainUiState.value.weatherData!!.daily.sunshineDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
+        var dayLight = _mainUiState.value.weatherData!!.daily.daylightDuration
+            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
         var precipitation = _mainUiState.value.weatherData!!.daily.precipitationSum
         var windSpeed = _mainUiState.value.weatherData!!.daily.windSpeedMax
         var gustSpeed = _mainUiState.value.weatherData!!.daily.windGustsMax
@@ -275,6 +278,7 @@ class MainViewModel @Inject constructor(
             averageTemps = aggregated.map { it.avgAvgTemp }
             minTemps = aggregated.map { it.avgMinTemp }
             sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+            dayLight = aggregated.map { (it.avgDaylightSeconds / 3600.0 * 10).roundToInt() / 10.0 }
             precipitation = aggregated.map { it.avgPrecipitation }
             windSpeed = aggregated.map { it.avgWindSpeed }
             gustSpeed = aggregated.map { it.avgWindGustSpeed }
@@ -287,45 +291,61 @@ class MainViewModel @Inject constructor(
         )
         _mainUiState.value.weatherGraphData.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.max(),
-                maxTemps,
-                popUpLabels,
-                _mainUiState.value.settingsBundle.isDotsVisible,
-                _mainUiState.value.settingsBundle.isEdgesCurved,
-                maxTempLineColor,
-                _mainUiState.value.isOneYear
+                label = stringProvider.max(),
+                values = maxTemps,
+                dates = popUpLabels,
+                isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
+                isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
+                color = maxTempLineColor,
+                withTint = true,
+                isOneYear = _mainUiState.value.isOneYear
             )
         _mainUiState.value.weatherGraphData.avgTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.avg(),
-                averageTemps,
-                popUpLabels,
-                _mainUiState.value.settingsBundle.isDotsVisible,
-                _mainUiState.value.settingsBundle.isEdgesCurved,
-                avgTempLineColor,
-                _mainUiState.value.isOneYear
+                label = stringProvider.avg(),
+                values = averageTemps,
+                dates = popUpLabels,
+                isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
+                isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
+                color = avgTempLineColor,
+                withTint = false,
+                isOneYear = _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.minTemperature =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.min(),
-                minTemps,
-                popUpLabels,
-                _mainUiState.value.settingsBundle.isDotsVisible,
-                _mainUiState.value.settingsBundle.isEdgesCurved,
-                minTempLineColor,
-                _mainUiState.value.isOneYear
+                label = stringProvider.min(),
+                values = minTemps,
+                dates = popUpLabels,
+                isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
+                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                color = minTempLineColor,
+                withTint = true,
+                isOneYear = _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.sunShineDuration =
             createWeatherGraphLineUseCase.invoke(
-                "",
-                sunshine,
-                popUpLabels,
-                _mainUiState.value.settingsBundle.isDotsVisible,
-                _mainUiState.value.settingsBundle.isEdgesCurved,
-                sunShineLineColor,
-                _mainUiState.value.isOneYear
+                label = stringProvider.sunshine(),
+                values = sunshine,
+                dates = popUpLabels,
+                isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
+                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                color = sunShineLineColor,
+                withTint = true,
+                isOneYear = _mainUiState.value.isOneYear
+            )
+
+        _mainUiState.value.weatherGraphData.dayLightDuration =
+            createWeatherGraphLineUseCase.invoke(
+                label = stringProvider.daylight(),
+                values = dayLight,
+                dates = popUpLabels,
+                isDotsVisible = false, //_mainUiState.value.settingsBundle.isDotsVisible,
+                isEdgesCurved = false, //_mainUiState.value.settingsBundle.isEdgesCurved,
+                color = daylightLineColor,
+                withTint = false,
+                isOneYear = _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.precipitation =
@@ -333,24 +353,26 @@ class MainViewModel @Inject constructor(
 
         _mainUiState.value.weatherGraphData.windSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.wind(),
-                windSpeed,
-                popUpLabels,
-                _mainUiState.value.settingsBundle.isDotsVisible,
-                _mainUiState.value.settingsBundle.isEdgesCurved,
-                windSpeedColor,
-                _mainUiState.value.isOneYear
+                label = stringProvider.wind(),
+                values = windSpeed,
+                dates = popUpLabels,
+                isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
+                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                color = windSpeedColor,
+                withTint = true,
+                isOneYear = _mainUiState.value.isOneYear
             )
 
         _mainUiState.value.weatherGraphData.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
-                stringProvider.gusts(),
-                gustSpeed,
-                popUpLabels,
-                _mainUiState.value.settingsBundle.isDotsVisible,
-                _mainUiState.value.settingsBundle.isEdgesCurved,
-                windGustsSpeedColor,
-                _mainUiState.value.isOneYear
+                label = stringProvider.gusts(),
+                values = gustSpeed,
+                dates = popUpLabels,
+                isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
+                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                color = windGustsSpeedColor,
+                withTint = true,
+                isOneYear = _mainUiState.value.isOneYear
             )
     }
 }

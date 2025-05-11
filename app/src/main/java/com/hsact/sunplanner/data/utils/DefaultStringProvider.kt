@@ -24,10 +24,11 @@ class DefaultStringProvider @Inject constructor(
         context.getString(R.string.error_fetching_weather, e.message ?: "unknown")
 
     override fun max() = context.getString(R.string.max)
-
     override fun avg() = context.getString(R.string.avg)
-
     override fun min() = context.getString(R.string.min)
+
+    override fun sunshine() = context.getString(R.string.sunshine)
+    override fun daylight() = context.getString(R.string.daylight)
 
     override fun windSpeed() = context.getString(R.string.wind_speed)
     override fun wind() = context.getString(R.string.wind)

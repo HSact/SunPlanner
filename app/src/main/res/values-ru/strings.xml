@@ -14,7 +14,7 @@
     <string name="min">Минимум</string>
     <string name="max">Максимум</string>
     <string name="daylight">Световой день</string>
-    <string name="sunshine">Солнечные часы</string>
+    <string name="sunshine">Солнечный свет</string>
     <string name="single_day_one_year">%1$d %2$s в %3$d году</string>
     <string name="single_day_range">%1$d %2$s за %3$d–%4$d годы</string>
     <string name="date_range_one_year">%1$d %2$s – %3$d %4$s в %5$d году</string>
