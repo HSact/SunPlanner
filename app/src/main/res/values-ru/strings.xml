@@ -13,12 +13,14 @@
     <string name="end_day">День окончания</string>
     <string name="min">Минимум</string>
     <string name="max">Максимум</string>
+    <string name="daylight">Световой день</string>
+    <string name="sunshine">Солнечные часы</string>
     <string name="single_day_one_year">%1$d %2$s в %3$d году</string>
     <string name="single_day_range">%1$d %2$s за %3$d–%4$d годы</string>
     <string name="date_range_one_year">%1$d %2$s – %3$d %4$s в %5$d году</string>
     <string name="date_range">%1$d %2$s – %3$d %4$s в среднем за %5$d–%6$d годы</string>
     <string name="temperature">Температура</string>
-    <string name="sunshine_hours">Солнечные часы</string>
+    <string name="sun_hours">Солнечные часы</string>
     <string name="precipitation">Осадки</string>
     <string name="data_source">Данные: Open-Meteo.com (CC BY 4.0)</string>
     <string name="error_location_empty">Локация не указана</string>

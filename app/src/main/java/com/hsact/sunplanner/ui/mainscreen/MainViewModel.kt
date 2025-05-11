@@ -317,7 +317,7 @@ class MainViewModel @Inject constructor(
                 _mainUiState.value.isOneYear
             )
 
-        _mainUiState.value.weatherGraphData.sunDuration =
+        _mainUiState.value.weatherGraphData.sunShineDuration =
             createWeatherGraphLineUseCase.invoke(
                 "",
                 sunshine,

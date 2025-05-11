@@ -420,8 +420,8 @@ private fun WeatherCards(
     Row(modifier.fillMaxWidth())
     {
         WeatherGraphLineCard(
-            stringResource(R.string.sunshine_hours),
-            listOf(mainDataUI.weatherGraphData.sunDuration!!),
+            stringResource(R.string.sun_hours),
+            listOf(mainDataUI.weatherGraphData.sunShineDuration!!),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,
