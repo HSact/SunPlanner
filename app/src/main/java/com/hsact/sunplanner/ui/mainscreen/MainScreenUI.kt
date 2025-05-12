@@ -466,10 +466,10 @@ private fun WeatherCards(
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    val fakeViewModel = MainViewModel()
+
     SunPlannerTheme {
         MainScreen(
-            viewModel = fakeViewModel,
+            viewModel = null,
             onApplyTheme = {},
             onChangeLanguage = {}
         )
