@@ -18,14 +18,14 @@ class AggregateWeatherByDateUseCase @Inject constructor() {
 
         return grouped.map { (day, indices) ->
             val avg = { list: List<Double> -> indices.map { list[it] }.average() }
-            val avgHours = { list: List<Double> -> indices.map { list[it] }.average() }
 
             DailyAggregatedData(
                 date = day,
                 avgMaxTemp = (avg(daily.maxTemperature) * 10).roundToInt() / 10.0,
                 avgAvgTemp = (((avg(daily.maxTemperature) + avg(daily.minTemperature)) / 2) * 10).roundToInt() / 10.0,
                 avgMinTemp = (avg(daily.minTemperature) * 10).roundToInt() / 10.0,
-                avgSunshineSeconds = (avgHours(daily.sunshineDuration) * 10).roundToInt() / 10.0,
+                avgSunshineSeconds = (avg(daily.sunshineDuration) * 10).roundToInt() / 10.0,
+                avgDaylightSeconds = (avg(daily.daylightDuration) * 10).roundToInt() / 10.0,
                 avgPrecipitation = (avg(daily.precipitationSum) * 10).roundToInt() / 10.0,
                 avgWindSpeed = (avg(daily.windSpeedMax) * 10).roundToInt() / 10.0,
                 avgWindGustSpeed = (avg(daily.windGustsMax) * 10).roundToInt() / 10.0

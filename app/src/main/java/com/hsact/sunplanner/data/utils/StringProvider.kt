@@ -10,6 +10,8 @@ interface StringProvider {
     fun max(): String
     fun avg(): String
     fun min(): String
+    fun sunshine(): String
+    fun daylight(): String
     fun windSpeed(): String
     fun wind(): String
     fun gusts(): String

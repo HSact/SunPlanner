@@ -37,7 +37,7 @@ fun <T> DropdownPicker(
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
-            modifier = modifier
+            modifier = Modifier
                 .menuAnchor(MenuAnchorType.Companion.PrimaryNotEditable, enabled = true)
         )
         ExposedDropdownMenu(

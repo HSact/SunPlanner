@@ -420,8 +420,11 @@ private fun WeatherCards(
     Row(modifier.fillMaxWidth())
     {
         WeatherGraphLineCard(
-            stringResource(R.string.sunshine_hours),
-            listOf(mainDataUI.weatherGraphData.sunDuration!!),
+            stringResource(R.string.sun_hours),
+            listOf(
+                mainDataUI.weatherGraphData.dayLightDuration!!,
+                mainDataUI.weatherGraphData.sunShineDuration!!,
+            ),
             mainDataUI.confirmedStartLD,
             mainDataUI.confirmedEndLD,
             locale,
@@ -463,10 +466,10 @@ private fun WeatherCards(
 @Preview(showBackground = true)
 @Composable
 fun MainScreenPreview() {
-    val fakeViewModel = MainViewModel()
+
     SunPlannerTheme {
         MainScreen(
-            viewModel = fakeViewModel,
+            viewModel = null,
             onApplyTheme = {},
             onChangeLanguage = {}
         )

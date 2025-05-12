@@ -38,6 +38,7 @@ object WeatherUtils {
             precipitationSum = matchingIndices.map { dailyWeather.precipitationSum[it] },
             precipitationHours = matchingIndices.map { dailyWeather.precipitationHours[it] },
             sunshineDuration = matchingIndices.map { dailyWeather.sunshineDuration[it] },
+            daylightDuration = matchingIndices.map { dailyWeather.daylightDuration[it] },
             windSpeedMax = matchingIndices.map { dailyWeather.windSpeedMax[it] },
             windGustsMax = matchingIndices.map { dailyWeather.windGustsMax[it] },
         )
