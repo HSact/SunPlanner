@@ -284,6 +284,7 @@ class MainViewModel @Inject constructor(
             gustSpeed = aggregated.map { it.avgWindGustSpeed }
         } else {
             _mainUiState.value = _mainUiState.value.copy(isOneDay = true)
+            dayLight = dayLight.map { dayLight.average() }.toList()
         }
         val popUpLabels = DateUtils.generatePopUpLabels(
             _mainUiState.value.startLD, _mainUiState.value.endLD,
