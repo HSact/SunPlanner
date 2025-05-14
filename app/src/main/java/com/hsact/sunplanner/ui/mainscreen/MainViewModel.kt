@@ -286,7 +286,7 @@ class MainViewModel @Inject constructor(
                     _mainUiState.value.startLD,
                     _mainUiState.value.endLD
                 )
-                processWeatherData(filteredWeather)
+                updateWeatherState(filteredWeather)
             } catch (e: Exception) {
                 updateError(stringProvider.fetchWeatherError(e))
             }
@@ -294,71 +294,74 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun processWeatherData(data: WeatherResponse) {
-        var state = _mainUiState.value
+    private suspend fun updateWeatherState(data: WeatherResponse) {
+        val state = withContext(Dispatchers.Default) {
+             buildWeatherDataState(_mainUiState.value, data)
+        }
+        _mainUiState.value = withContext(Dispatchers.Main) {
+             state
+        }
+    }
+
+    private fun buildWeatherDataState(
+        state: MainUIState,
+        data: WeatherResponse,
+    ): MainUIState {
+        var state = state
         val daily = data.daily
-        withContext(Dispatchers.Default) {
-            //_mainUiState.value = _mainUiState.value.copy(weatherData = data)
-            state = state.copy(weatherData = data)
-            var maxTemps = daily.maxTemperature
-            var minTemps = daily.minTemperature
-            var averageTemps = maxTemps.indices.map { i ->
-                val avg = (maxTemps[i] + minTemps[i]) / 2
-                round(avg * 10) / 10
-            }
-            var sunshine = daily.sunshineDuration
-                .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-            var dayLight = daily.daylightDuration
-                .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-            var precipitation = daily.precipitationSum
-            var windSpeed = daily.windSpeedMax
-            var gustSpeed = daily.windGustsMax
-
-            state = if (state.startLD.year == state.endLD.year) {
-                state.copy(isOneYear = true)
-            } else {
-                state.copy(isOneYear = false)
-            }
-
-            if (state.startLD.dayOfMonth != state.endLD.dayOfMonth ||
-                state.startLD.monthValue != state.endLD.monthValue
-            ) {
-                state = state.copy(isOneDay = false)
-                val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
-                maxTemps = aggregated.map { it.avgMaxTemp }
-                averageTemps = aggregated.map { it.avgAvgTemp }
-                minTemps = aggregated.map { it.avgMinTemp }
-                sunshine =
-                    aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-                dayLight =
-                    aggregated.map { (it.avgDaylightSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-                precipitation = aggregated.map { it.avgPrecipitation }
-                windSpeed = aggregated.map { it.avgWindSpeed }
-                gustSpeed = aggregated.map { it.avgWindGustSpeed }
-            } else {
-                state = state.copy(isOneDay = true)
-                dayLight = dayLight.map { dayLight.average() }.toList()
-            }
-            val popUpLabels = DateUtils.generatePopUpLabels(
-                state.startLD, state.endLD,
-                state.settingsBundle.languageMode.toLocale()
-            )
-            val graphData = createGraphData(
-                maxTemps,
-                averageTemps,
-                minTemps,
-                sunshine,
-                dayLight,
-                precipitation,
-                windSpeed,
-                gustSpeed,
-                popUpLabels
-            )
-            state = state.copy(weatherGraphData = graphData)
+        state = state.copy(weatherData = data)
+        var maxTemps = daily.maxTemperature
+        var minTemps = daily.minTemperature
+        var averageTemps = maxTemps.indices.map { i ->
+            val avg = (maxTemps[i] + minTemps[i]) / 2
+            round(avg * 10) / 10
         }
-        withContext(Dispatchers.Main) {
-            _mainUiState.value = state
+        var sunshine = daily.sunshineDuration
+            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
+        var dayLight = daily.daylightDuration
+            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
+        var precipitation = daily.precipitationSum
+        var windSpeed = daily.windSpeedMax
+        var gustSpeed = daily.windGustsMax
+
+        state = state.copy(isOneYear = state.startLD.year == state.endLD.year)
+
+        if (state.startLD.dayOfMonth != state.endLD.dayOfMonth ||
+            state.startLD.monthValue != state.endLD.monthValue
+        ) {
+            state = state.copy(isOneDay = false)
+            val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
+            maxTemps = aggregated.map { it.avgMaxTemp }
+            averageTemps = aggregated.map { it.avgAvgTemp }
+            minTemps = aggregated.map { it.avgMinTemp }
+            sunshine =
+                aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+            dayLight =
+                aggregated.map { (it.avgDaylightSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+            precipitation = aggregated.map { it.avgPrecipitation }
+            windSpeed = aggregated.map { it.avgWindSpeed }
+            gustSpeed = aggregated.map { it.avgWindGustSpeed }
+        } else {
+            state = state.copy(isOneDay = true)
+            dayLight = dayLight.map { dayLight.average() }.toList()
         }
+        val popUpLabels = DateUtils.generatePopUpLabels(
+            state.startLD, state.endLD,
+            state.settingsBundle.languageMode.toLocale()
+        )
+        val graphData = createGraphData(
+            maxTemps,
+            averageTemps,
+            minTemps,
+            sunshine,
+            dayLight,
+            precipitation,
+            windSpeed,
+            gustSpeed,
+            popUpLabels
+        )
+        state = state.copy(weatherGraphData = graphData)
+        return state
     }
 
     private fun createGraphData(
