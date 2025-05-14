@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
@@ -298,8 +299,8 @@ class MainViewModel @Inject constructor(
         val state = withContext(Dispatchers.Default) {
              buildWeatherDataState(_mainUiState.value, data)
         }
-        _mainUiState.value = withContext(Dispatchers.Main) {
-             state
+        _mainUiState.update { current ->
+            state
         }
     }
 
