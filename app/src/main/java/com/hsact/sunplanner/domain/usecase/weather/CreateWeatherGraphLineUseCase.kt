@@ -27,7 +27,6 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
     ): Line {
         val fixedValues = if (isOneYear && values.size < 2) values + values else values
         val fixedDates = if (isOneYear && dates!!.size < 2) dates + dates else dates
-        val a = .5f
 
         data class Point(val date: String, val value: Double)
 
