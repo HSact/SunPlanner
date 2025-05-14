@@ -38,6 +38,7 @@ fun WeatherGraphBarsCard(
         val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
         allValues.maxOrNull() ?: 0.0
     }
+    val labelWidthFactor = 35
 
     val hasAnyLabel = remember(barGroups) {
         barGroups.any { it.label.isNotBlank() }
@@ -52,13 +53,6 @@ fun WeatherGraphBarsCard(
         if (isDarkTheme) TextStyle(color = Color.White)
         else TextStyle(color = Color.Black)
     }
-
-    val labelProperties = LabelProperties(
-        enabled = true,
-        textStyle = textStyle,
-        labels = DateUtils.generateAxisXLabels(startDate, endDate, locale),
-        rotation = LabelProperties.Rotation(degree = 0f)
-    )
 
     val labelHelperProperties = LabelHelperProperties(
         enabled = hasAnyLabel,
@@ -83,6 +77,22 @@ fun WeatherGraphBarsCard(
 
     Card(modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
         BoxWithConstraints(modifier = Modifier.padding(10.dp)) {
+            var labels = DateUtils.generateAxisXLabels(
+                startDate = startDate,
+                endDate = endDate,
+                locale = locale,
+                count = maxWidth.value.toInt()/labelWidthFactor
+            )
+
+            if (labels.size < 2) {
+                labels = labels + labels
+            }
+            val labelProperties = LabelProperties(
+                enabled = true,
+                textStyle = textStyle,
+                labels = labels,
+                rotation = LabelProperties.Rotation(degree = 0f)
+            )
 
             val totalBars = barGroups[0].values.size
             val spacing = if ((120 / totalBars).toInt() > 2) 2.dp else (120 / totalBars).toInt().dp
