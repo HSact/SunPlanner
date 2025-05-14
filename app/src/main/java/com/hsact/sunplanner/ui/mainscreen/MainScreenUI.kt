@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -154,11 +155,14 @@ fun MainScreen(
                 Row(
                     modifier = Modifier
                         .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                        .align(Alignment.CenterHorizontally)
                 ) {
                     Button(
                         onClick = { viewModel.onWeatherSearchClick() },
                         modifier = Modifier
-                            .weight(1f),
+                            .widthIn(max = 500.dp)
+                            .fillMaxWidth()
+                            ,
                         enabled = !mainDataUI.isLoading
                     ) {
                         Text(stringResource(R.string.search))
