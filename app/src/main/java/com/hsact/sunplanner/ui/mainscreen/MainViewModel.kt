@@ -101,26 +101,70 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun updateLocation(city: Location) {
+    fun handleIntent(intent: MainScreenIntents) {
+        viewModelScope.launch {
+            when (intent) {
+                is MainScreenIntents.FetchCityList -> {
+                    fetchCityList(intent.query)
+                }
+
+                is MainScreenIntents.UpdateLocation -> {
+                    updateLocation(intent.city)
+                }
+
+                is MainScreenIntents.UpdateStartYear -> {
+                    updateStartYear(intent.year)
+                }
+
+                is MainScreenIntents.UpdateStartMonth -> {
+                    updateStartMonth(intent.month)
+                }
+
+                is MainScreenIntents.UpdateStartDay -> {
+                    updateStartDay(intent.day)
+                }
+
+                is MainScreenIntents.UpdateEndYear -> {
+                    updateEndYear(intent.year)
+                }
+
+                is MainScreenIntents.UpdateEndMonth -> {
+                    updateEndMonth(intent.month)
+                }
+
+                is MainScreenIntents.UpdateEndDay -> {
+                    updateEndDay(intent.day)
+                }
+                is MainScreenIntents.CleanError -> {
+                    cleanError()
+                }
+                is MainScreenIntents.WeatherSearchClick -> {
+                    onWeatherSearchClick()
+                }
+            }
+        }
+    }
+
+    private fun updateLocation(city: Location) {
         //_searchDataUI.value = _searchDataUI.value.copy(location = city)
         viewModelScope.launch {
             updateLocationUseCase.invoke(city)
         }
     }
 
-    fun updateStartYear(year: Int) {
+    private fun updateStartYear(year: Int) {
         val old = _mainUiState.value.startLD
         val newDate = old.withYear(year).coerceDay()
         _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
     }
 
-    fun updateStartMonth(month: Int) {
+    private fun updateStartMonth(month: Int) {
         val old = _mainUiState.value.startLD
         val newDate = old.withMonth(month).coerceDay()
         _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
     }
 
-    fun updateStartDay(day: Int) {
+    private fun updateStartDay(day: Int) {
         val old = _mainUiState.value.startLD
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
@@ -128,19 +172,19 @@ class MainViewModel @Inject constructor(
         _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
     }
 
-    fun updateEndYear(year: Int) {
+    private fun updateEndYear(year: Int) {
         val old = _mainUiState.value.endLD
         val newDate = old.withYear(year).coerceDay()
         _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
     }
 
-    fun updateEndMonth(month: Int) {
+    private fun updateEndMonth(month: Int) {
         val old = _mainUiState.value.endLD
         val newDate = old.withMonth(month).coerceDay()
         _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
     }
 
-    fun updateEndDay(day: Int) {
+    private fun updateEndDay(day: Int) {
         val old = _mainUiState.value.endLD
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
@@ -153,20 +197,20 @@ class MainViewModel @Inject constructor(
         return if (this.dayOfMonth > maxDay) this.withDayOfMonth(maxDay) else this
     }
 
-    fun updateError(error: String) {
+    private fun updateError(error: String) {
         _mainUiState.value = _mainUiState.value.copy(error = error)
     }
 
-    fun cleanError() {
+    private fun cleanError() {
         _mainUiState.value = _mainUiState.value.copy(error = "")
     }
 
-    fun updateConfirmedLD(start: LocalDate, end: LocalDate) {
+    private fun updateConfirmedLD(start: LocalDate, end: LocalDate) {
         _mainUiState.value =
             _mainUiState.value.copy(confirmedStartLD = start, confirmedEndLD = end)
     }
 
-    fun onWeatherSearchClick() {
+    private fun onWeatherSearchClick() {
         if (_mainUiState.value.settingsBundle.location == null) {
             updateError(stringProvider.locationEmpty())
             return
@@ -193,7 +237,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun prepareParamsForRequest(state: MainUIState): WeatherRequestParams? {
+    private fun prepareParamsForRequest(state: MainUIState): WeatherRequestParams? {
         val location = state.settingsBundle.location ?: return null
         val startDate = state.startLD
         val endDate = state.endLD
@@ -212,7 +256,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun fetchCityList(cityName: String) {
+    private fun fetchCityList(cityName: String) {
         var cities: List<Location>? = null
         viewModelScope.launch {
             try {
@@ -247,7 +291,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun processWeatherData(data: WeatherResponse) {
+    private fun processWeatherData(data: WeatherResponse) {
         _mainUiState.value = _mainUiState.value.copy(weatherData = data)
         var maxTemps = _mainUiState.value.weatherData!!.daily.maxTemperature
         var minTemps = _mainUiState.value.weatherData!!.daily.minTemperature
@@ -290,6 +334,30 @@ class MainViewModel @Inject constructor(
             _mainUiState.value.startLD, _mainUiState.value.endLD,
             _mainUiState.value.settingsBundle.languageMode.toLocale()
         )
+        createGraphData(
+            maxTemps,
+            averageTemps,
+            minTemps,
+            sunshine,
+            dayLight,
+            precipitation,
+            windSpeed,
+            gustSpeed,
+            popUpLabels
+        )
+    }
+
+    private fun createGraphData(
+        maxTemps: List<Double>,
+        averageTemps: List<Double>,
+        minTemps: List<Double>,
+        sunshine: List<Double>,
+        dayLight: List<Double>,
+        precipitation: List<Double>,
+        windSpeed: List<Double>,
+        gustSpeed: List<Double>,
+        popUpLabels: List<String>
+    ) {
         _mainUiState.value.weatherGraphData.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.max(),
@@ -319,7 +387,7 @@ class MainViewModel @Inject constructor(
                 values = minTemps,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
-                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
                 color = minTempLineColor,
                 tintOpacity = 0.4F,
                 isOneYear = _mainUiState.value.isOneYear
@@ -331,7 +399,7 @@ class MainViewModel @Inject constructor(
                 values = sunshine,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
-                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
                 color = sunShineLineColor,
                 tintOpacity = 0.8F,
                 isOneYear = _mainUiState.value.isOneYear
@@ -358,7 +426,7 @@ class MainViewModel @Inject constructor(
                 values = windSpeed,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
-                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
                 color = windSpeedColor,
                 tintOpacity = 0.5F,
                 isOneYear = _mainUiState.value.isOneYear
@@ -370,7 +438,7 @@ class MainViewModel @Inject constructor(
                 values = gustSpeed,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
-                isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
+                isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
                 color = windGustsSpeedColor,
                 tintOpacity = 0.5F,
                 isOneYear = _mainUiState.value.isOneYear

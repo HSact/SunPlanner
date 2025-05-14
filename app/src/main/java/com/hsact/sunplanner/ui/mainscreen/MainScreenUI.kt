@@ -93,7 +93,7 @@ fun MainScreen(
     LaunchedEffect(mainDataUI.error) {
         if (mainDataUI.error.isNotEmpty()) {
             Toast.makeText(context, mainDataUI.error, Toast.LENGTH_SHORT).show()
-            viewModel.cleanError()
+            viewModel.handleIntent(MainScreenIntents.CleanError)
         }
     }
     LaunchedEffect(mainDataUI.settingsBundle.location) {
@@ -145,7 +145,7 @@ fun MainScreen(
                     query = query,
                     onQueryChange = { query = it },
                     onCitySelected = { selectedCity ->
-                        viewModel.updateLocation(selectedCity)
+                        viewModel.handleIntent(MainScreenIntents.UpdateLocation(selectedCity))
                         isSearchExpanded = false
                         cityName = LocationUtils.buildCityFullName(selectedCity)
                         query = cityName
@@ -163,7 +163,7 @@ fun MainScreen(
                         .align(Alignment.CenterHorizontally)
                 ) {
                     Button(
-                        onClick = { viewModel.onWeatherSearchClick() },
+                        onClick = { viewModel.handleIntent(MainScreenIntents.WeatherSearchClick) },
                         modifier = Modifier
                             .widthIn(max = 500.dp)
                             .fillMaxWidth(),
@@ -224,7 +224,7 @@ private fun YearsRangeSelection(
             list = yearChoices,
             selected = date1.year,
             onSelected = {
-                viewModel.updateStartYear(it)
+                viewModel.handleIntent(MainScreenIntents.UpdateStartYear(it))
             },
             modifier = Modifier
                 .weight(0.5f)
@@ -235,7 +235,7 @@ private fun YearsRangeSelection(
             list = yearChoices,
             selected = date2.year,
             onSelected = {
-                viewModel.updateEndYear(it)
+                viewModel.handleIntent(MainScreenIntents.UpdateEndYear(it))
             },
             modifier = Modifier
                 .weight(0.5f)
@@ -315,7 +315,7 @@ private fun ColumnScope.DatesRangeSection(
                             list = monthChoices,
                             selected = monthChoices[date1.monthValue - 1],
                             onSelected = {
-                                viewModel.updateStartMonth(monthChoices.indexOf(it) + 1)
+                                viewModel.handleIntent(MainScreenIntents.UpdateStartMonth(monthChoices.indexOf(it) + 1))
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -326,7 +326,7 @@ private fun ColumnScope.DatesRangeSection(
                             list = monthChoices,
                             selected = monthChoices[date2.monthValue - 1],
                             onSelected = {
-                                viewModel.updateEndMonth(monthChoices.indexOf(it) + 1)
+                                viewModel.handleIntent(MainScreenIntents.UpdateEndMonth(monthChoices.indexOf(it) + 1))
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -340,7 +340,7 @@ private fun ColumnScope.DatesRangeSection(
                             list = dayChoices,
                             selected = date1.dayOfMonth,
                             onSelected = {
-                                viewModel.updateStartDay(it)
+                                viewModel.handleIntent(MainScreenIntents.UpdateStartDay(it))
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -351,7 +351,7 @@ private fun ColumnScope.DatesRangeSection(
                             list = dayChoices,
                             selected = date2.dayOfMonth,
                             onSelected = {
-                                viewModel.updateEndDay(it)
+                                viewModel.handleIntent(MainScreenIntents.UpdateEndDay(it))
                             },
                             modifier = Modifier
                                 .weight(0.5f)
