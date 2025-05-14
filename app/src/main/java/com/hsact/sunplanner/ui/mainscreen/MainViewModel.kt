@@ -13,6 +13,7 @@ import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.model.SettingsBundle
+import com.hsact.sunplanner.domain.model.WeatherGraphData
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
@@ -294,50 +295,55 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun processWeatherData(data: WeatherResponse) {
+        var state = _mainUiState.value
+        val daily = data.daily
         withContext(Dispatchers.Default) {
-        _mainUiState.value = _mainUiState.value.copy(weatherData = data)
-        var maxTemps = _mainUiState.value.weatherData!!.daily.maxTemperature
-        var minTemps = _mainUiState.value.weatherData!!.daily.minTemperature
-        var averageTemps = maxTemps.indices.map { i ->
-            val avg = (maxTemps[i] + minTemps[i]) / 2
-            round(avg * 10) / 10
-        }
-        var sunshine = _mainUiState.value.weatherData!!.daily.sunshineDuration
-            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-        var dayLight = _mainUiState.value.weatherData!!.daily.daylightDuration
-            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-        var precipitation = _mainUiState.value.weatherData!!.daily.precipitationSum
-        var windSpeed = _mainUiState.value.weatherData!!.daily.windSpeedMax
-        var gustSpeed = _mainUiState.value.weatherData!!.daily.windGustsMax
+            //_mainUiState.value = _mainUiState.value.copy(weatherData = data)
+            state = state.copy(weatherData = data)
+            var maxTemps = daily.maxTemperature
+            var minTemps = daily.minTemperature
+            var averageTemps = maxTemps.indices.map { i ->
+                val avg = (maxTemps[i] + minTemps[i]) / 2
+                round(avg * 10) / 10
+            }
+            var sunshine = daily.sunshineDuration
+                .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
+            var dayLight = daily.daylightDuration
+                .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
+            var precipitation = daily.precipitationSum
+            var windSpeed = daily.windSpeedMax
+            var gustSpeed = daily.windGustsMax
 
-        if (_mainUiState.value.startLD.year == _mainUiState.value.endLD.year) {
-            _mainUiState.value = _mainUiState.value.copy(isOneYear = true)
-        } else {
-            _mainUiState.value = _mainUiState.value.copy(isOneYear = false)
-        }
+            state = if (state.startLD.year == state.endLD.year) {
+                state.copy(isOneYear = true)
+            } else {
+                state.copy(isOneYear = false)
+            }
 
-        if (_mainUiState.value.startLD.dayOfMonth != _mainUiState.value.endLD.dayOfMonth ||
-            _mainUiState.value.startLD.monthValue != _mainUiState.value.endLD.monthValue
-        ) {
-            _mainUiState.value = _mainUiState.value.copy(isOneDay = false)
-            val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
-            maxTemps = aggregated.map { it.avgMaxTemp }
-            averageTemps = aggregated.map { it.avgAvgTemp }
-            minTemps = aggregated.map { it.avgMinTemp }
-            sunshine = aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-            dayLight = aggregated.map { (it.avgDaylightSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-            precipitation = aggregated.map { it.avgPrecipitation }
-            windSpeed = aggregated.map { it.avgWindSpeed }
-            gustSpeed = aggregated.map { it.avgWindGustSpeed }
-        } else {
-            _mainUiState.value = _mainUiState.value.copy(isOneDay = true)
-            dayLight = dayLight.map { dayLight.average() }.toList()
-        }
-        val popUpLabels = DateUtils.generatePopUpLabels(
-            _mainUiState.value.startLD, _mainUiState.value.endLD,
-            _mainUiState.value.settingsBundle.languageMode.toLocale()
-        )
-            createGraphData(
+            if (state.startLD.dayOfMonth != state.endLD.dayOfMonth ||
+                state.startLD.monthValue != state.endLD.monthValue
+            ) {
+                state = state.copy(isOneDay = false)
+                val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
+                maxTemps = aggregated.map { it.avgMaxTemp }
+                averageTemps = aggregated.map { it.avgAvgTemp }
+                minTemps = aggregated.map { it.avgMinTemp }
+                sunshine =
+                    aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+                dayLight =
+                    aggregated.map { (it.avgDaylightSeconds / 3600.0 * 10).roundToInt() / 10.0 }
+                precipitation = aggregated.map { it.avgPrecipitation }
+                windSpeed = aggregated.map { it.avgWindSpeed }
+                gustSpeed = aggregated.map { it.avgWindGustSpeed }
+            } else {
+                state = state.copy(isOneDay = true)
+                dayLight = dayLight.map { dayLight.average() }.toList()
+            }
+            val popUpLabels = DateUtils.generatePopUpLabels(
+                state.startLD, state.endLD,
+                state.settingsBundle.languageMode.toLocale()
+            )
+            val graphData = createGraphData(
                 maxTemps,
                 averageTemps,
                 minTemps,
@@ -348,6 +354,10 @@ class MainViewModel @Inject constructor(
                 gustSpeed,
                 popUpLabels
             )
+            state = state.copy(weatherGraphData = graphData)
+        }
+        withContext(Dispatchers.Main) {
+            _mainUiState.value = state
         }
     }
 
@@ -361,8 +371,9 @@ class MainViewModel @Inject constructor(
         windSpeed: List<Double>,
         gustSpeed: List<Double>,
         popUpLabels: List<String>
-    ) {
-        _mainUiState.value.weatherGraphData.maxTemperature =
+    ): WeatherGraphData {
+        val graphData = WeatherGraphData()
+        graphData.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.max(),
                 values = maxTemps,
@@ -373,7 +384,7 @@ class MainViewModel @Inject constructor(
                 tintOpacity = 0.4F,
                 isOneYear = _mainUiState.value.isOneYear
             )
-        _mainUiState.value.weatherGraphData.avgTemperature =
+        graphData.avgTemperature =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.avg(),
                 values = averageTemps,
@@ -385,7 +396,7 @@ class MainViewModel @Inject constructor(
                 isOneYear = _mainUiState.value.isOneYear
             )
 
-        _mainUiState.value.weatherGraphData.minTemperature =
+        graphData.minTemperature =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.min(),
                 values = minTemps,
@@ -397,7 +408,7 @@ class MainViewModel @Inject constructor(
                 isOneYear = _mainUiState.value.isOneYear
             )
 
-        _mainUiState.value.weatherGraphData.sunShineDuration =
+        graphData.sunShineDuration =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.sunshine(),
                 values = sunshine,
@@ -409,7 +420,7 @@ class MainViewModel @Inject constructor(
                 isOneYear = _mainUiState.value.isOneYear
             )
 
-        _mainUiState.value.weatherGraphData.dayLightDuration =
+        graphData.dayLightDuration =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.daylight(),
                 values = dayLight,
@@ -421,10 +432,10 @@ class MainViewModel @Inject constructor(
                 isOneYear = _mainUiState.value.isOneYear
             )
 
-        _mainUiState.value.weatherGraphData.precipitation =
+        graphData.precipitation =
             createWeatherGraphBarsUseCase.invoke("", precipitation, precipitationBarColor)
 
-        _mainUiState.value.weatherGraphData.windSpeed =
+        graphData.windSpeed =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.wind(),
                 values = windSpeed,
@@ -436,7 +447,7 @@ class MainViewModel @Inject constructor(
                 isOneYear = _mainUiState.value.isOneYear
             )
 
-        _mainUiState.value.weatherGraphData.windGustsSpeed =
+        graphData.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.gusts(),
                 values = gustSpeed,
@@ -447,5 +458,6 @@ class MainViewModel @Inject constructor(
                 tintOpacity = 0.5F,
                 isOneYear = _mainUiState.value.isOneYear
             )
+        return graphData
     }
 }
