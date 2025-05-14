@@ -28,12 +28,14 @@ import com.hsact.sunplanner.ui.theme.sunShineLineColor
 import com.hsact.sunplanner.ui.theme.windGustsSpeedColor
 import com.hsact.sunplanner.ui.theme.windSpeedColor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.util.Locale
 import javax.inject.Inject
@@ -135,9 +137,11 @@ class MainViewModel @Inject constructor(
                 is MainScreenIntents.UpdateEndDay -> {
                     updateEndDay(intent.day)
                 }
+
                 is MainScreenIntents.CleanError -> {
                     cleanError()
                 }
+
                 is MainScreenIntents.WeatherSearchClick -> {
                     onWeatherSearchClick()
                 }
@@ -257,19 +261,17 @@ class MainViewModel @Inject constructor(
     }
 
     private fun fetchCityList(cityName: String) {
-        var cities: List<Location>? = null
         viewModelScope.launch {
             try {
-                cities = repository.getCitiesList(
+                var cities = repository.getCitiesList(
                     cityName = cityName,
                     language = _mainUiState.value.settingsBundle.languageMode.toName(),
                 )
+                if (cities != null) {
+                    _mainUiState.value = _mainUiState.value.copy(cities = cities)
+                }
             } catch (e: Exception) {
-                //updateError("Error fetching cities: ${e.message}")
                 updateError(stringProvider.fetchCitiesError(e))
-            }
-            if (cities != null) {
-                _mainUiState.value = _mainUiState.value.copy(cities = cities!!)
             }
         }
     }
@@ -291,7 +293,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun processWeatherData(data: WeatherResponse) {
+    private suspend fun processWeatherData(data: WeatherResponse) {
+        withContext(Dispatchers.Default) {
         _mainUiState.value = _mainUiState.value.copy(weatherData = data)
         var maxTemps = _mainUiState.value.weatherData!!.daily.maxTemperature
         var minTemps = _mainUiState.value.weatherData!!.daily.minTemperature
@@ -334,17 +337,18 @@ class MainViewModel @Inject constructor(
             _mainUiState.value.startLD, _mainUiState.value.endLD,
             _mainUiState.value.settingsBundle.languageMode.toLocale()
         )
-        createGraphData(
-            maxTemps,
-            averageTemps,
-            minTemps,
-            sunshine,
-            dayLight,
-            precipitation,
-            windSpeed,
-            gustSpeed,
-            popUpLabels
-        )
+            createGraphData(
+                maxTemps,
+                averageTemps,
+                minTemps,
+                sunshine,
+                dayLight,
+                precipitation,
+                windSpeed,
+                gustSpeed,
+                popUpLabels
+            )
+        }
     }
 
     private fun createGraphData(
