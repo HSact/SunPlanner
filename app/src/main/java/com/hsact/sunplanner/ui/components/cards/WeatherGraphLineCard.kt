@@ -87,14 +87,20 @@ fun WeatherGraphLineCard(
         textStyle = textStyle,
     )
 
+    val animationMode = if (lineList.first().values.size < 100) {
+        AnimationMode.Together(delayBuilder = { it * 500L })
+    } else {
+        AnimationMode.Together(delayBuilder = { 0L })
+    }
+
     Card(modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
         BoxWithConstraints(modifier = Modifier.padding(10.dp)) {
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
                 endDate = endDate,
                 locale = locale,
-                count = maxWidth.value.toInt()/labelWidthFactor
-                )
+                count = maxWidth.value.toInt() / labelWidthFactor
+            )
 
             if (labels.size < 2) {
                 labels = labels + labels
@@ -117,9 +123,7 @@ fun WeatherGraphLineCard(
 
                 LineChart(
                     data = lineList,
-                    animationMode = AnimationMode.Together(
-                        delayBuilder = { it * 500L }
-                    ),
+                    animationMode = animationMode,
                     gridProperties = gridProperties,
                     zeroLineProperties = ZeroLineProperties(enabled = false),
                     indicatorProperties = indicatorProperties,

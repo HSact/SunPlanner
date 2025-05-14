@@ -22,11 +22,12 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
         isDotsVisible: Boolean,
         isEdgesCurved: Boolean,
         color: Color,
-        withTint: Boolean = true,
+        tintOpacity: Float = 0.5F,
         isOneYear: Boolean = false
     ): Line {
         val fixedValues = if (isOneYear && values.size < 2) values + values else values
         val fixedDates = if (isOneYear && dates!!.size < 2) dates + dates else dates
+        val a = .5f
 
         data class Point(val date: String, val value: Double)
 
@@ -35,7 +36,7 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
             label = label,
             values = if (isOneYear && values.size < 2) values + values else values,
             color = SolidColor(color),
-            firstGradientFillColor = if (withTint) color.copy(alpha = .5f) else Color.Transparent,
+            firstGradientFillColor = color.copy(alpha = tintOpacity),
             secondGradientFillColor = Color.Transparent,
             strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
             gradientAnimationDelay = 1000,

@@ -78,9 +78,12 @@ fun MainScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scrollState = rememberScrollState()
     val canScroll = remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf(
-        if (mainDataUI.settingsBundle.location != null)
-            LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else "") }
+    var query by remember {
+        mutableStateOf(
+            if (mainDataUI.settingsBundle.location != null)
+                LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else ""
+        )
+    }
     val date1 = mainDataUI.startLD
     val date2 = mainDataUI.endLD
 
@@ -96,7 +99,9 @@ fun MainScreen(
     LaunchedEffect(mainDataUI.settingsBundle.location) {
         if (query.isBlank() && mainDataUI.settingsBundle.location != null) {
             query =
-                LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location ?: return@LaunchedEffect)
+                LocationUtils.buildCityFullName(
+                    mainDataUI.settingsBundle.location ?: return@LaunchedEffect
+                )
         }
     }
     Scaffold(
@@ -161,8 +166,7 @@ fun MainScreen(
                         onClick = { viewModel.onWeatherSearchClick() },
                         modifier = Modifier
                             .widthIn(max = 500.dp)
-                            .fillMaxWidth()
-                            ,
+                            .fillMaxWidth(),
                         enabled = !mainDataUI.isLoading
                     ) {
                         Text(stringResource(R.string.search))
@@ -248,7 +252,7 @@ private fun ColumnScope.DatesRangeSection(
     date1: LocalDate,
     date2: LocalDate,
 ) {
-    val monthChoices = remember {context.resources.getStringArray(R.array.month_choices).toList()}
+    val monthChoices = remember { context.resources.getStringArray(R.array.month_choices).toList() }
     val dayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     Row(
         modifier = Modifier
@@ -309,9 +313,9 @@ private fun ColumnScope.DatesRangeSection(
                         DropdownPicker(
                             label = stringResource(R.string.start_month),
                             list = monthChoices,
-                            selected = monthChoices[date1.monthValue-1],
+                            selected = monthChoices[date1.monthValue - 1],
                             onSelected = {
-                                viewModel.updateStartMonth(monthChoices.indexOf(it)+1)
+                                viewModel.updateStartMonth(monthChoices.indexOf(it) + 1)
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -320,9 +324,9 @@ private fun ColumnScope.DatesRangeSection(
                         DropdownPicker(
                             label = stringResource(R.string.end_month),
                             list = monthChoices,
-                            selected = monthChoices[date2.monthValue-1],
+                            selected = monthChoices[date2.monthValue - 1],
                             onSelected = {
-                                viewModel.updateEndMonth(monthChoices.indexOf(it)+1)
+                                viewModel.updateEndMonth(monthChoices.indexOf(it) + 1)
                             },
                             modifier = Modifier
                                 .weight(0.5f)

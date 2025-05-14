@@ -298,7 +298,7 @@ class MainViewModel @Inject constructor(
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
                 color = maxTempLineColor,
-                withTint = true,
+                tintOpacity = 0.4F,
                 isOneYear = _mainUiState.value.isOneYear
             )
         _mainUiState.value.weatherGraphData.avgTemperature =
@@ -309,7 +309,7 @@ class MainViewModel @Inject constructor(
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
                 color = avgTempLineColor,
-                withTint = false,
+                tintOpacity = 0.0F,
                 isOneYear = _mainUiState.value.isOneYear
             )
 
@@ -321,7 +321,7 @@ class MainViewModel @Inject constructor(
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
                 color = minTempLineColor,
-                withTint = true,
+                tintOpacity = 0.4F,
                 isOneYear = _mainUiState.value.isOneYear
             )
 
@@ -333,7 +333,7 @@ class MainViewModel @Inject constructor(
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
                 color = sunShineLineColor,
-                withTint = true,
+                tintOpacity = 0.8F,
                 isOneYear = _mainUiState.value.isOneYear
             )
 
@@ -345,7 +345,7 @@ class MainViewModel @Inject constructor(
                 isDotsVisible = false, //_mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = false, //_mainUiState.value.settingsBundle.isEdgesCurved,
                 color = daylightLineColor,
-                withTint = false,
+                tintOpacity = 0.0F,
                 isOneYear = _mainUiState.value.isOneYear
             )
 
@@ -360,7 +360,7 @@ class MainViewModel @Inject constructor(
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
                 color = windSpeedColor,
-                withTint = true,
+                tintOpacity = 0.5F,
                 isOneYear = _mainUiState.value.isOneYear
             )
 
@@ -372,7 +372,7 @@ class MainViewModel @Inject constructor(
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved =_mainUiState.value.settingsBundle.isEdgesCurved,
                 color = windGustsSpeedColor,
-                withTint = true,
+                tintOpacity = 0.5F,
                 isOneYear = _mainUiState.value.isOneYear
             )
     }
