@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.data.responses.Location
+import com.hsact.sunplanner.ui.mainscreen.MainScreenIntents
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 import kotlinx.coroutines.FlowPreview
 
@@ -99,7 +100,7 @@ fun LocationSearch(
                             onQueryChange(it)
                             onSearchExpandedChange(it.isNotEmpty() || isFocused)
                             if (it.length >= minCityLetters) {
-                                viewModel.fetchCityList(it)
+                                viewModel.handleIntent(MainScreenIntents.FetchCityList(it))
                             }
                         },
                         modifier = Modifier

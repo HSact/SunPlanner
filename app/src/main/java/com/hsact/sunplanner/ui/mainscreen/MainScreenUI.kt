@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -77,9 +78,12 @@ fun MainScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scrollState = rememberScrollState()
     val canScroll = remember { mutableStateOf(false) }
-    var query by remember { mutableStateOf(
-        if (mainDataUI.settingsBundle.location != null)
-            LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else "") }
+    var query by remember {
+        mutableStateOf(
+            if (mainDataUI.settingsBundle.location != null)
+                LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else ""
+        )
+    }
     val date1 = mainDataUI.startLD
     val date2 = mainDataUI.endLD
 
@@ -89,13 +93,15 @@ fun MainScreen(
     LaunchedEffect(mainDataUI.error) {
         if (mainDataUI.error.isNotEmpty()) {
             Toast.makeText(context, mainDataUI.error, Toast.LENGTH_SHORT).show()
-            viewModel.cleanError()
+            viewModel.handleIntent(MainScreenIntents.CleanError)
         }
     }
     LaunchedEffect(mainDataUI.settingsBundle.location) {
         if (query.isBlank() && mainDataUI.settingsBundle.location != null) {
             query =
-                LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location ?: return@LaunchedEffect)
+                LocationUtils.buildCityFullName(
+                    mainDataUI.settingsBundle.location ?: return@LaunchedEffect
+                )
         }
     }
     Scaffold(
@@ -139,7 +145,7 @@ fun MainScreen(
                     query = query,
                     onQueryChange = { query = it },
                     onCitySelected = { selectedCity ->
-                        viewModel.updateLocation(selectedCity)
+                        viewModel.handleIntent(MainScreenIntents.UpdateLocation(selectedCity))
                         isSearchExpanded = false
                         cityName = LocationUtils.buildCityFullName(selectedCity)
                         query = cityName
@@ -154,11 +160,13 @@ fun MainScreen(
                 Row(
                     modifier = Modifier
                         .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                        .align(Alignment.CenterHorizontally)
                 ) {
                     Button(
-                        onClick = { viewModel.onWeatherSearchClick() },
+                        onClick = { viewModel.handleIntent(MainScreenIntents.WeatherSearchClick) },
                         modifier = Modifier
-                            .weight(1f),
+                            .widthIn(max = 500.dp)
+                            .fillMaxWidth(),
                         enabled = !mainDataUI.isLoading
                     ) {
                         Text(stringResource(R.string.search))
@@ -216,7 +224,7 @@ private fun YearsRangeSelection(
             list = yearChoices,
             selected = date1.year,
             onSelected = {
-                viewModel.updateStartYear(it)
+                viewModel.handleIntent(MainScreenIntents.UpdateStartYear(it))
             },
             modifier = Modifier
                 .weight(0.5f)
@@ -227,7 +235,7 @@ private fun YearsRangeSelection(
             list = yearChoices,
             selected = date2.year,
             onSelected = {
-                viewModel.updateEndYear(it)
+                viewModel.handleIntent(MainScreenIntents.UpdateEndYear(it))
             },
             modifier = Modifier
                 .weight(0.5f)
@@ -244,7 +252,7 @@ private fun ColumnScope.DatesRangeSection(
     date1: LocalDate,
     date2: LocalDate,
 ) {
-    val monthChoices = remember {context.resources.getStringArray(R.array.month_choices).toList()}
+    val monthChoices = remember { context.resources.getStringArray(R.array.month_choices).toList() }
     val dayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     Row(
         modifier = Modifier
@@ -305,9 +313,9 @@ private fun ColumnScope.DatesRangeSection(
                         DropdownPicker(
                             label = stringResource(R.string.start_month),
                             list = monthChoices,
-                            selected = monthChoices[date1.monthValue-1],
+                            selected = monthChoices[date1.monthValue - 1],
                             onSelected = {
-                                viewModel.updateStartMonth(monthChoices.indexOf(it)+1)
+                                viewModel.handleIntent(MainScreenIntents.UpdateStartMonth(monthChoices.indexOf(it) + 1))
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -316,9 +324,9 @@ private fun ColumnScope.DatesRangeSection(
                         DropdownPicker(
                             label = stringResource(R.string.end_month),
                             list = monthChoices,
-                            selected = monthChoices[date2.monthValue-1],
+                            selected = monthChoices[date2.monthValue - 1],
                             onSelected = {
-                                viewModel.updateEndMonth(monthChoices.indexOf(it)+1)
+                                viewModel.handleIntent(MainScreenIntents.UpdateEndMonth(monthChoices.indexOf(it) + 1))
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -332,7 +340,7 @@ private fun ColumnScope.DatesRangeSection(
                             list = dayChoices,
                             selected = date1.dayOfMonth,
                             onSelected = {
-                                viewModel.updateStartDay(it)
+                                viewModel.handleIntent(MainScreenIntents.UpdateStartDay(it))
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -343,7 +351,7 @@ private fun ColumnScope.DatesRangeSection(
                             list = dayChoices,
                             selected = date2.dayOfMonth,
                             onSelected = {
-                                viewModel.updateEndDay(it)
+                                viewModel.handleIntent(MainScreenIntents.UpdateEndDay(it))
                             },
                             modifier = Modifier
                                 .weight(0.5f)

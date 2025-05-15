@@ -1,9 +1,10 @@
 package com.hsact.sunplanner.ui.components.cards
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -36,6 +37,7 @@ import ir.ehsannarmani.compose_charts.models.ZeroLineProperties
 import java.time.LocalDate
 import java.util.Locale
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun WeatherGraphLineCard(
     header: String,
@@ -61,6 +63,8 @@ fun WeatherGraphLineCard(
         lineList.any { it.label.isNotBlank() }
     }
 
+    val labelWidthFactor = 35
+
     val isDarkTheme =
         if (theme == ThemeMode.SYSTEM) isSystemInDarkTheme()
         else {
@@ -70,20 +74,6 @@ fun WeatherGraphLineCard(
         if (isDarkTheme) TextStyle(color = Color.White)
         else TextStyle(color = Color.Black)
     }
-    var labels = DateUtils.generateAxisXLabels(startDate, endDate, locale)
-    if (labels.size < 2) {
-        labels = labels + labels
-    }
-
-    val labelProperties = LabelProperties(
-        enabled = true,
-        textStyle = textStyle,
-        labels = labels,
-        /*if (useYearsAsLabels) (startDate.year..endDate.year).map
-    { "'${(it % 100).toString().padStart(2, '0')}" }
-        else (startDate.dayOfMonth..endDate.dayOfMonth).map { it.toString() },*/
-        rotation = LabelProperties.Rotation(degree = 0f)
-    )
 
     val labelHelperProperties = LabelHelperProperties(
         enabled = hasAnyLabel,
@@ -97,8 +87,31 @@ fun WeatherGraphLineCard(
         textStyle = textStyle,
     )
 
+    val animationMode = if (lineList.first().values.size < 100) {
+        AnimationMode.Together(delayBuilder = { it * 500L })
+    } else {
+        AnimationMode.Together(delayBuilder = { 0L })
+    }
+
     Card(modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
-        Box(modifier = Modifier.padding(10.dp)) {
+        BoxWithConstraints(modifier = Modifier.padding(10.dp)) {
+            var labels = DateUtils.generateAxisXLabels(
+                startDate = startDate,
+                endDate = endDate,
+                locale = locale,
+                count = maxWidth.value.toInt() / labelWidthFactor
+            )
+
+            if (labels.size < 2) {
+                labels = labels + labels
+            }
+
+            val labelProperties = LabelProperties(
+                enabled = true,
+                textStyle = textStyle,
+                labels = labels,
+                rotation = LabelProperties.Rotation(degree = 0f)
+            )
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                 Text(
                     text = header,
@@ -110,9 +123,7 @@ fun WeatherGraphLineCard(
 
                 LineChart(
                     data = lineList,
-                    animationMode = AnimationMode.Together(
-                        delayBuilder = { it * 500L }
-                    ),
+                    animationMode = animationMode,
                     gridProperties = gridProperties,
                     zeroLineProperties = ZeroLineProperties(enabled = false),
                     indicatorProperties = indicatorProperties,

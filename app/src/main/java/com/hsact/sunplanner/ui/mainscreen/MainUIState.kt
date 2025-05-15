@@ -6,9 +6,10 @@ import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherGraphData
 import java.time.LocalDate
 
-data class MainUIState (
+data class MainUIState(
     val settingsBundle: SettingsBundle = SettingsBundle(),
-    val error : String = "",
+    val maxYearRange: Int = 30,
+    val error: String = "",
     val isLoading: Boolean = false,
     val isOneDay: Boolean = true,
     val isOneYear: Boolean = false,
@@ -20,4 +21,20 @@ data class MainUIState (
     val confirmedEndLD: LocalDate = endLD,
     val weatherData: WeatherResponse? = null,
     val weatherGraphData: WeatherGraphData = WeatherGraphData()
-)
+) {
+    fun isLocationNotNull(): Boolean {
+        return settingsBundle.location != null
+    }
+
+    fun isStartYearNotAfterEndYear(): Boolean {
+        return startLD.year <= endLD.year
+    }
+
+    fun isDateRangeValid(): Boolean {
+        return startLD.withYear(endLD.year).dayOfYear <= endLD.dayOfYear
+    }
+
+    fun isYearsRangeWithinLimit(): Boolean {
+        return (endLD.year - startLD.year) < maxYearRange
+    }
+}

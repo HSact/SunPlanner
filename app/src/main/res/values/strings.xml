@@ -26,7 +26,7 @@
     <string name="error_location_empty">Location is empty</string>
     <string name="error_invalid_year_range">Invalid year range</string>
     <string name="error_invalid_date_range">Invalid date range</string>
-    <string name="error_years_range_too_big">Years range is too big (max 20)</string>
+    <string name="error_years_range_too_big">Years range is too big (max %1$d)</string>
     <string name="error_fetching_cities">Error fetching cities: %1$s</string>
     <string name="error_fetching_weather">Error fetching weather: %1$s</string>
     <string name="settings">Settings</string>
