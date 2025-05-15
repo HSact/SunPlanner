@@ -152,7 +152,6 @@ class MainViewModel @Inject constructor(
     }
 
     private fun updateLocation(city: Location) {
-        //_searchDataUI.value = _searchDataUI.value.copy(location = city)
         viewModelScope.launch {
             updateLocationUseCase.invoke(city)
         }
@@ -216,29 +215,29 @@ class MainViewModel @Inject constructor(
             _mainUiState.value.copy(confirmedStartLD = start, confirmedEndLD = end)
     }
 
-    private fun onWeatherSearchClick() {
-        if (_mainUiState.value.settingsBundle.location == null) {
+    private suspend fun onWeatherSearchClick() {
+        val state = _mainUiState.value
+        if (!state.isLocationNotNull()) {
             updateError(stringProvider.locationEmpty())
             return
         }
-        if (_mainUiState.value.startLD.year > _mainUiState.value.endLD.year) {
+        if (!state.isStartYearNotAfterEndYear()) {
             updateError(stringProvider.invalidYearRange())
             return
         }
-        if (_mainUiState.value.startLD.withYear(_mainUiState.value.endLD.year).dayOfYear >
-            _mainUiState.value.endLD.dayOfYear
-        ) {
+        if (!state.isDateRangeValid()) {
             updateError(stringProvider.invalidDateRange())
             return
         }
-        if (_mainUiState.value.endLD.year - _mainUiState.value.startLD.year >= 20) {
-            //updateError("Years range is too big (max 20)")
-            updateError(stringProvider.yearsRangeTooBig())
+        if (!state.isYearsRangeWithinLimit()) {
+            updateError(stringProvider.yearsRangeTooBig(state.maxYearRange))
             return
         }
-        val params = prepareParamsForRequest(_mainUiState.value)
+        val params = withContext(Dispatchers.Default) {
+            prepareParamsForRequest(state)
+        }
         if (params != null) {
-            updateConfirmedLD(_mainUiState.value.startLD, _mainUiState.value.endLD)
+            updateConfirmedLD(state.startLD, state.endLD)
             fetchWeather(params)
         }
     }
@@ -297,7 +296,7 @@ class MainViewModel @Inject constructor(
 
     private suspend fun updateWeatherState(data: WeatherResponse) {
         val state = withContext(Dispatchers.Default) {
-             buildWeatherDataState(_mainUiState.value, data)
+            buildWeatherDataState(_mainUiState.value, data)
         }
         _mainUiState.update { current ->
             state

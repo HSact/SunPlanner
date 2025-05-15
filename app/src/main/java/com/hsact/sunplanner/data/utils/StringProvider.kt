@@ -4,7 +4,7 @@ interface StringProvider {
     fun locationEmpty(): String
     fun invalidYearRange(): String
     fun invalidDateRange(): String
-    fun yearsRangeTooBig(): String
+    fun yearsRangeTooBig(limit: Int): String
     fun fetchCitiesError(e: Exception): String
     fun fetchWeatherError(e: Exception): String
     fun max(): String
