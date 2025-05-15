@@ -155,7 +155,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                 }
             }
         }
-        /*Row(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 15.dp)
@@ -180,7 +180,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                 },
                 modifier = Modifier.padding(start = 20.dp)
             )
-        }*/
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
