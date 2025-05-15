@@ -17,8 +17,6 @@ import com.hsact.sunplanner.domain.model.WeatherGraphData
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
-import com.hsact.sunplanner.ui.settings.modes.toLocale
-import com.hsact.sunplanner.ui.settings.modes.toName
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import com.hsact.sunplanner.ui.theme.avgTempLineColor
 import com.hsact.sunplanner.ui.theme.daylightLineColor
