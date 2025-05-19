@@ -1,5 +1,8 @@
 package com.hsact.sunplanner
 
+import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,6 +21,7 @@ import com.hsact.sunplanner.ui.ThemeViewModel
 import com.hsact.sunplanner.ui.mainscreen.MainScreen
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
+import com.hsact.sunplanner.ui.settings.LocalizedContextWrapper
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +43,16 @@ class MainActivity : ComponentActivity() {
     lateinit var appLocaleManager: AppLocaleManager
 
     private lateinit var selectedLocale: Locale
+    val isPreAndroid13 = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+
+    override fun attachBaseContext(base: Context) {
+        if (isPreAndroid13) {
+            selectedLocale = Locale.getDefault()
+            val localizedContext = LocalizedContextWrapper.wrap(base, selectedLocale)
+            super.attachBaseContext(localizedContext)
+        } else
+            super.attachBaseContext(base)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +87,9 @@ class MainActivity : ComponentActivity() {
             }
             val onChangeLanguage: (LanguageMode) -> Unit = { selectedLanguage ->
                 setAppLocale(selectedLanguage)
+                if (isPreAndroid13) {
+                    setAppLocaleLegacy(selectedLanguage)
+                }
             }
             SunPlannerTheme(darkTheme = isDarkTheme) {
                 MainScreen(
@@ -86,5 +103,27 @@ class MainActivity : ComponentActivity() {
 
     private fun setAppLocale(languageMode: LanguageMode) {
         appLocaleManager.changeLanguage(this, languageMode.toName())
+    }
+
+    private fun setAppLocaleLegacy(languageMode: LanguageMode) {
+        val locale = when (languageMode) {
+            LanguageMode.ENGLISH -> Locale.ENGLISH
+            LanguageMode.RUSSIAN -> Locale("ru")
+        }
+        Locale.setDefault(locale)
+        val config = resources.configuration
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+
+        @Suppress("DEPRECATION")
+        resources.updateConfiguration(config, resources.displayMetrics)
+        restartApp()
+    }
+
+    private fun restartApp() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
+        finishAffinity()
     }
 }
