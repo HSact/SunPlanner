@@ -1,6 +1,7 @@
 package com.hsact.sunplanner
 
 import android.app.Application
+import android.os.Build
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.AppLocaleManager
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
@@ -23,25 +24,27 @@ class SunPlanner : Application() {
     @Inject
     lateinit var appLocaleManager: AppLocaleManager
 
+    val isPreAndroid13 = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+
     override fun onCreate() {
         super.onCreate()
         applySavedLanguage()
     }
 
     private fun applySavedLanguage() {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-            CoroutineScope(Dispatchers.Default).launch {
-                val langMode = getSettingsUseCase.language.firstOrNull()
-                    ?: nameToLanguageMode(Locale.getDefault().language)
-                appLocaleManager.changeLanguage(this@SunPlanner, langMode.toName())
-                setLocale(langMode)
-            }
-        } else {
+        if (isPreAndroid13) {
             runBlocking {
                 val language = getSettingsUseCase.language.firstOrNull()
                 language?.let {
                     setLocale(it)
                 }
+            }
+        } else {
+            CoroutineScope(Dispatchers.Default).launch {
+                val langMode = getSettingsUseCase.language.firstOrNull()
+                    ?: nameToLanguageMode(Locale.getDefault().language)
+                appLocaleManager.changeLanguage(this@SunPlanner, langMode.toName())
+                setLocale(langMode)
             }
         }
     }
