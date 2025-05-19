@@ -99,7 +99,7 @@ fun WeatherGraphLineCard(
                 startDate = startDate,
                 endDate = endDate,
                 locale = locale,
-                count = maxWidth.value.toInt() / labelWidthFactor
+                maxCount = maxWidth.value.toInt() / labelWidthFactor
             )
 
             if (labels.size < 2) {

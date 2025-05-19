@@ -103,7 +103,7 @@ object DateUtils {
         startDate: LocalDate,
         endDate: LocalDate,
         locale: Locale,
-        count: Int = 10
+        maxCount: Int = 10
     ): List<String> {
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
@@ -117,8 +117,8 @@ object DateUtils {
                 monthLabels(startDate, endDate, locale)
             }
         }
-        if (rawLabels.size <= count) return rawLabels
-        val step = (rawLabels.size / count).toInt().coerceAtLeast(2)
+        if (rawLabels.size <= maxCount) return rawLabels
+        val step = (rawLabels.size / maxCount).toInt().coerceAtLeast(2)
         val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
         return filteredLabels
     }
