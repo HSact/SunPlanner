@@ -9,6 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -81,7 +82,9 @@ class MainActivity : ComponentActivity() {
                 ThemeMode.DARK -> true
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
             }
-
+            if (isPreAndroid13) {
+                ApplyThemeLegacy(isDarkTheme)
+            }
             val onApplyTheme: (ThemeMode) -> Unit = { selectedTheme ->
                 themeViewModel.updateTheme(selectedTheme)
             }
@@ -101,10 +104,30 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @Suppress("DEPRECATION")
+    @Composable
+    private fun ApplyThemeLegacy(isDarkTheme: Boolean) {
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = !isDarkTheme
+        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        val controller = WindowInsetsControllerCompat(window, window.decorView)
+        window.navigationBarColor = if (isDarkTheme) {
+            0xFF000000.toInt()
+        } else {
+            0xFFFFFFFF.toInt()
+        }
+        controller.isAppearanceLightStatusBars = !isDarkTheme
+        controller.isAppearanceLightNavigationBars = !isDarkTheme
+        controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+    }
+
     private fun setAppLocale(languageMode: LanguageMode) {
         appLocaleManager.changeLanguage(this, languageMode.toName())
     }
 
+    @Suppress("DEPRECATION")
     private fun setAppLocaleLegacy(languageMode: LanguageMode) {
         val locale = when (languageMode) {
             LanguageMode.ENGLISH -> Locale.ENGLISH
@@ -114,8 +137,6 @@ class MainActivity : ComponentActivity() {
         val config = resources.configuration
         config.setLocale(locale)
         config.setLayoutDirection(locale)
-
-        @Suppress("DEPRECATION")
         resources.updateConfiguration(config, resources.displayMetrics)
         restartApp()
     }
