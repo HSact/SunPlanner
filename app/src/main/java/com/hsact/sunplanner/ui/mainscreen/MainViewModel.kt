@@ -14,6 +14,7 @@ import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherGraphData
+import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
@@ -308,19 +309,21 @@ class MainViewModel @Inject constructor(
         var state = state
         val daily = data.daily
         state = state.copy(weatherData = data)
-        var maxTemps = daily.maxTemperature
-        var minTemps = daily.minTemperature
-        var averageTemps = maxTemps.indices.map { i ->
-            val avg = (maxTemps[i] + minTemps[i]) / 2
+        val weatherMetrics = WeatherMetrics()
+        weatherMetrics.maxTemps = daily.maxTemperature
+        weatherMetrics.minTemps = daily.minTemperature
+        weatherMetrics.averageTemps = weatherMetrics.maxTemps.indices.map { i ->
+            val avg = (weatherMetrics.maxTemps[i] + weatherMetrics.minTemps[i]) / 2
             round(avg * 10) / 10
         }
-        var sunshine = daily.sunshineDuration
+
+        weatherMetrics.sunshine = daily.sunshineDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-        var dayLight = daily.daylightDuration
+        weatherMetrics.dayLight = daily.daylightDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-        var precipitation = daily.precipitationSum
-        var windSpeed = daily.windSpeedMax
-        var gustSpeed = daily.windGustsMax
+        weatherMetrics.precipitation = daily.precipitationSum
+        weatherMetrics.windSpeed = daily.windSpeedMax
+        weatherMetrics.gustSpeed = daily.windGustsMax
 
         state = state.copy(isOneYear = state.startLD.year == state.endLD.year)
 
@@ -329,33 +332,26 @@ class MainViewModel @Inject constructor(
         ) {
             state = state.copy(isOneDay = false)
             val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
-            maxTemps = aggregated.map { it.avgMaxTemp }
-            averageTemps = aggregated.map { it.avgAvgTemp }
-            minTemps = aggregated.map { it.avgMinTemp }
-            sunshine =
+            weatherMetrics.maxTemps = aggregated.map { it.avgMaxTemp }
+            weatherMetrics.averageTemps = aggregated.map { it.avgAvgTemp }
+            weatherMetrics.minTemps = aggregated.map { it.avgMinTemp }
+            weatherMetrics.sunshine =
                 aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-            dayLight =
+            weatherMetrics.dayLight =
                 aggregated.map { (it.avgDaylightSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-            precipitation = aggregated.map { it.avgPrecipitation }
-            windSpeed = aggregated.map { it.avgWindSpeed }
-            gustSpeed = aggregated.map { it.avgWindGustSpeed }
+            weatherMetrics.precipitation = aggregated.map { it.avgPrecipitation }
+            weatherMetrics.windSpeed = aggregated.map { it.avgWindSpeed }
+            weatherMetrics.gustSpeed = aggregated.map { it.avgWindGustSpeed }
         } else {
             state = state.copy(isOneDay = true)
-            dayLight = dayLight.map { dayLight.average() }.toList()
+            weatherMetrics.dayLight = weatherMetrics.dayLight.map { weatherMetrics.dayLight.average() }.toList()
         }
         val popUpLabels = DateUtils.generatePopUpLabels(
             state.startLD, state.endLD,
             state.settingsBundle.languageMode.toLocale()
         )
         val graphData = createGraphData(
-            maxTemps,
-            averageTemps,
-            minTemps,
-            sunshine,
-            dayLight,
-            precipitation,
-            windSpeed,
-            gustSpeed,
+            weatherMetrics,
             popUpLabels
         )
         state = state.copy(weatherGraphData = graphData)
@@ -363,21 +359,14 @@ class MainViewModel @Inject constructor(
     }
 
     private fun createGraphData(
-        maxTemps: List<Double>,
-        averageTemps: List<Double>,
-        minTemps: List<Double>,
-        sunshine: List<Double>,
-        dayLight: List<Double>,
-        precipitation: List<Double>,
-        windSpeed: List<Double>,
-        gustSpeed: List<Double>,
+        weatherMetrics: WeatherMetrics,
         popUpLabels: List<String>
     ): WeatherGraphData {
         val graphData = WeatherGraphData()
         graphData.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.max(),
-                values = maxTemps,
+                values = weatherMetrics.maxTemps,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
@@ -388,7 +377,7 @@ class MainViewModel @Inject constructor(
         graphData.avgTemperature =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.avg(),
-                values = averageTemps,
+                values = weatherMetrics.averageTemps,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
@@ -400,7 +389,7 @@ class MainViewModel @Inject constructor(
         graphData.minTemperature =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.min(),
-                values = minTemps,
+                values = weatherMetrics.minTemps,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
@@ -412,7 +401,7 @@ class MainViewModel @Inject constructor(
         graphData.sunShineDuration =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.sunshine(),
-                values = sunshine,
+                values = weatherMetrics.sunshine,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
@@ -424,7 +413,7 @@ class MainViewModel @Inject constructor(
         graphData.dayLightDuration =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.daylight(),
-                values = dayLight,
+                values = weatherMetrics.dayLight,
                 dates = popUpLabels,
                 isDotsVisible = false, //_mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = false, //_mainUiState.value.settingsBundle.isEdgesCurved,
@@ -434,12 +423,12 @@ class MainViewModel @Inject constructor(
             )
 
         graphData.precipitation =
-            createWeatherGraphBarsUseCase.invoke("", precipitation, precipitationBarColor)
+            createWeatherGraphBarsUseCase.invoke("", weatherMetrics.precipitation, precipitationBarColor)
 
         graphData.windSpeed =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.wind(),
-                values = windSpeed,
+                values = weatherMetrics.windSpeed,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
@@ -451,7 +440,7 @@ class MainViewModel @Inject constructor(
         graphData.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
                 label = stringProvider.gusts(),
-                values = gustSpeed,
+                values = weatherMetrics.gustSpeed,
                 dates = popUpLabels,
                 isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                 isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
