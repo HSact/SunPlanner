@@ -11,10 +11,10 @@ object DateUtils {
         isOneDay: Boolean,
         isOneYear: Boolean,
         locale: Locale,
-        singleDayOneYearString: String = "",
-        singleDaySting: String = "",
-        dateRangeOneYearSting: String = "",
-        dateRangeString: String = ""
+        singleDayOneYearString: String = "",    //For resource String
+        singleDaySting: String = "",            //For resource String
+        dateRangeOneYearSting: String = "",     //For resource String
+        dateRangeString: String = ""            //For resource String
     ): String {
         return if (isOneDay) {
             val monthName = startDate.month
