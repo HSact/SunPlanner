@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.repository.WeatherRepository
-import com.hsact.sunplanner.domain.usecase.weather.AggregateWeatherByDateUseCase
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
+import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
 import com.hsact.sunplanner.domain.factory.WeatherGraphDataFactory
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
@@ -41,7 +41,7 @@ class MainViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateLocationUseCase: UpdateLocationUseCase,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
-    private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
+    private val weatherAvgValuesFactory: WeatherAvgValuesFactory,
     private val weatherGraphDataFactory: WeatherGraphDataFactory,
 ) : ViewModel() {
 
@@ -298,7 +298,7 @@ class MainViewModel @Inject constructor(
         var state = state
         val daily = data.daily
         state = state.copy(weatherData = data)
-        val weatherMetrics = WeatherMetrics()
+        var weatherMetrics = WeatherMetrics()
         weatherMetrics.maxTemps = daily.maxTemperature
         weatherMetrics.minTemps = daily.minTemperature
         weatherMetrics.averageTemps = weatherMetrics.maxTemps.indices.map { i ->
@@ -320,17 +320,7 @@ class MainViewModel @Inject constructor(
             state.startLD.monthValue != state.endLD.monthValue
         ) {
             state = state.copy(isOneDay = false)
-            val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
-            weatherMetrics.maxTemps = aggregated.map { it.avgMaxTemp }
-            weatherMetrics.averageTemps = aggregated.map { it.avgAvgTemp }
-            weatherMetrics.minTemps = aggregated.map { it.avgMinTemp }
-            weatherMetrics.sunshine =
-                aggregated.map { (it.avgSunshineSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-            weatherMetrics.dayLight =
-                aggregated.map { (it.avgDaylightSeconds / 3600.0 * 10).roundToInt() / 10.0 }
-            weatherMetrics.precipitation = aggregated.map { it.avgPrecipitation }
-            weatherMetrics.windSpeed = aggregated.map { it.avgWindSpeed }
-            weatherMetrics.gustSpeed = aggregated.map { it.avgWindGustSpeed }
+            weatherMetrics = weatherAvgValuesFactory.create(data, weatherMetrics)
         } else {
             state = state.copy(isOneDay = true)
             weatherMetrics.dayLight = weatherMetrics.dayLight.map { weatherMetrics.dayLight.average() }.toList()
