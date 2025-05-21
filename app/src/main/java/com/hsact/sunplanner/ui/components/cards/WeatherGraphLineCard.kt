@@ -20,9 +20,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import ir.ehsannarmani.compose_charts.LineChart
@@ -55,15 +57,10 @@ fun WeatherGraphLineCard(
         val min = if (minIsZero) 0.0 else allValues.minOrNull() ?: 0.0
         min to max
     }
-    /*val useYearsAsLabels =
-        startDate.dayOfMonth == endDate.dayOfMonth &&
-                startDate.month == endDate.month*/
 
     val hasAnyLabel = remember(lineList) {
         lineList.any { it.label.isNotBlank() }
     }
-
-    val labelWidthFactor = 35
 
     val isDarkTheme =
         if (theme == ThemeMode.SYSTEM) isSystemInDarkTheme()
@@ -71,7 +68,8 @@ fun WeatherGraphLineCard(
             theme == ThemeMode.DARK
         }
     val textStyle = remember(isDarkTheme) {
-        if (isDarkTheme) TextStyle(color = Color.White)
+        if (isDarkTheme) TextStyle(color = Color.White,
+            fontSize = 12.sp)
         else TextStyle(color = Color.Black)
     }
 
@@ -98,10 +96,12 @@ fun WeatherGraphLineCard(
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
                 endDate = endDate,
-                locale = locale,
-                count = maxWidth.value.toInt() / labelWidthFactor
+                locale = locale
             )
-
+            val density = LocalDensity.current
+            val screenWidthPx = with(density) { maxWidth.toPx() }
+            val totalWidth = totalTextWidth(labels, textStyle)
+            labels = DateUtils.reduceAxisXLabels(labels, totalWidth, screenWidthPx.toDouble())
             if (labels.size < 2) {
                 labels = labels + labels
             }

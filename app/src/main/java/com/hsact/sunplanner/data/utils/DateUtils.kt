@@ -1,6 +1,7 @@
 package com.hsact.sunplanner.data.utils
 
 import java.time.LocalDate
+import java.time.Year
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -11,10 +12,10 @@ object DateUtils {
         isOneDay: Boolean,
         isOneYear: Boolean,
         locale: Locale,
-        singleDayOneYearString: String = "",
-        singleDaySting: String = "",
-        dateRangeOneYearSting: String = "",
-        dateRangeString: String = ""
+        singleDayOneYearString: String = "",    //For resource String
+        singleDaySting: String = "",            //For resource String
+        dateRangeOneYearSting: String = "",     //For resource String
+        dateRangeString: String = ""            //For resource String
     ): String {
         return if (isOneDay) {
             val monthName = startDate.month
@@ -81,9 +82,14 @@ object DateUtils {
         if (isOneDay) {
             return (startDate.year..endDate.year).map { it.toString() }
         }
-        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
+        val leapYearDate = (startDate.year..endDate.year)
+            .firstOrNull { Year.isLeap(it.toLong()) }
+            ?.let { LocalDate.of(it, startDate.month, startDate.dayOfMonth) }
+            ?: startDate
+
+        val singleYearEndDate = endDate.minusYears((endDate.year - leapYearDate.year).toLong())
         val labels = mutableListOf<String>()
-        var current = startDate
+        var current = leapYearDate
 
         while (!current.isAfter(singleYearEndDate)) {
             val day = current.dayOfMonth
@@ -102,8 +108,7 @@ object DateUtils {
     fun generateAxisXLabels(
         startDate: LocalDate,
         endDate: LocalDate,
-        locale: Locale,
-        count: Int = 10
+        locale: Locale
     ): List<String> {
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
@@ -117,8 +122,22 @@ object DateUtils {
                 monthLabels(startDate, endDate, locale)
             }
         }
-        if (rawLabels.size <= count) return rawLabels
-        val step = (rawLabels.size / count).toInt().coerceAtLeast(2)
+//        if (rawLabels.size <= maxCount)
+            return rawLabels
+//        val step = (rawLabels.size / maxCount).toInt().coerceAtLeast(2)
+//        val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
+//        return filteredLabels
+    }
+
+    fun reduceAxisXLabels(
+        rawLabels: List<String>,
+        labelsWidth: Double,
+        maxWidth: Double
+    ): List<String> {
+        if (labelsWidth <= maxWidth) {
+            return rawLabels
+        }
+        val step = (labelsWidth / maxWidth).toInt().coerceAtLeast(1) + 1
         val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
         return filteredLabels
     }
@@ -157,8 +176,12 @@ object DateUtils {
         startDate: LocalDate,
         endDate: LocalDate
     ): List<String> {
-        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
-        return generateSequence(startDate) { it.plusDays(1) }
+        val leapYearDate = (startDate.year..endDate.year)
+            .firstOrNull { Year.isLeap(it.toLong()) }
+            ?.let { LocalDate.of(it, startDate.month, startDate.dayOfMonth) }
+            ?: startDate
+        val singleYearEndDate = endDate.minusYears((endDate.year - leapYearDate.year).toLong())
+        return generateSequence(leapYearDate) { it.plusDays(1) }
             .takeWhile { !it.isAfter(singleYearEndDate) }
             .map { it.dayOfMonth.toString() }
             .toList()

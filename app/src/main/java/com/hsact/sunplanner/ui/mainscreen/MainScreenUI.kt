@@ -253,7 +253,8 @@ private fun ColumnScope.DatesRangeSection(
     date2: LocalDate,
 ) {
     val monthChoices = remember { context.resources.getStringArray(R.array.month_choices).toList() }
-    val dayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
+    val startDayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
+    val endDayChoices = remember(date2) { (1..date2.lengthOfMonth()).toList() }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -337,7 +338,7 @@ private fun ColumnScope.DatesRangeSection(
                     {
                         DropdownPicker(
                             label = stringResource(R.string.start_day),
-                            list = dayChoices,
+                            list = startDayChoices,
                             selected = date1.dayOfMonth,
                             onSelected = {
                                 viewModel.handleIntent(MainScreenIntents.UpdateStartDay(it))
@@ -348,7 +349,7 @@ private fun ColumnScope.DatesRangeSection(
                         )
                         DropdownPicker(
                             label = stringResource(R.string.end_day),
-                            list = dayChoices,
+                            list = endDayChoices,
                             selected = date2.dayOfMonth,
                             onSelected = {
                                 viewModel.handleIntent(MainScreenIntents.UpdateEndDay(it))
