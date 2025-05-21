@@ -102,8 +102,7 @@ object DateUtils {
     fun generateAxisXLabels(
         startDate: LocalDate,
         endDate: LocalDate,
-        locale: Locale,
-        maxCount: Int = 10
+        locale: Locale
     ): List<String> {
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month

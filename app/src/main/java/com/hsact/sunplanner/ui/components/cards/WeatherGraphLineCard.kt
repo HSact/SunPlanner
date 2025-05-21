@@ -57,15 +57,10 @@ fun WeatherGraphLineCard(
         val min = if (minIsZero) 0.0 else allValues.minOrNull() ?: 0.0
         min to max
     }
-    /*val useYearsAsLabels =
-        startDate.dayOfMonth == endDate.dayOfMonth &&
-                startDate.month == endDate.month*/
 
     val hasAnyLabel = remember(lineList) {
         lineList.any { it.label.isNotBlank() }
     }
-
-    val labelWidthFactor = 35
 
     val isDarkTheme =
         if (theme == ThemeMode.SYSTEM) isSystemInDarkTheme()
@@ -101,8 +96,7 @@ fun WeatherGraphLineCard(
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
                 endDate = endDate,
-                locale = locale,
-                maxCount = maxWidth.value.toInt() / labelWidthFactor
+                locale = locale
             )
             val density = LocalDensity.current
             val screenWidthPx = with(density) { maxWidth.toPx() }

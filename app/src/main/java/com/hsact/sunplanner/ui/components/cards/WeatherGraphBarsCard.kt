@@ -39,7 +39,6 @@ fun WeatherGraphBarsCard(
         val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
         allValues.maxOrNull() ?: 0.0
     }
-    val labelWidthFactor = 35
 
     val hasAnyLabel = remember(barGroups) {
         barGroups.any { it.label.isNotBlank() }
@@ -82,8 +81,7 @@ fun WeatherGraphBarsCard(
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
                 endDate = endDate,
-                locale = locale,
-                maxCount = maxWidth.value.toInt() / labelWidthFactor
+                locale = locale
             )
             val density = LocalDensity.current
             val screenWidthPx = with(density) { maxWidth.toPx() }
