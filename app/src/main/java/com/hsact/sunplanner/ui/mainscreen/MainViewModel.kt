@@ -11,6 +11,7 @@ import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
 import com.hsact.sunplanner.domain.factory.WeatherGraphDataFactory
+import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
@@ -87,7 +88,12 @@ class MainViewModel @Inject constructor(
             }.debounce(200).collect { updatedBundle ->
                 _mainUiState.value = _mainUiState.value.copy(settingsBundle = updatedBundle)
                 if (_mainUiState.value.weatherData != null && !_mainUiState.value.isLoading) {
-                    fetchWeather(prepareParamsForRequest(_mainUiState.value) ?: return@collect)
+                    fetchWeather(
+                        prepareParamsForRequest(
+                            _mainUiState.value.settingsBundle,
+                            _mainUiState.value.confirmedDates
+                        ) ?: return@collect
+                    )
                 }
             }
         }
@@ -204,11 +210,11 @@ class MainViewModel @Inject constructor(
         _mainUiState.value = _mainUiState.value.copy(error = "")
     }
 
-    private fun updateConfirmedLD(start: LocalDate, end: LocalDate) {
+    private fun updateConfirmedLD(dates: DatesBundle) {
         _mainUiState.value.copy(
             tempDates = _mainUiState.value.tempDates.copy(
-                startDate = start,
-                endDate = end
+                startDate = dates.startDate,
+                endDate = dates.endDate
             )
         )
     }
@@ -219,34 +225,37 @@ class MainViewModel @Inject constructor(
             updateError(stringProvider.locationEmpty())
             return
         }
-        if (!state.isStartYearNotAfterEndYear()) {
+        if (!state.tempDates.isStartYearNotAfterEndYear()) {
             updateError(stringProvider.invalidYearRange())
             return
         }
-        if (!state.isDateRangeValid()) {
+        if (!state.tempDates.isDateRangeValid()) {
             updateError(stringProvider.invalidDateRange())
             return
         }
-        if (!state.isYearsRangeWithinLimit()) {
+        if (!state.tempDates.isYearsRangeWithinLimit(state.maxYearRange)) {
             updateError(stringProvider.yearsRangeTooBig(state.maxYearRange))
             return
         }
         val params = withContext(Dispatchers.Default) {
-            prepareParamsForRequest(state)
+            prepareParamsForRequest(state.settingsBundle, state.tempDates)
         }
         if (params != null) {
-            updateConfirmedLD(state.tempDates.startDate, state.tempDates.endDate)
+            updateConfirmedLD(state.tempDates)
             fetchWeather(params)
         }
     }
 
-    private fun prepareParamsForRequest(state: MainUIState): WeatherRequestParams? {
-        val location = state.settingsBundle.location ?: return null
-        val startDate = state.tempDates.startDate
-        val endDate = state.tempDates.endDate
-        val temperatureUnit = state.settingsBundle.temperatureUnitMode.toName()
-        val windSpeedUnit = state.settingsBundle.windUnitMode.toName()
-        val precipitationUnit = state.settingsBundle.precipitationUnitMode.toName()
+    private fun prepareParamsForRequest(
+        settingsBundle: SettingsBundle,
+        dates: DatesBundle
+    ): WeatherRequestParams? {
+        val location = settingsBundle.location ?: return null
+        val startDate = dates.startDate
+        val endDate = dates.endDate
+        val temperatureUnit = settingsBundle.temperatureUnitMode.toName()
+        val windSpeedUnit = settingsBundle.windUnitMode.toName()
+        val precipitationUnit = settingsBundle.precipitationUnitMode.toName()
 
         return WeatherRequestParams().apply {
             latitude = location.latitude

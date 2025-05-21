@@ -16,10 +16,6 @@ data class MainUIState(
     val isOneYear: Boolean = false,
     val cityName: String = "",
     val cities: List<Location> = emptyList(),
-    /*val startLD: LocalDate = LocalDate.now().minusYears(10),
-    val endLD: LocalDate = LocalDate.now().minusYears(1),
-    val confirmedStartLD: LocalDate = startLD,
-    val confirmedEndLD: LocalDate = endLD,*/
     val tempDates: DatesBundle = DatesBundle(LocalDate.now().minusYears(10), LocalDate.now().minusYears(1)),
     val confirmedDates: DatesBundle = tempDates,
     val weatherData: WeatherResponse? = null,
@@ -27,17 +23,5 @@ data class MainUIState(
 ) {
     fun isLocationNotNull(): Boolean {
         return settingsBundle.location != null
-    }
-
-    fun isStartYearNotAfterEndYear(): Boolean {
-        return tempDates.startDate.year <= tempDates.endDate.year
-    }
-
-    fun isDateRangeValid(): Boolean {
-        return tempDates.startDate.withYear(tempDates.endDate.year).dayOfYear <= tempDates.endDate.dayOfYear
-    }
-
-    fun isYearsRangeWithinLimit(): Boolean {
-        return (tempDates.endDate.year - tempDates.startDate.year) < maxYearRange
     }
 }
