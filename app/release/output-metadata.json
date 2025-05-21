@@ -11,9 +11,9 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 2,
-      "versionName": "0.8.0",
-      "outputFile": "app-release.apk"
+      "versionCode": 3,
+      "versionName": "0.8.1",
+      "outputFile": "SunPlanner_v0.8.1.apk"
     }
   ],
   "elementType": "File",
@@ -22,14 +22,14 @@
       "minApi": 28,
       "maxApi": 30,
       "baselineProfiles": [
-        "baselineProfiles/1/app-release.dm"
+        "baselineProfiles/1/SunPlanner_v0.8.1.dm"
       ]
     },
     {
       "minApi": 31,
       "maxApi": 2147483647,
       "baselineProfiles": [
-        "baselineProfiles/0/app-release.dm"
+        "baselineProfiles/0/SunPlanner_v0.8.1.dm"
       ]
     }
   ],
