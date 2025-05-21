@@ -17,8 +17,8 @@ android {
         applicationId = "com.hsact.sunplanner"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.8.0"
+        versionCode = 3
+        versionName = "0.8.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -41,6 +41,15 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    applicationVariants.all {
+        val variant = this
+        variant.outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val outputFileName = "SunPlanner_v${variant.versionName}.apk"
+                output.outputFileName = outputFileName
+            }
     }
 }
 

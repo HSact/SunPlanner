@@ -49,6 +49,9 @@ import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
 import java.time.LocalDate
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hsact.sunplanner.domain.model.DatesBundle
+import com.hsact.sunplanner.domain.model.SettingsBundle
+import com.hsact.sunplanner.domain.model.WeatherGraphData
 import com.hsact.sunplanner.ui.components.CollapsibleTopBar
 import com.hsact.sunplanner.ui.components.DropdownPicker
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
@@ -84,8 +87,6 @@ fun MainScreen(
                 LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else ""
         )
     }
-    val date1 = mainDataUI.startLD
-    val date2 = mainDataUI.endLD
 
     LaunchedEffect(scrollState.maxValue) {
         canScroll.value = scrollState.maxValue > 0 && !mainDataUI.isLoading
@@ -155,8 +156,8 @@ fun MainScreen(
                 )
             }
             if (!isSearchExpanded) {
-                YearsRangeSelection(viewModel, date1, date2)
-                DatesRangeSection(viewModel, context, date1, date2)
+                YearsRangeSelection(viewModel, mainDataUI.tempDates)
+                DatesRangeSection(viewModel, context, mainDataUI.tempDates)
                 Row(
                     modifier = Modifier
                         .padding(top = 10.dp, start = 10.dp, end = 10.dp)
@@ -187,8 +188,19 @@ fun MainScreen(
                     }
                 }
                 if (mainDataUI.weatherData != null && !mainDataUI.isLoading) {
-                    DateText(modifier, mainDataUI)
-                    WeatherCards(context, mainDataUI, modifier, Locale.getDefault())
+                    DateText(
+                        modifier,
+                        mainDataUI.confirmedDates,
+                        mainDataUI.isOneDay,
+                        mainDataUI.isOneYear
+                    )
+                    WeatherCards(
+                        context,
+                        modifier,
+                        mainDataUI.confirmedDates,
+                        mainDataUI.weatherGraphData,
+                        mainDataUI.settingsBundle
+                    )
                     Row(
                         modifier
                             .fillMaxWidth()
@@ -206,8 +218,7 @@ fun MainScreen(
 @Composable
 private fun YearsRangeSelection(
     viewModel: MainViewModel,
-    date1: LocalDate,
-    date2: LocalDate
+    dates: DatesBundle
 ) {
     val yearChoices by remember {
         mutableStateOf(
@@ -222,7 +233,7 @@ private fun YearsRangeSelection(
         DropdownPicker(
             label = stringResource(R.string.start_year),
             list = yearChoices,
-            selected = date1.year,
+            selected = dates.startDate.year,
             onSelected = {
                 viewModel.handleIntent(MainScreenIntents.UpdateStartYear(it))
             },
@@ -233,7 +244,7 @@ private fun YearsRangeSelection(
         DropdownPicker(
             label = stringResource(R.string.end_year),
             list = yearChoices,
-            selected = date2.year,
+            selected = dates.endDate.year,
             onSelected = {
                 viewModel.handleIntent(MainScreenIntents.UpdateEndYear(it))
             },
@@ -249,9 +260,10 @@ private fun YearsRangeSelection(
 private fun ColumnScope.DatesRangeSection(
     viewModel: MainViewModel,
     context: Context,
-    date1: LocalDate,
-    date2: LocalDate,
+    datesBundle: DatesBundle,
 ) {
+    val date1 = datesBundle.startDate
+    val date2 = datesBundle.endDate
     val monthChoices = remember { context.resources.getStringArray(R.array.month_choices).toList() }
     val startDayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     val endDayChoices = remember(date2) { (1..date2.lengthOfMonth()).toList() }
@@ -316,7 +328,11 @@ private fun ColumnScope.DatesRangeSection(
                             list = monthChoices,
                             selected = monthChoices[date1.monthValue - 1],
                             onSelected = {
-                                viewModel.handleIntent(MainScreenIntents.UpdateStartMonth(monthChoices.indexOf(it) + 1))
+                                viewModel.handleIntent(
+                                    MainScreenIntents.UpdateStartMonth(
+                                        monthChoices.indexOf(it) + 1
+                                    )
+                                )
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -327,7 +343,13 @@ private fun ColumnScope.DatesRangeSection(
                             list = monthChoices,
                             selected = monthChoices[date2.monthValue - 1],
                             onSelected = {
-                                viewModel.handleIntent(MainScreenIntents.UpdateEndMonth(monthChoices.indexOf(it) + 1))
+                                viewModel.handleIntent(
+                                    MainScreenIntents.UpdateEndMonth(
+                                        monthChoices.indexOf(
+                                            it
+                                        ) + 1
+                                    )
+                                )
                             },
                             modifier = Modifier
                                 .weight(0.5f)
@@ -368,7 +390,9 @@ private fun ColumnScope.DatesRangeSection(
 @Composable
 private fun DateText(
     modifier: Modifier,
-    mainDataUI: MainUIState
+    dates: DatesBundle,
+    isOneDay: Boolean,
+    isOneYear: Boolean
 ) {
     Row(
         modifier
@@ -378,10 +402,10 @@ private fun DateText(
     ) {
         Text(
             text = DateUtils.formatDateRange(
-                startDate = mainDataUI.confirmedStartLD,
-                endDate = mainDataUI.confirmedEndLD,
-                isOneDay = mainDataUI.isOneDay,
-                isOneYear = mainDataUI.isOneYear,
+                startDate = dates.startDate,
+                endDate = dates.endDate,
+                isOneDay = isOneDay,
+                isOneYear = isOneYear,
                 locale = Locale.getDefault(),
                 singleDayOneYearString = stringResource(R.string.single_day_one_year),
                 singleDaySting = stringResource(R.string.single_day_range),
@@ -395,16 +419,17 @@ private fun DateText(
 @Composable
 private fun WeatherCards(
     context: Context,
-    mainDataUI: MainUIState,
     modifier: Modifier,
-    locale: Locale
+    dates: DatesBundle,
+    weatherGraphData: WeatherGraphData,
+    settingsBundle: SettingsBundle
 ) {
     val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
-        .toList()[mainDataUI.settingsBundle.temperatureUnitMode.toIndex()]
+        .toList()[settingsBundle.temperatureUnitMode.toIndex()]
     val speedUnit = context.resources.getStringArray(R.array.speed_unit_choices)
-        .toList()[mainDataUI.settingsBundle.windUnitMode.toIndex()]
+        .toList()[settingsBundle.windUnitMode.toIndex()]
     val precipitationUnit = context.resources.getStringArray(R.array.precipitation_unit_choices)
-        .toList()[mainDataUI.settingsBundle.precipitationUnitMode.toIndex()]
+        .toList()[settingsBundle.precipitationUnitMode.toIndex()]
 
     Row(
         modifier
@@ -416,14 +441,14 @@ private fun WeatherCards(
             stringResource(R.string.temperature)
                     + " (" + tempUnit + ")",
             listOf(
-                mainDataUI.weatherGraphData.maxTemperature!!,
-                mainDataUI.weatherGraphData.avgTemperature!!,
-                mainDataUI.weatherGraphData.minTemperature!!
+                weatherGraphData.maxTemperature!!,
+                weatherGraphData.avgTemperature!!,
+                weatherGraphData.minTemperature!!
             ),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            locale,
-            mainDataUI.settingsBundle.themeMode
+            dates.startDate,
+            dates.endDate,
+            settingsBundle.languageMode.toLocale(),
+            settingsBundle.themeMode
         )
     }
     Row(modifier.fillMaxWidth())
@@ -431,13 +456,13 @@ private fun WeatherCards(
         WeatherGraphLineCard(
             stringResource(R.string.sun_hours),
             listOf(
-                mainDataUI.weatherGraphData.dayLightDuration!!,
-                mainDataUI.weatherGraphData.sunShineDuration!!,
+                weatherGraphData.dayLightDuration!!,
+                weatherGraphData.sunShineDuration!!,
             ),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            locale,
-            mainDataUI.settingsBundle.themeMode,
+            dates.startDate,
+            dates.endDate,
+            settingsBundle.languageMode.toLocale(),
+            settingsBundle.themeMode,
             true              //set min value 0
         )
     }
@@ -446,12 +471,16 @@ private fun WeatherCards(
         WeatherGraphBarsCard(
             stringResource(R.string.precipitation)
                     + " (" + precipitationUnit + ")",
-            listOf(mainDataUI.weatherGraphData.precipitation!!),
-            DateUtils.generatePopUpLabels(mainDataUI.startLD, mainDataUI.endLD, locale),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            locale,
-            mainDataUI.settingsBundle.themeMode
+            listOf(weatherGraphData.precipitation!!),
+            DateUtils.generatePopUpLabels(
+                dates.startDate,
+                dates.endDate,
+                settingsBundle.languageMode.toLocale()
+            ),
+            dates.startDate,
+            dates.endDate,
+            settingsBundle.languageMode.toLocale(),
+            settingsBundle.themeMode
         )
     }
     Row(modifier.fillMaxWidth()) {
@@ -459,13 +488,13 @@ private fun WeatherCards(
             stringResource(R.string.wind_speed)
                     + " (" + speedUnit + ")",
             listOf(
-                mainDataUI.weatherGraphData.windSpeed!!,
-                mainDataUI.weatherGraphData.windGustsSpeed!!
+                weatherGraphData.windSpeed!!,
+                weatherGraphData.windGustsSpeed!!
             ),
-            mainDataUI.confirmedStartLD,
-            mainDataUI.confirmedEndLD,
-            locale,
-            mainDataUI.settingsBundle.themeMode,
+            dates.startDate,
+            dates.endDate,
+            settingsBundle.languageMode.toLocale(),
+            settingsBundle.themeMode,
             true
         )
     }
