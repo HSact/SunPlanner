@@ -1,22 +1,21 @@
 <h1 align="center">🌞 SunPlanner</h1>
 
 
-SunPlanner is an app for planning and analyzing weather conditions that helps you choose the best time for a vacation or an important event.
-
-Weather data by [Open-Meteo](https://open-meteo.com/)
-
-Graphs by [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts) 
+SunPlanner is an app for planning and analyzing weather conditions that helps you choose the best time for a vacation or an important event.<br><br>
+Weather data by [Open-Meteo.com](https://open-meteo.com/)<br>
+Graphs by [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts)<br>
 
 
 ---
 
 
-📌 Main Features:
+📌 Main Features:<br>
 
-✅ Retrieve weather data for a day or a selected period: temperature, precipitation, and other parameters.  
-✅ Calculate average temperature and precipitation by day and year.  
-✅ User-friendly interface for entering city and date ranges.  
-✅ Support for various time intervals for flexible analysis.  
+🌦️ Weather for a selected day or period: temperature, precipitation, cloudiness, etc.<br>
+📊 Weather statistics: average temperature and precipitation by day and year<br>
+📅 Weather log: convenient viewing of data by day and year<br>
+🧭 Simple interface: enter the city and the desired dates<br>
+🔁 Support for various time intervals<br>
 
 ## Screenshots
 
@@ -44,23 +43,32 @@ Obtainium is an app that allows automatic APK updates from GitHub. If you have O
 ---
 
 <h1 align="center">🌞 SunPlanner</h1>
-SunPlanner — это приложение для планирования и анализа погодных условий, которое поможет вам выбрать наилучшее время для отдыха или важного события.
-
-
-
-Данные от [Open-Meteo](https://open-meteo.com/)
-
+SunPlanner — это приложение для анализа истории погоды. Смотри, какая была температура, осадки, облачность и другие параметры в выбранный день или период в любом городе. Приложение собирает данные и предоставляет статистику погоды — удобно для планирования отпуска, свадеб и других мероприятий.<br>
+Данные от [Open-Meteo.com](https://open-meteo.com)
+ <br>
 Библиотека графиков [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts) 
 
 ---
 
 
-📌 **Основные возможности:**
+📌 **Основные возможности:**<br>
 
-✅ Получение данных о погоде за выбранный день или период: температура, осадки и другие параметры.  
-✅ Средние значения температуры и осадков по дням и годам.  
-✅ Интуитивно понятный интерфейс для ввода города и дат.  
-✅ Поддержка различных временных интервалов для анализа.  
+🌦️ Погода за выбранный день или период: температура, осадки, облачность и др.<br>
+📊 Статистика погоды: средние значения температуры и осадков по дням и годам<br>
+📅 Журнал погоды: удобный просмотр данных по дням и годам<br>
+🧭 Простой интерфейс: введи город и нужные даты<br>
+🔁 Поддержка различных временных интервалов<br>
+
+<table>
+  <tr>
+    <td><img src="screenshots/ru/main_screen.png" alt="Main screen" width="250"/></td>
+    <td><img src="screenshots/ru/search.png" alt="Search your city" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/ru/graph1.png" alt="Weather data 1" width="250"/></td>
+    <td><img src="screenshots/ru/graph2.png" alt="Weather data 2" width="250"/></td>
+  </tr>
+</table>
 
 📥 **Установка**
 
