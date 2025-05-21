@@ -1,6 +1,7 @@
 package com.hsact.sunplanner.data.utils
 
 import java.time.LocalDate
+import java.time.Year
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -81,9 +82,14 @@ object DateUtils {
         if (isOneDay) {
             return (startDate.year..endDate.year).map { it.toString() }
         }
-        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
+        val leapYearDate = (startDate.year..endDate.year)
+            .firstOrNull { Year.isLeap(it.toLong()) }
+            ?.let { LocalDate.of(it, startDate.month, startDate.dayOfMonth) }
+            ?: startDate
+
+        val singleYearEndDate = endDate.minusYears((endDate.year - leapYearDate.year).toLong())
         val labels = mutableListOf<String>()
-        var current = startDate
+        var current = leapYearDate
 
         while (!current.isAfter(singleYearEndDate)) {
             val day = current.dayOfMonth
@@ -170,8 +176,12 @@ object DateUtils {
         startDate: LocalDate,
         endDate: LocalDate
     ): List<String> {
-        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
-        return generateSequence(startDate) { it.plusDays(1) }
+        val leapYearDate = (startDate.year..endDate.year)
+            .firstOrNull { Year.isLeap(it.toLong()) }
+            ?.let { LocalDate.of(it, startDate.month, startDate.dayOfMonth) }
+            ?: startDate
+        val singleYearEndDate = endDate.minusYears((endDate.year - leapYearDate.year).toLong())
+        return generateSequence(leapYearDate) { it.plusDays(1) }
             .takeWhile { !it.isAfter(singleYearEndDate) }
             .map { it.dayOfMonth.toString() }
             .toList()
