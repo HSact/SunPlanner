@@ -117,8 +117,22 @@ object DateUtils {
                 monthLabels(startDate, endDate, locale)
             }
         }
-        if (rawLabels.size <= maxCount) return rawLabels
-        val step = (rawLabels.size / maxCount).toInt().coerceAtLeast(2)
+//        if (rawLabels.size <= maxCount)
+            return rawLabels
+//        val step = (rawLabels.size / maxCount).toInt().coerceAtLeast(2)
+//        val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
+//        return filteredLabels
+    }
+
+    fun reduceAxisXLabels(
+        rawLabels: List<String>,
+        labelsWidth: Double,
+        maxWidth: Double
+    ): List<String> {
+        if (labelsWidth <= maxWidth) {
+            return rawLabels
+        }
+        val step = (labelsWidth / maxWidth).toInt().coerceAtLeast(1) + 1
         val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
         return filteredLabels
     }
