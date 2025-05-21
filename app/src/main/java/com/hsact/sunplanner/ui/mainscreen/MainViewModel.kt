@@ -146,43 +146,44 @@ class MainViewModel @Inject constructor(
     }
 
     private fun updateStartYear(year: Int) {
-        val old = _mainUiState.value.startLD
+        val old = _mainUiState.value.tempDates.startDate
         val newDate = old.withYear(year).coerceDay()
-        _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
+        _mainUiState.value =
+            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(startDate = newDate))
     }
 
     private fun updateStartMonth(month: Int) {
-        val old = _mainUiState.value.startLD
+        val old = _mainUiState.value.tempDates.startDate
         val newDate = old.withMonth(month).coerceDay()
-        _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
+        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(startDate = newDate))
     }
 
     private fun updateStartDay(day: Int) {
-        val old = _mainUiState.value.startLD
+        val old = _mainUiState.value.tempDates.startDate
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
         val newDate = old.withDayOfMonth(validDay)
-        _mainUiState.value = _mainUiState.value.copy(startLD = newDate)
+        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(startDate = newDate))
     }
 
     private fun updateEndYear(year: Int) {
-        val old = _mainUiState.value.endLD
+        val old = _mainUiState.value.tempDates.endDate
         val newDate = old.withYear(year).coerceDay()
-        _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
+        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
     }
 
     private fun updateEndMonth(month: Int) {
-        val old = _mainUiState.value.endLD
+        val old = _mainUiState.value.tempDates.endDate
         val newDate = old.withMonth(month).coerceDay()
-        _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
+        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
     }
 
     private fun updateEndDay(day: Int) {
-        val old = _mainUiState.value.endLD
+        val old = _mainUiState.value.tempDates.endDate
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
         val newDate = old.withDayOfMonth(validDay)
-        _mainUiState.value = _mainUiState.value.copy(endLD = newDate)
+        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
     }
 
     private fun LocalDate.coerceDay(): LocalDate {
@@ -199,8 +200,12 @@ class MainViewModel @Inject constructor(
     }
 
     private fun updateConfirmedLD(start: LocalDate, end: LocalDate) {
-        _mainUiState.value =
-            _mainUiState.value.copy(confirmedStartLD = start, confirmedEndLD = end)
+        _mainUiState.value.copy(
+            tempDates = _mainUiState.value.tempDates.copy(
+                startDate = start,
+                endDate = end
+            )
+        )
     }
 
     private suspend fun onWeatherSearchClick() {
@@ -225,15 +230,15 @@ class MainViewModel @Inject constructor(
             prepareParamsForRequest(state)
         }
         if (params != null) {
-            updateConfirmedLD(state.startLD, state.endLD)
+            updateConfirmedLD(state.tempDates.startDate, state.tempDates.endDate)
             fetchWeather(params)
         }
     }
 
     private fun prepareParamsForRequest(state: MainUIState): WeatherRequestParams? {
         val location = state.settingsBundle.location ?: return null
-        val startDate = state.startLD
-        val endDate = state.endLD
+        val startDate = state.tempDates.startDate
+        val endDate = state.tempDates.endDate
         val temperatureUnit = state.settingsBundle.temperatureUnitMode.toName()
         val windSpeedUnit = state.settingsBundle.windUnitMode.toName()
         val precipitationUnit = state.settingsBundle.precipitationUnitMode.toName()
@@ -271,8 +276,8 @@ class MainViewModel @Inject constructor(
             try {
                 val filteredWeather = fetchFilteredWeatherUseCase.execute(
                     params,
-                    _mainUiState.value.startLD,
-                    _mainUiState.value.endLD
+                    _mainUiState.value.tempDates.startDate,
+                    _mainUiState.value.tempDates.endDate
                 )
                 updateWeatherState(filteredWeather)
             } catch (e: Exception) {
@@ -314,19 +319,21 @@ class MainViewModel @Inject constructor(
         weatherMetrics.windSpeed = daily.windSpeedMax
         weatherMetrics.gustSpeed = daily.windGustsMax
 
-        state = state.copy(isOneYear = state.startLD.year == state.endLD.year)
+        state =
+            state.copy(isOneYear = state.tempDates.startDate.year == state.tempDates.endDate.year)
 
-        if (state.startLD.dayOfMonth != state.endLD.dayOfMonth ||
-            state.startLD.monthValue != state.endLD.monthValue
+        if (state.tempDates.startDate.dayOfMonth != state.tempDates.endDate.dayOfMonth ||
+            state.tempDates.startDate.monthValue != state.tempDates.endDate.monthValue
         ) {
             state = state.copy(isOneDay = false)
             weatherMetrics = weatherAvgValuesFactory.create(data, weatherMetrics)
         } else {
             state = state.copy(isOneDay = true)
-            weatherMetrics.dayLight = weatherMetrics.dayLight.map { weatherMetrics.dayLight.average() }.toList()
+            weatherMetrics.dayLight =
+                weatherMetrics.dayLight.map { weatherMetrics.dayLight.average() }.toList()
         }
         val popUpLabels = DateUtils.generatePopUpLabels(
-            state.startLD, state.endLD,
+            state.tempDates.startDate, state.tempDates.endDate,
             state.settingsBundle.languageMode.toLocale()
         )
         val graphData = weatherGraphDataFactory.create(
