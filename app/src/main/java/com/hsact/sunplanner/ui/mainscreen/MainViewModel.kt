@@ -155,7 +155,8 @@ class MainViewModel @Inject constructor(
     private fun updateStartMonth(month: Int) {
         val old = _mainUiState.value.tempDates.startDate
         val newDate = old.withMonth(month).coerceDay()
-        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(startDate = newDate))
+        _mainUiState.value =
+            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(startDate = newDate))
     }
 
     private fun updateStartDay(day: Int) {
@@ -163,19 +164,22 @@ class MainViewModel @Inject constructor(
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
         val newDate = old.withDayOfMonth(validDay)
-        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(startDate = newDate))
+        _mainUiState.value =
+            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(startDate = newDate))
     }
 
     private fun updateEndYear(year: Int) {
         val old = _mainUiState.value.tempDates.endDate
         val newDate = old.withYear(year).coerceDay()
-        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
+        _mainUiState.value =
+            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
     }
 
     private fun updateEndMonth(month: Int) {
         val old = _mainUiState.value.tempDates.endDate
         val newDate = old.withMonth(month).coerceDay()
-        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
+        _mainUiState.value =
+            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
     }
 
     private fun updateEndDay(day: Int) {
@@ -183,7 +187,8 @@ class MainViewModel @Inject constructor(
         val maxDay = old.lengthOfMonth()
         val validDay = day.coerceIn(1, maxDay)
         val newDate = old.withDayOfMonth(validDay)
-        _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
+        _mainUiState.value =
+            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(endDate = newDate))
     }
 
     private fun LocalDate.coerceDay(): LocalDate {

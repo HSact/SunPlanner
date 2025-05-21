@@ -188,7 +188,12 @@ fun MainScreen(
                     }
                 }
                 if (mainDataUI.weatherData != null && !mainDataUI.isLoading) {
-                    DateText(modifier, mainDataUI)
+                    DateText(
+                        modifier,
+                        mainDataUI.confirmedDates,
+                        mainDataUI.isOneDay,
+                        mainDataUI.isOneYear
+                    )
                     WeatherCards(
                         context,
                         modifier,
@@ -385,7 +390,9 @@ private fun ColumnScope.DatesRangeSection(
 @Composable
 private fun DateText(
     modifier: Modifier,
-    mainDataUI: MainUIState
+    dates: DatesBundle,
+    isOneDay: Boolean,
+    isOneYear: Boolean
 ) {
     Row(
         modifier
@@ -395,10 +402,10 @@ private fun DateText(
     ) {
         Text(
             text = DateUtils.formatDateRange(
-                startDate = mainDataUI.confirmedDates.startDate,
-                endDate = mainDataUI.confirmedDates.endDate,
-                isOneDay = mainDataUI.isOneDay,
-                isOneYear = mainDataUI.isOneYear,
+                startDate = dates.startDate,
+                endDate = dates.endDate,
+                isOneDay = isOneDay,
+                isOneYear = isOneYear,
                 locale = Locale.getDefault(),
                 singleDayOneYearString = stringResource(R.string.single_day_one_year),
                 singleDaySting = stringResource(R.string.single_day_range),
