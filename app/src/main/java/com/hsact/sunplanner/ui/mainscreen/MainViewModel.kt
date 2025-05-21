@@ -211,12 +211,13 @@ class MainViewModel @Inject constructor(
     }
 
     private fun updateConfirmedLD(dates: DatesBundle) {
-        _mainUiState.value.copy(
-            tempDates = _mainUiState.value.tempDates.copy(
-                startDate = dates.startDate,
-                endDate = dates.endDate
+        _mainUiState.value =
+            _mainUiState.value.copy(
+                confirmedDates = _mainUiState.value.confirmedDates.copy(
+                    startDate = dates.startDate,
+                    endDate = dates.endDate
+                )
             )
-        )
     }
 
     private suspend fun onWeatherSearchClick() {
