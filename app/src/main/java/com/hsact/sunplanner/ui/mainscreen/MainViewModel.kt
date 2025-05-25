@@ -7,10 +7,8 @@ import com.hsact.sunplanner.data.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
-import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
-import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
@@ -328,18 +326,6 @@ class MainViewModel @Inject constructor(
             state.copy(isOneDay = true)
         }
         var weatherMetrics = createWeatherMetrics(data, state.isOneDay)
-        val popUpLabels = DateUtils.generatePopUpLabels(
-            state.tempDates.startDate,
-            state.tempDates.endDate,
-            state.settingsBundle.languageMode.toLocale()
-        )
-        /*val graphData = weatherGraphDataFactory.create(
-            weatherMetrics,
-            state.settingsBundle.isDotsVisible,
-            state.settingsBundle.isEdgesCurved,
-            state.isOneYear,
-            popUpLabels
-        )*/
         state = state.copy(weatherMetrics = weatherMetrics)
         return state
     }
