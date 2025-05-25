@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.AppLocaleManager
 import com.hsact.sunplanner.ui.ThemeViewModel
+import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.mainscreen.MainScreen
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
@@ -42,6 +43,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var appLocaleManager: AppLocaleManager
+
+    @Inject
+    lateinit var weatherGraphDataFactory: WeatherGraphDataFactory
 
     private lateinit var selectedLocale: Locale
     val isPreAndroid13 = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
@@ -97,6 +101,7 @@ class MainActivity : ComponentActivity() {
             SunPlannerTheme(darkTheme = isDarkTheme) {
                 MainScreen(
                     viewModel,
+                    weatherGraphDataFactory = weatherGraphDataFactory,
                     onApplyTheme = onApplyTheme,
                     onChangeLanguage = onChangeLanguage
                 )

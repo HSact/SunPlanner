@@ -7,10 +7,8 @@ import com.hsact.sunplanner.data.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
-import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
-import com.hsact.sunplanner.domain.factory.WeatherGraphDataFactory
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
@@ -43,7 +41,6 @@ class MainViewModel @Inject constructor(
     private val updateLocationUseCase: UpdateLocationUseCase,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val weatherAvgValuesFactory: WeatherAvgValuesFactory,
-    private val weatherGraphDataFactory: WeatherGraphDataFactory,
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow(MainUIState())
@@ -316,8 +313,25 @@ class MainViewModel @Inject constructor(
         data: WeatherResponse,
     ): MainUIState {
         var state = state
+        state = state.copy(
+            weatherData = data,
+            isOneYear = state.tempDates.startDate.year == state.tempDates.endDate.year
+        )
+
+        state = if (state.tempDates.startDate.dayOfMonth != state.tempDates.endDate.dayOfMonth ||
+            state.tempDates.startDate.monthValue != state.tempDates.endDate.monthValue
+        ) {
+            state.copy(isOneDay = false)
+        } else {
+            state.copy(isOneDay = true)
+        }
+        var weatherMetrics = createWeatherMetrics(data, state.isOneDay)
+        state = state.copy(weatherMetrics = weatherMetrics)
+        return state
+    }
+
+    private fun createWeatherMetrics(data: WeatherResponse, isOneDay: Boolean): WeatherMetrics {
         val daily = data.daily
-        state = state.copy(weatherData = data)
         var weatherMetrics = WeatherMetrics()
         weatherMetrics.maxTemps = daily.maxTemperature
         weatherMetrics.minTemps = daily.minTemperature
@@ -325,7 +339,6 @@ class MainViewModel @Inject constructor(
             val avg = (weatherMetrics.maxTemps[i] + weatherMetrics.minTemps[i]) / 2
             round(avg * 10) / 10
         }
-
         weatherMetrics.sunshine = daily.sunshineDuration
             .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
         weatherMetrics.dayLight = daily.daylightDuration
@@ -333,32 +346,12 @@ class MainViewModel @Inject constructor(
         weatherMetrics.precipitation = daily.precipitationSum
         weatherMetrics.windSpeed = daily.windSpeedMax
         weatherMetrics.gustSpeed = daily.windGustsMax
-
-        state =
-            state.copy(isOneYear = state.tempDates.startDate.year == state.tempDates.endDate.year)
-
-        if (state.tempDates.startDate.dayOfMonth != state.tempDates.endDate.dayOfMonth ||
-            state.tempDates.startDate.monthValue != state.tempDates.endDate.monthValue
-        ) {
-            state = state.copy(isOneDay = false)
-            weatherMetrics = weatherAvgValuesFactory.create(data, weatherMetrics)
-        } else {
-            state = state.copy(isOneDay = true)
+        if (isOneDay) {
             weatherMetrics.dayLight =
                 weatherMetrics.dayLight.map { weatherMetrics.dayLight.average() }.toList()
+        } else {
+            weatherMetrics = weatherAvgValuesFactory.create(data, weatherMetrics)
         }
-        val popUpLabels = DateUtils.generatePopUpLabels(
-            state.tempDates.startDate, state.tempDates.endDate,
-            state.settingsBundle.languageMode.toLocale()
-        )
-        val graphData = weatherGraphDataFactory.create(
-            weatherMetrics,
-            state.settingsBundle.isDotsVisible,
-            state.settingsBundle.isEdgesCurved,
-            state.isOneYear,
-            popUpLabels
-        )
-        state = state.copy(weatherGraphData = graphData)
-        return state
+        return weatherMetrics
     }
 }
