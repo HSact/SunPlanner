@@ -8,14 +8,14 @@ import javax.inject.Inject
 import kotlin.math.ceil
 
 class CreateWeatherGraphBarsUseCase @Inject constructor() {
-    private val count = 500
+    private val maxSize = 500
     operator fun invoke(
         label: String,
         values: List<Double>,
         color: Color
     ): Bars {
         val brush = SolidColor(color)
-        val reducedValues = if (values.size > count) {
+        val reducedValues = if (values.size > maxSize) {
             reduceValues(values)
         } else {
             values
@@ -38,7 +38,7 @@ class CreateWeatherGraphBarsUseCase @Inject constructor() {
     }
 
     private fun reduceValues(values: List<Double>): List<Double> {
-        val targetSize = count
+        val targetSize = maxSize
         val chunkSize = ceil(values.size / targetSize.toDouble()).toInt()
 
         return values.chunked(chunkSize).map { chunk ->

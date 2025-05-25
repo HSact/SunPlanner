@@ -1,18 +1,11 @@
-package com.hsact.sunplanner.domain.factory
+package com.hsact.sunplanner.ui.components.cards
 
 import com.hsact.sunplanner.data.utils.StringProvider
 import com.hsact.sunplanner.domain.model.WeatherGraphData
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphLineUseCase
-import com.hsact.sunplanner.ui.theme.avgTempLineColor
-import com.hsact.sunplanner.ui.theme.daylightLineColor
-import com.hsact.sunplanner.ui.theme.maxTempLineColor
-import com.hsact.sunplanner.ui.theme.minTempLineColor
-import com.hsact.sunplanner.ui.theme.precipitationBarColor
-import com.hsact.sunplanner.ui.theme.sunShineLineColor
-import com.hsact.sunplanner.ui.theme.windGustsSpeedColor
-import com.hsact.sunplanner.ui.theme.windSpeedColor
+import com.hsact.sunplanner.ui.theme.ExtendedColors
 import javax.inject.Inject
 
 class WeatherGraphDataFactory @Inject constructor(
@@ -25,6 +18,7 @@ class WeatherGraphDataFactory @Inject constructor(
         isDotsVisible: Boolean,
         isEdgesCurved: Boolean,
         isOneYear: Boolean,
+        colors: ExtendedColors,
         popUpLabels: List<String>
     ): WeatherGraphData {
         val graphData = WeatherGraphData()
@@ -35,7 +29,7 @@ class WeatherGraphDataFactory @Inject constructor(
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
                 isEdgesCurved = isEdgesCurved,
-                color = maxTempLineColor,
+                color = colors.maxTempLineColor,
                 tintOpacity = 0.4F,
                 isOneYear = isOneYear
             )
@@ -46,7 +40,7 @@ class WeatherGraphDataFactory @Inject constructor(
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
                 isEdgesCurved = isEdgesCurved,
-                color = avgTempLineColor,
+                color = colors.avgTempLineColor,
                 tintOpacity = 0.0F,
                 isOneYear = isOneYear
             )
@@ -58,7 +52,7 @@ class WeatherGraphDataFactory @Inject constructor(
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
                 isEdgesCurved = isEdgesCurved,
-                color = minTempLineColor,
+                color = colors.minTempLineColor,
                 tintOpacity = 0.4F,
                 isOneYear = isOneYear
             )
@@ -70,7 +64,7 @@ class WeatherGraphDataFactory @Inject constructor(
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
                 isEdgesCurved = isEdgesCurved,
-                color = sunShineLineColor,
+                color = colors.sunShineLineColor,
                 tintOpacity = 0.8F,
                 isOneYear = isOneYear
             )
@@ -80,15 +74,17 @@ class WeatherGraphDataFactory @Inject constructor(
                 label = stringProvider.daylight(),
                 values = weatherMetrics.dayLight,
                 dates = popUpLabels,
-                isDotsVisible = false, //_mainUiState.value.settingsBundle.isDotsVisible,
-                isEdgesCurved = false, //_mainUiState.value.settingsBundle.isEdgesCurved,
-                color = daylightLineColor,
+                isDotsVisible = false,
+                isEdgesCurved = false,
+                color = colors.daylightLineColor,
                 tintOpacity = 0.0F,
                 isOneYear = isOneYear
             )
 
         graphData.precipitation =
-            createWeatherGraphBarsUseCase.invoke("", weatherMetrics.precipitation, precipitationBarColor)
+            createWeatherGraphBarsUseCase.invoke("", weatherMetrics.precipitation,
+                colors.precipitationBarColor
+            )
 
         graphData.windSpeed =
             createWeatherGraphLineUseCase.invoke(
@@ -97,7 +93,7 @@ class WeatherGraphDataFactory @Inject constructor(
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
                 isEdgesCurved = isEdgesCurved,
-                color = windSpeedColor,
+                color = colors.windSpeedColor,
                 tintOpacity = 0.5F,
                 isOneYear = isOneYear
             )
@@ -109,7 +105,7 @@ class WeatherGraphDataFactory @Inject constructor(
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
                 isEdgesCurved = isEdgesCurved,
-                color = windGustsSpeedColor,
+                color = colors.windGustsSpeedColor,
                 tintOpacity = 0.5F,
                 isOneYear = isOneYear
             )

@@ -51,15 +51,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
-import com.hsact.sunplanner.domain.model.WeatherGraphData
+import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.ui.components.CollapsibleTopBar
 import com.hsact.sunplanner.ui.components.DropdownPicker
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.LocationSearch
+import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
+import com.hsact.sunplanner.ui.theme.LocalExtendedColors
 import kotlinx.coroutines.FlowPreview
 import java.util.Locale
 import kotlin.collections.toList
@@ -70,6 +72,7 @@ import kotlin.collections.toList
 fun MainScreen(
     viewModel: MainViewModel,
     modifier: Modifier = Modifier,
+    weatherGraphDataFactory: WeatherGraphDataFactory,
     onApplyTheme: (ThemeMode) -> Unit,
     onChangeLanguage: (LanguageMode) -> Unit
 ) {
@@ -195,10 +198,12 @@ fun MainScreen(
                         mainDataUI.isOneYear
                     )
                     WeatherCards(
+                        weatherGraphDataFactory,
                         context,
                         modifier,
                         mainDataUI.confirmedDates,
-                        mainDataUI.weatherGraphData,
+                        mainDataUI.isOneYear,
+                        mainDataUI.weatherMetrics,
                         mainDataUI.settingsBundle
                     )
                     Row(
@@ -418,10 +423,12 @@ private fun DateText(
 
 @Composable
 private fun WeatherCards(
+    weatherGraphDataFactory: WeatherGraphDataFactory,
     context: Context,
     modifier: Modifier,
     dates: DatesBundle,
-    weatherGraphData: WeatherGraphData,
+    isOneYear: Boolean,
+    weatherMetrics: WeatherMetrics,
     settingsBundle: SettingsBundle
 ) {
     val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
@@ -430,6 +437,20 @@ private fun WeatherCards(
         .toList()[settingsBundle.windUnitMode.toIndex()]
     val precipitationUnit = context.resources.getStringArray(R.array.precipitation_unit_choices)
         .toList()[settingsBundle.precipitationUnitMode.toIndex()]
+
+    val popUpLabels = DateUtils.generatePopUpLabels(
+        dates.startDate,
+        dates.endDate,
+        settingsBundle.languageMode.toLocale()
+    )
+    val graphData = weatherGraphDataFactory.create(
+        weatherMetrics,
+        settingsBundle.isDotsVisible,
+        settingsBundle.isEdgesCurved,
+        isOneYear,
+        LocalExtendedColors.current,
+        popUpLabels
+    )
 
     Row(
         modifier
@@ -441,9 +462,9 @@ private fun WeatherCards(
             stringResource(R.string.temperature)
                     + " (" + tempUnit + ")",
             listOf(
-                weatherGraphData.maxTemperature!!,
-                weatherGraphData.avgTemperature!!,
-                weatherGraphData.minTemperature!!
+                graphData.maxTemperature!!,
+                graphData.avgTemperature!!,
+                graphData.minTemperature!!
             ),
             dates.startDate,
             dates.endDate,
@@ -456,8 +477,8 @@ private fun WeatherCards(
         WeatherGraphLineCard(
             stringResource(R.string.sun_hours),
             listOf(
-                weatherGraphData.dayLightDuration!!,
-                weatherGraphData.sunShineDuration!!,
+                graphData.dayLightDuration!!,
+                graphData.sunShineDuration!!,
             ),
             dates.startDate,
             dates.endDate,
@@ -471,7 +492,7 @@ private fun WeatherCards(
         WeatherGraphBarsCard(
             stringResource(R.string.precipitation)
                     + " (" + precipitationUnit + ")",
-            listOf(weatherGraphData.precipitation!!),
+            listOf(graphData.precipitation!!),
             DateUtils.generatePopUpLabels(
                 dates.startDate,
                 dates.endDate,
@@ -488,8 +509,8 @@ private fun WeatherCards(
             stringResource(R.string.wind_speed)
                     + " (" + speedUnit + ")",
             listOf(
-                weatherGraphData.windSpeed!!,
-                weatherGraphData.windGustsSpeed!!
+                graphData.windSpeed!!,
+                graphData.windGustsSpeed!!
             ),
             dates.startDate,
             dates.endDate,
