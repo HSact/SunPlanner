@@ -60,7 +60,7 @@
     </string-array>
     <string-array name="language_choices">
         <item>English</item>
-        <item>Russian</item>
+        <item>Русский</item>
     </string-array>
     <string-array name="off_on_choices">
         <item>Off</item>

@@ -59,7 +59,7 @@
         <item>Ночь</item>
     </string-array>
     <string-array name="language_choices">
-        <item>Английский</item>
+        <item>English</item>
         <item>Русский</item>
     </string-array>
     <string-array name="off_on_choices">
