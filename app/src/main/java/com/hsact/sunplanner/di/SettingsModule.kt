@@ -1,6 +1,6 @@
 package com.hsact.sunplanner.di
 
-import com.hsact.sunplanner.data.repository.SettingsRepository
+import com.hsact.sunplanner.domain.repository.SettingsRepository
 import com.hsact.sunplanner.data.repository.SettingsRepositoryImpl
 import dagger.Binds
 import dagger.Module

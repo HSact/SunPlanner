@@ -1,6 +1,6 @@
 package com.hsact.sunplanner.domain.usecase.settings
 
-import com.hsact.sunplanner.data.repository.SettingsRepository
+import com.hsact.sunplanner.domain.repository.SettingsRepository
 import javax.inject.Inject
 
 class UpdateDotsOptionUseCase @Inject constructor(
