@@ -12,6 +12,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 abstract class SettingsModule {
 
+    @Suppress("unused")
     @Binds
     @Singleton
     abstract fun bindSettingsRepository(
