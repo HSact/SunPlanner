@@ -65,9 +65,6 @@ Obtainium is an app that allows automatic APK updates from GitHub. If you have O
 
 <h1 align="center">🌞 SunPlanner</h1>
 SunPlanner — это приложение для анализа истории погоды. Смотри, какая была температура, осадки, облачность и другие параметры в выбранный день или период в любом городе. Приложение собирает данные и предоставляет статистику погоды — удобно для планирования отпуска, свадеб и других мероприятий.<br>
-Данные от [Open-Meteo.com](https://open-meteo.com)
- <br>
-Библиотека графиков [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts) 
 
 ---
 
@@ -89,8 +86,8 @@ SunPlanner — это приложение для анализа истории 
 - **DI:** Hilt  
 - **Сеть:** Retrofit + Moshi
 - **Хранение настроек:** Jetpack DataStore
-- **Графики:** [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts)
-- **Источник данных:** [Open-Meteo.com](https://open-meteo.com/) (без локальной БД)
+- **Графики:** [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts) 
+- **Источник данных:** [Open-Meteo.com](https://open-meteo.com/) API (без локальной БД)
 
 ## 🧩 Архитектура
 
