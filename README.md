@@ -9,13 +9,33 @@ Graphs by [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts)<br>
 ---
 
 
-📌 Main Features:<br>
+## 📌 Main Features<br>
 
 🌦️ Weather for a selected day or period: temperature, precipitation, cloudiness, etc.<br>
 📊 Weather statistics: average temperature and precipitation by day and year<br>
 📅 Weather log: convenient viewing of data by day and year<br>
 🧭 Simple interface: enter the city and the desired dates<br>
 🔁 Support for various time intervals<br>
+
+## 🧱 Tech Stack
+
+- **Language:** Kotlin  
+- **UI:** Jetpack Compose  
+- **Architecture:** MVVM with MVI-style state management  
+- **State Handling:** StateFlow + sealed `UiState`  
+- **Dependency Injection:** Hilt  
+- **Networking:** Retrofit + Moshi  
+- **Charts:** ComposeCharts  
+- **Data Source:** Open‑Meteo API (no local database)
+
+## 🧩 Architecture Overview
+
+The app follows a unidirectional data flow:
+
+- ViewModel holds `StateFlow<MainUIState>`
+- UI observes and reacts to state changes
+- Sealed `UiState` handles loading, success, and error states
+- ViewModel uses a use-case layer to abstract API logic
 
 ## Screenshots
 
@@ -51,13 +71,31 @@ SunPlanner — это приложение для анализа истории 
 ---
 
 
-📌 **Основные возможности:**<br>
+## 📌 Основные возможности<br>
 
 🌦️ Погода за выбранный день или период: температура, осадки, облачность и др.<br>
 📊 Статистика погоды: средние значения температуры и осадков по дням и годам<br>
 📅 Журнал погоды: удобный просмотр данных по дням и годам<br>
 🧭 Простой интерфейс: введи город и нужные даты<br>
 🔁 Поддержка различных временных интервалов<br>
+
+## 🧱 Технологии
+
+- **Язык:** Kotlin  
+- **UI:** Jetpack Compose  
+- **Архитектура:** MVVM с элементами MVI  
+- **Состояния:** StateFlow + `sealed` UiState  
+- **DI:** Hilt  
+- **Сеть:** Retrofit + Moshi  
+- **Графики:** ComposeCharts  
+- **Источник данных:** Open‑Meteo (без локальной БД)
+
+## 🧩 Архитектура
+
+- ViewModel хранит `StateFlow<MainUIState>`
+- Компоненты UI подписаны на состояние
+- Используются `sealed` классы для представления UI-состояний (`Loading`, `Error`, `Data`)
+- Вся логика получения данных инкапсулирована в UseCase
 
 <table>
   <tr>
