@@ -11,14 +11,14 @@ hilt {
 
 android {
     namespace = "com.hsact.sunplanner"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.hsact.sunplanner"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 5
-        versionName = "0.8.3"
+        targetSdk = 36
+        versionCode = 6
+        versionName = "0.8.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

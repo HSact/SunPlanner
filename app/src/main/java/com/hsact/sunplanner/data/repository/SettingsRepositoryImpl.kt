@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.hsact.sunplanner.data.responses.Location
+import com.hsact.sunplanner.domain.repository.SettingsRepository
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode

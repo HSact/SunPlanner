@@ -119,7 +119,34 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
             .padding(end = 4.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.language))
+            Spacer(modifier = Modifier.weight(1f))
+            DropdownPicker(
+                "",
+                languageChoices,
+                selected = languageChoices[selectedLanguageIndex.intValue],
+                onSelected = {
+                    selectedLanguageIndex.intValue = languageChoices.indexOf(it)
+                    viewModel.handleIntent(
+                        SettingsIntents.UpdateLanguage(
+                            indexToLanguageMode(
+                                selectedLanguageIndex.intValue
+                            )
+                        )
+                    )
+                },
+                modifier = Modifier.padding(start = 20.dp)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.theme))
@@ -154,32 +181,6 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                     )
                 }
             }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 15.dp)
-                .align(Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(stringResource(R.string.language))
-            Spacer(modifier = Modifier.weight(1f))
-            DropdownPicker(
-                "",
-                languageChoices,
-                selected = languageChoices[selectedLanguageIndex.intValue],
-                onSelected = {
-                    selectedLanguageIndex.intValue = languageChoices.indexOf(it)
-                    viewModel.handleIntent(
-                        SettingsIntents.UpdateLanguage(
-                            indexToLanguageMode(
-                                selectedLanguageIndex.intValue
-                            )
-                        )
-                    )
-                },
-                modifier = Modifier.padding(start = 20.dp)
-            )
         }
         Row(
             modifier = Modifier

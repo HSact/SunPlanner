@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.data.repository
+package com.hsact.sunplanner.domain.repository
 
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location

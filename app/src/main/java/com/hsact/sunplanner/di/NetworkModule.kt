@@ -2,7 +2,7 @@ package com.hsact.sunplanner.di
 
 import com.hsact.sunplanner.data.network.OpenMeteoGeo
 import com.hsact.sunplanner.data.network.OpenMeteoService
-import com.hsact.sunplanner.data.repository.WeatherRepository
+import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.data.repository.WeatherRepositoryImpl
 import dagger.Module
 import dagger.Provides
