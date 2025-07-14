@@ -80,37 +80,37 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
     var selectedThemeIndex by remember(uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
     val themeChoices =
         LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
-    var selectedLanguageIndex = remember(uiState.currentLanguage) {
+    val selectedLanguageIndex = remember(uiState.currentLanguage) {
         mutableIntStateOf(uiState.currentLanguage.toIndex())
     }
     val languageChoices =
         LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
     val offOnChoices =
         LocalContext.current.resources.getStringArray(R.array.off_on_choices).toList()
-    var selectedDotsOptionIndex = remember(uiState.currentDotsOption) {
+    val selectedDotsOptionIndex = remember(uiState.currentDotsOption) {
         mutableIntStateOf(uiState.currentDotsOption)
     }
 
-    var selectedCurveOptionIndex = remember(uiState.currentCurvedOption) {
+    val selectedCurveOptionIndex = remember(uiState.currentCurvedOption) {
         mutableIntStateOf(uiState.currentCurvedOption)
     }
 
     val tempUnitChoices =
         LocalContext.current.resources.getStringArray(R.array.temp_unit_choices).toList()
-    var selectedTempUnitIndex = remember(uiState.currentTemperatureUnit) {
+    val selectedTempUnitIndex = remember(uiState.currentTemperatureUnit) {
         mutableIntStateOf(uiState.currentTemperatureUnit.toIndex())
     }
 
     val windUnitChoices =
         LocalContext.current.resources.getStringArray(R.array.speed_unit_choices).toList()
-    var selectedWindUnitIndex = remember(uiState.currentWindSpeedUnit) {
+    val selectedWindUnitIndex = remember(uiState.currentWindSpeedUnit) {
         mutableIntStateOf(uiState.currentWindSpeedUnit.toIndex())
     }
 
     val precipitationUnitChoices =
         LocalContext.current.resources.getStringArray(R.array.precipitation_unit_choices)
             .toList()
-    var selectedPrecipitationUnitIndex = remember(uiState.currentPrecipitationUnit) {
+    val selectedPrecipitationUnitIndex = remember(uiState.currentPrecipitationUnit) {
         mutableIntStateOf(uiState.currentPrecipitationUnit.toIndex())
     }
     Column(
@@ -140,19 +140,19 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                         )
                     )
                 },
-                modifier = Modifier.padding(start = 20.dp)
+                modifier = Modifier.padding(start = 24.dp)
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.theme))
             Spacer(modifier = Modifier.weight(1f))
             SingleChoiceSegmentedButtonRow(
-                modifier = Modifier.padding(start = 20.dp),
+                modifier = Modifier.padding(start = 24.dp),
             ) {
                 themeChoices.forEachIndexed { index, label ->
                     SegmentedButton(
@@ -185,7 +185,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.show_graph_dots))
@@ -201,7 +201,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.curved_edges))
@@ -217,7 +217,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.temperature))
@@ -233,7 +233,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.wind))
@@ -249,7 +249,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(top = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.precipitation))
@@ -273,7 +273,7 @@ private fun SegmentedButtonUnitPicker(
     onIndexSelected: (Int) -> SettingsIntents
 ) {
     SingleChoiceSegmentedButtonRow(
-        modifier = Modifier.padding(start = 20.dp),
+        modifier = Modifier.padding(start = 24.dp),
     ) {
         choices.forEachIndexed { index, label ->
             SegmentedButton(

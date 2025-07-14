@@ -142,7 +142,7 @@ fun MainScreen(
                     .heightIn(max = screenHeight)
                 else Modifier
                     .heightIn(max = screenHeight)
-                    .padding(start = 10.dp, end = 10.dp)
+                    .padding(start = 16.dp, end = 16.dp)
             ) {
                 LocationSearch(
                     viewModel = viewModel,
@@ -163,7 +163,7 @@ fun MainScreen(
                 DatesRangeSection(viewModel, context, mainDataUI.tempDates)
                 Row(
                     modifier = Modifier
-                        .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .align(Alignment.CenterHorizontally)
                 ) {
                     Button(
@@ -180,7 +180,7 @@ fun MainScreen(
                     Row(
                         modifier
                             .fillMaxWidth()
-                            .padding(top = 50.dp),
+                            .padding(top = 52.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         CircularProgressIndicator(
@@ -209,7 +209,7 @@ fun MainScreen(
                     Row(
                         modifier
                             .fillMaxWidth()
-                            .padding(start = 10.dp, end = 10.dp)
+                            .padding(start = 16.dp, end = 16.dp)
                     ) {
                         Text(stringResource(R.string.data_source))
                     }
@@ -232,7 +232,7 @@ private fun YearsRangeSelection(
     }
     Row(
         modifier = Modifier
-            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
     ) {
         DropdownPicker(
@@ -244,7 +244,7 @@ private fun YearsRangeSelection(
             },
             modifier = Modifier
                 .weight(0.5f)
-                .padding(end = 3.dp)
+                .padding(end = 8.dp)
         )
         DropdownPicker(
             label = stringResource(R.string.end_year),
@@ -255,7 +255,7 @@ private fun YearsRangeSelection(
             },
             modifier = Modifier
                 .weight(0.5f)
-                .padding(start = 3.dp)
+                .padding(start = 8.dp)
         )
     }
 }
@@ -275,7 +275,7 @@ private fun ColumnScope.DatesRangeSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 10.dp)
+            .padding(top = 16.dp)
             .align(Alignment.CenterHorizontally)
     )
     {
@@ -293,17 +293,17 @@ private fun ColumnScope.DatesRangeSection(
             )
             Box(
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 10.dp, end = 10.dp)
+                    .padding(top = 24.dp, start = 16.dp, end = 16.dp)
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.outline,
                         RoundedCornerShape(10.dp)
                     )
                     .padding(
-                        top = 10.dp,
-                        start = 5.dp,
-                        end = 5.dp,
-                        bottom = 5.dp
+                        top = 16.dp,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 8.dp
                     )
                     .align(Alignment.TopCenter)
                     .zIndex(0f)
@@ -323,10 +323,7 @@ private fun ColumnScope.DatesRangeSection(
                     }
                     Row(
                         modifier = Modifier
-                            .padding(
-                                top = 10.dp, start = 10.dp,
-                                end = 10.dp, bottom = 10.dp
-                            )
+                            .padding(8.dp)
                     ) {
                         DropdownPicker(
                             label = stringResource(R.string.start_month),
@@ -341,7 +338,7 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(end = 3.dp)
+                                .padding(end = 8.dp)
                         )
                         DropdownPicker(
                             label = stringResource(R.string.end_month),
@@ -358,10 +355,15 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(start = 3.dp)
+                                .padding(start = 8.dp)
                         )
                     }
-                    Row(modifier = Modifier.padding(10.dp))
+                    Row(
+                        modifier = Modifier.padding(
+                            top = 8.dp, start = 8.dp,
+                            end = 8.dp, bottom = 16.dp
+                        )
+                    )
                     {
                         DropdownPicker(
                             label = stringResource(R.string.start_day),
@@ -372,7 +374,7 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(end = 3.dp)
+                                .padding(end = 8.dp)
                         )
                         DropdownPicker(
                             label = stringResource(R.string.end_day),
@@ -383,7 +385,7 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(start = 3.dp)
+                                .padding(start = 8.dp)
                         )
                     }
                 }
@@ -402,7 +404,7 @@ private fun DateText(
     Row(
         modifier
             .fillMaxWidth()
-            .padding(top = 10.dp, start = 10.dp, end = 10.dp),
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
@@ -455,7 +457,7 @@ private fun WeatherCards(
     Row(
         modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
+            .padding(top = 24.dp)
     ) {
         //Text("Weather: ${searchDataUI.weatherData}")
         WeatherGraphLineCard(
