@@ -2,7 +2,6 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.hsact.sunplanner.R
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,31 +42,31 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.hsact.sunplanner.R
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.LocationUtils
-import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
-import java.time.LocalDate
-import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.ui.components.CollapsibleTopBar
 import com.hsact.sunplanner.ui.components.DropdownPicker
-import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.LocationSearch
+import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
+import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.settings.SettingsDialog
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
 import com.hsact.sunplanner.ui.theme.LocalExtendedColors
 import kotlinx.coroutines.FlowPreview
+import java.time.LocalDate
 import java.util.Locale
-import kotlin.collections.toList
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @SuppressLint("LocalContextConfigurationRead")

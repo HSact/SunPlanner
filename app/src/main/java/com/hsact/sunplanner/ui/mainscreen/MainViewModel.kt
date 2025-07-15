@@ -2,20 +2,20 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.domain.repository.WeatherRepository
-import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
+import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.error.toApiError
-import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
+import com.hsact.sunplanner.domain.repository.StringProvider
+import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
+import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import dagger.hilt.android.lifecycle.HiltViewModel

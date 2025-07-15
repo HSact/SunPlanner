@@ -1,7 +1,7 @@
 package com.hsact.sunplanner.domain.usecase.settings
 
-import com.hsact.sunplanner.domain.repository.SettingsRepository
 import com.hsact.sunplanner.data.responses.Location
+import com.hsact.sunplanner.domain.repository.SettingsRepository
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
