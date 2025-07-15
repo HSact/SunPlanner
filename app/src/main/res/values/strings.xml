@@ -49,7 +49,6 @@
     <string name="error_no_internet">No internet connection. Please check your network.</string>
     <string name="error_unknown">An unknown error occurred</string>
     <string name="error_bad_request_with_reason">Invalid request: %1$s</string>
-
     <string name="error">Error</string>
     <string name="button_retry">Retry</string>
     <string name="button_ok">OK</string>

@@ -50,7 +50,6 @@
     <string name="error_no_internet">Нет подключения к интернету. Проверьте соединение.</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="error_bad_request_with_reason">Некорректный запрос: %1$s</string>
-
     <string name="error">Ошибка</string>
     <string name="button_retry">Повторить</string>
     <string name="button_ok">OK</string>
