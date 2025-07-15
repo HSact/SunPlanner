@@ -2,6 +2,9 @@ package com.hsact.sunplanner
 
 import android.app.Application
 import android.os.Build
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.AppLocaleManager
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
@@ -29,6 +32,8 @@ class SunPlanner : Application() {
     override fun onCreate() {
         super.onCreate()
         applySavedLanguage()
+        val analytics = Firebase.analytics
+        analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
     }
 
     private fun applySavedLanguage() {
@@ -50,7 +55,7 @@ class SunPlanner : Application() {
     }
 
     private fun setLocale(languageMode: LanguageMode) {
-        val locale = when (languageMode) {
+        @Suppress("DEPRECATION") val locale = when (languageMode) {
             LanguageMode.ENGLISH -> Locale.ENGLISH
             LanguageMode.RUSSIAN -> Locale("ru")
         }

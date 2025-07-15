@@ -80,7 +80,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics.ndk)
-    implementation(libs.google.firebase.analytics)
     ksp(libs.moshi.kotlin.codegen)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
