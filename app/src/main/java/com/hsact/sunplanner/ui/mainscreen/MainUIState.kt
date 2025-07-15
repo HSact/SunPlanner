@@ -10,7 +10,8 @@ import java.time.LocalDate
 data class MainUIState(
     val settingsBundle: SettingsBundle = SettingsBundle(),
     val maxYearRange: Int = 30,
-    val error: String = "",
+    val validationError: String? = null,
+    val networkError: String? = null,
     val isLoading: Boolean = false,
     val isOneDay: Boolean = true,
     val isOneYear: Boolean = false,

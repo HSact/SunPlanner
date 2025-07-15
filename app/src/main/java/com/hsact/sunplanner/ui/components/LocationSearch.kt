@@ -158,7 +158,7 @@ private fun CityList(
                 .fillMaxWidth()
         ) {
             items(searchDataUI.cities) { city ->
-                CityCard(city, onCityClick = onCitySelected, onSearchExpandedChange)
+                CityCard(city, onCitySelected, onSearchExpandedChange)
             }
         }
     } else if (searchDataUI.cityName.length >= minCityLetters) {
@@ -177,7 +177,7 @@ private fun CityCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 6.dp, end = 6.dp, bottom = 6.dp)
+            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
             .clickable {
                 keyboardController?.hide()
                 focusManager.clearFocus(force = true)

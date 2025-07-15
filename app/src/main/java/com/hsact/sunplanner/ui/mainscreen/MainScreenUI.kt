@@ -94,10 +94,16 @@ fun MainScreen(
     LaunchedEffect(scrollState.maxValue) {
         canScroll.value = scrollState.maxValue > 0 && !mainDataUI.isLoading
     }
-    LaunchedEffect(mainDataUI.error) {
-        if (mainDataUI.error.isNotEmpty()) {
-            Toast.makeText(context, mainDataUI.error, Toast.LENGTH_SHORT).show()
-            viewModel.handleIntent(MainScreenIntents.CleanError)
+    LaunchedEffect(mainDataUI.validationError) {
+        if (mainDataUI.validationError != null) {
+            Toast.makeText(context, mainDataUI.validationError, Toast.LENGTH_SHORT).show()
+            viewModel.handleIntent(MainScreenIntents.CleanValidationError)
+        }
+    }
+    LaunchedEffect(mainDataUI.networkError) {
+        if (mainDataUI.networkError != null) {
+            Toast.makeText(context, mainDataUI.networkError, Toast.LENGTH_SHORT).show()
+            viewModel.handleIntent(MainScreenIntents.ClearNetworkError)
         }
     }
     LaunchedEffect(mainDataUI.settingsBundle.location) {
