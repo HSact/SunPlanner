@@ -177,7 +177,7 @@ private fun CityCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 5.dp, end = 5.dp, bottom = 5.dp)
+            .padding(start = 6.dp, end = 6.dp, bottom = 6.dp)
             .clickable {
                 keyboardController?.hide()
                 focusManager.clearFocus(force = true)

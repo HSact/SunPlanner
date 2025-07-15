@@ -127,11 +127,10 @@ fun MainScreen(
             }
         }
         val topPadding = if (isSearchExpanded) 0.dp else innerPadding.calculateTopPadding()
-        val bottomPadding = innerPadding.calculateBottomPadding()
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(top = topPadding, bottom = bottomPadding)
+                .padding(top = topPadding)
                 .verticalScroll(scrollState)
         ) {
             val windowInfo = LocalWindowInfo.current
@@ -209,7 +208,7 @@ fun MainScreen(
                     Row(
                         modifier
                             .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp)
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     ) {
                         Text(stringResource(R.string.data_source))
                     }
