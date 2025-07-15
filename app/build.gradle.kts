@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.hilt.gradle)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 hilt {
     enableAggregatingTask = false
@@ -17,8 +19,8 @@ android {
         applicationId = "com.hsact.sunplanner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.8.4"
+        versionCode = 7
+        versionName = "0.8.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -75,6 +77,9 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics.ndk)
     ksp(libs.moshi.kotlin.codegen)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)

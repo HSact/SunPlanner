@@ -11,6 +11,7 @@ sealed class MainScreenIntents {
     data class UpdateEndYear(val year: Int) : MainScreenIntents()
     data class UpdateEndMonth(val month: Int) : MainScreenIntents()
     data class UpdateEndDay(val day: Int) : MainScreenIntents()
-    object CleanError : MainScreenIntents()
+    object CleanValidationError : MainScreenIntents()
+    object CleanNetworkError : MainScreenIntents()
     object WeatherSearchClick : MainScreenIntents()
 }

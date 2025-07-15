@@ -2,18 +2,20 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.domain.repository.WeatherRepository
-import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
+import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
-import com.hsact.sunplanner.data.utils.StringProvider
+import com.hsact.sunplanner.domain.error.ApiError
+import com.hsact.sunplanner.domain.error.toApiError
 import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
+import com.hsact.sunplanner.domain.repository.StringProvider
+import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
+import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -131,8 +134,11 @@ class MainViewModel @Inject constructor(
                     updateEndDay(intent.day)
                 }
 
-                is MainScreenIntents.CleanError -> {
-                    cleanError()
+                is MainScreenIntents.CleanValidationError -> {
+                    cleanValidationError()
+                }
+                is MainScreenIntents.CleanNetworkError -> {
+                    cleanNetworkError()
                 }
 
                 is MainScreenIntents.WeatherSearchClick -> {
@@ -199,15 +205,24 @@ class MainViewModel @Inject constructor(
         return if (this.dayOfMonth > maxDay) this.withDayOfMonth(maxDay) else this
     }
 
-    private fun updateError(error: String) {
-        _mainUiState.value = _mainUiState.value.copy(error = error)
+    private fun setValidationError(error: String) {
+        _mainUiState.value = _mainUiState.value.copy(validationError = error)
     }
 
-    private fun cleanError() {
-        _mainUiState.value = _mainUiState.value.copy(error = "")
+    private fun setNetworkError(error: ApiError) {
+        _mainUiState.value = _mainUiState.value.copy(
+            networkError = error,
+            networkErrorId = UUID.randomUUID().toString())
     }
 
-    private fun updateConfirmedLD(dates: DatesBundle) {
+    private fun cleanValidationError() {
+        _mainUiState.value = _mainUiState.value.copy(validationError = null)
+    }
+
+    private fun cleanNetworkError() {
+        _mainUiState.value = _mainUiState.value.copy(networkError = null)
+    }
+    private fun updateConfirmedDates(dates: DatesBundle) {
         _mainUiState.value =
             _mainUiState.value.copy(
                 confirmedDates = _mainUiState.value.confirmedDates.copy(
@@ -220,26 +235,26 @@ class MainViewModel @Inject constructor(
     private suspend fun onWeatherSearchClick() {
         val state = _mainUiState.value
         if (!state.isLocationNotNull()) {
-            updateError(stringProvider.locationEmpty())
+            setValidationError(stringProvider.locationEmpty())
             return
         }
         if (!state.tempDates.isStartYearNotAfterEndYear()) {
-            updateError(stringProvider.invalidYearRange())
+            setValidationError(stringProvider.invalidYearRange())
             return
         }
         if (!state.tempDates.isDateRangeValid()) {
-            updateError(stringProvider.invalidDateRange())
+            setValidationError(stringProvider.invalidDateRange())
             return
         }
         if (!state.tempDates.isYearsRangeWithinLimit(state.maxYearRange)) {
-            updateError(stringProvider.yearsRangeTooBig(state.maxYearRange))
+            setValidationError(stringProvider.yearsRangeTooBig(state.maxYearRange))
             return
         }
         val params = withContext(Dispatchers.Default) {
             prepareParamsForRequest(state.settingsBundle, state.tempDates)
         }
         if (params != null) {
-            updateConfirmedLD(state.tempDates)
+            updateConfirmedDates(state.tempDates)
             fetchWeather(params)
         }
     }
@@ -269,7 +284,7 @@ class MainViewModel @Inject constructor(
     private fun fetchCityList(cityName: String) {
         viewModelScope.launch {
             try {
-                var cities = repository.getCitiesList(
+                val cities = repository.getCitiesList(
                     cityName = cityName,
                     language = _mainUiState.value.settingsBundle.languageMode.toName(),
                 )
@@ -277,7 +292,7 @@ class MainViewModel @Inject constructor(
                     _mainUiState.value = _mainUiState.value.copy(cities = cities)
                 }
             } catch (e: Exception) {
-                updateError(stringProvider.fetchCitiesError(e))
+                setNetworkError(e.toApiError())
             }
         }
     }
@@ -293,7 +308,7 @@ class MainViewModel @Inject constructor(
                 )
                 updateWeatherState(filteredWeather)
             } catch (e: Exception) {
-                updateError(stringProvider.fetchWeatherError(e))
+                setNetworkError(e.toApiError())
             }
             _mainUiState.value = _mainUiState.value.copy(isLoading = false)
         }
@@ -325,7 +340,7 @@ class MainViewModel @Inject constructor(
         } else {
             state.copy(isOneDay = true)
         }
-        var weatherMetrics = createWeatherMetrics(data, state.isOneDay)
+        val weatherMetrics = createWeatherMetrics(data, state.isOneDay)
         state = state.copy(weatherMetrics = weatherMetrics)
         return state
     }

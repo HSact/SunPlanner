@@ -2,11 +2,12 @@ package com.hsact.sunplanner.data.utils
 
 import android.content.Context
 import com.hsact.sunplanner.R
+import com.hsact.sunplanner.domain.repository.StringProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class DefaultStringProvider @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : StringProvider {
 
     override fun locationEmpty() = context.getString(R.string.error_location_empty)

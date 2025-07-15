@@ -91,8 +91,8 @@ fun WeatherGraphLineCard(
         AnimationMode.Together(delayBuilder = { 0L })
     }
 
-    Card(modifier = Modifier.padding(start = 10.dp, end = 10.dp, bottom = 20.dp)) {
-        BoxWithConstraints(modifier = Modifier.padding(10.dp)) {
+    Card(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+        BoxWithConstraints(modifier = Modifier.padding(16.dp)) {
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
                 endDate = endDate,
@@ -133,7 +133,7 @@ fun WeatherGraphLineCard(
                     maxValue = max,
                     modifier = Modifier
                         .heightIn(max = 300.dp)
-                        .padding(top = 50.dp)
+                        .padding(top = 52.dp)
                 )
             }
         }

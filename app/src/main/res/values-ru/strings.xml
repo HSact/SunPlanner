@@ -39,6 +39,20 @@
     <string name="gusts">Порывы</string>
     <string name="avg">Среднее</string>
     <string name="curved_edges">Скруглённые углы</string>
+    <string name="error_too_many_requests">
+        Вы отправили слишком много запросов за короткое время.
+        Это ограничение со стороны погодного API, а не приложения.
+        Пожалуйста, подождите немного и повторите попытку.
+    </string>
+    <string name="error_bad_request">Некорректный запрос</string>
+    <string name="error_server_error">Ошибка сервера. Пожалуйста, попробуйте позже.</string>
+    <string name="error_invalid_response">Получены некорректные данные от сервера</string>
+    <string name="error_no_internet">Нет подключения к интернету. Проверьте соединение.</string>
+    <string name="error_unknown">Произошла неизвестная ошибка</string>
+    <string name="error_bad_request_with_reason">Некорректный запрос: %1$s</string>
+    <string name="error">Ошибка</string>
+    <string name="button_retry">Повторить</string>
+    <string name="button_ok">OK</string>
     <string-array name="month_choices">
         <item>Январь</item>
         <item>Февраль</item>

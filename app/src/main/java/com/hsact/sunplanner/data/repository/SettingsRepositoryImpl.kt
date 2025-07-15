@@ -24,7 +24,7 @@ private val Context.dataStore by preferencesDataStore(name = "settings")
 
 @Singleton
 class SettingsRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : SettingsRepository {
 
     companion object {
@@ -100,9 +100,9 @@ class SettingsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun setWindSpeedUnit(windSpeedMode: WindSpeedUnitMode) {
+    override suspend fun setWindSpeedUnit(windMode: WindSpeedUnitMode) {
         context.dataStore.edit { preferences ->
-            preferences[WIND_SPEED_UNIT_KEY] = windSpeedMode.ordinal
+            preferences[WIND_SPEED_UNIT_KEY] = windMode.ordinal
         }
     }
 
@@ -112,15 +112,15 @@ class SettingsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun setDotsVisibility(isDotsVisible: Boolean) {
+    override suspend fun setDotsVisibility(isVisible: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[IS_DOTS_VISIBLE_KEY] = isDotsVisible
+            preferences[IS_DOTS_VISIBLE_KEY] = isVisible
         }
     }
 
-    override suspend fun setGraphCurved(isGraphCurved: Boolean) {
+    override suspend fun setGraphCurved(isCurved: Boolean) {
         context.dataStore.edit { preferences ->
-            preferences[IS_GRAPH_CURVED_KEY] = isGraphCurved
+            preferences[IS_GRAPH_CURVED_KEY] = isCurved
         }
     }
 

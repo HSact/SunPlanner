@@ -2,7 +2,6 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import com.hsact.sunplanner.R
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,12 +20,14 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,30 +42,31 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.hsact.sunplanner.R
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.LocationUtils
-import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
-import java.time.LocalDate
-import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
+import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.ui.components.CollapsibleTopBar
 import com.hsact.sunplanner.ui.components.DropdownPicker
-import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.LocationSearch
+import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
+import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.settings.SettingsDialog
+import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
 import com.hsact.sunplanner.ui.theme.LocalExtendedColors
 import kotlinx.coroutines.FlowPreview
+import java.time.LocalDate
 import java.util.Locale
-import kotlin.collections.toList
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @SuppressLint("LocalContextConfigurationRead")
@@ -84,20 +86,49 @@ fun MainScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scrollState = rememberScrollState()
     val canScroll = remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
     var query by remember {
         mutableStateOf(
             if (mainDataUI.settingsBundle.location != null)
                 LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else ""
         )
     }
+    val networkErrorMessage = mainDataUI.networkError?.let { error ->
+        when (error) {
+            ApiError.TooManyRequests -> context.getString(R.string.error_too_many_requests)
+            is ApiError.BadRequest -> context.getString(
+                if (error.reason.isNullOrBlank())
+                    R.string.error_bad_request
+                else
+                    R.string.error_bad_request_with_reason,
+                error.reason.orEmpty()
+            )
+
+            ApiError.ServerError -> context.getString(R.string.error_server_error)
+            ApiError.InvalidResponse -> context.getString(R.string.error_invalid_response)
+            ApiError.NoInternet -> context.getString(R.string.error_no_internet)
+            ApiError.EmptyResponse -> context.getString(R.string.error_invalid_response)
+            is ApiError.Unknown -> context.getString(R.string.error_unknown)
+        }
+    }
 
     LaunchedEffect(scrollState.maxValue) {
         canScroll.value = scrollState.maxValue > 0 && !mainDataUI.isLoading
     }
-    LaunchedEffect(mainDataUI.error) {
-        if (mainDataUI.error.isNotEmpty()) {
-            Toast.makeText(context, mainDataUI.error, Toast.LENGTH_SHORT).show()
-            viewModel.handleIntent(MainScreenIntents.CleanError)
+    LaunchedEffect(mainDataUI.validationError) {
+        if (mainDataUI.validationError != null) {
+            Toast.makeText(context, mainDataUI.validationError, Toast.LENGTH_SHORT).show()
+            viewModel.handleIntent(MainScreenIntents.CleanValidationError)
+        }
+    }
+    LaunchedEffect(mainDataUI.networkErrorId) {
+        networkErrorMessage?.let {
+            if (mainDataUI.networkError == ApiError.TooManyRequests) {
+                showErrorDialog = true
+            } else {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+            }
         }
     }
     LaunchedEffect(mainDataUI.settingsBundle.location) {
@@ -107,6 +138,37 @@ fun MainScreen(
                     mainDataUI.settingsBundle.location ?: return@LaunchedEffect
                 )
         }
+    }
+    if (showErrorDialog && networkErrorMessage != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showErrorDialog = false
+                viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+            },
+            title = {
+                Text(text = stringResource(R.string.error))
+            },
+            text = {
+                Text(text = networkErrorMessage)
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showErrorDialog = false
+                    viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+                    viewModel.handleIntent(MainScreenIntents.WeatherSearchClick)
+                }) {
+                    Text(text = stringResource(R.string.button_retry))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showErrorDialog = false
+                    viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+                }) {
+                    Text(text = stringResource(R.string.button_ok))
+                }
+            }
+        )
     }
     Scaffold(
         modifier = Modifier
@@ -127,11 +189,10 @@ fun MainScreen(
             }
         }
         val topPadding = if (isSearchExpanded) 0.dp else innerPadding.calculateTopPadding()
-        val bottomPadding = innerPadding.calculateBottomPadding()
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .padding(top = topPadding, bottom = bottomPadding)
+                .padding(top = topPadding)
                 .verticalScroll(scrollState)
         ) {
             val windowInfo = LocalWindowInfo.current
@@ -142,7 +203,7 @@ fun MainScreen(
                     .heightIn(max = screenHeight)
                 else Modifier
                     .heightIn(max = screenHeight)
-                    .padding(start = 10.dp, end = 10.dp)
+                    .padding(start = 16.dp, end = 16.dp)
             ) {
                 LocationSearch(
                     viewModel = viewModel,
@@ -163,7 +224,7 @@ fun MainScreen(
                 DatesRangeSection(viewModel, context, mainDataUI.tempDates)
                 Row(
                     modifier = Modifier
-                        .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                        .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                         .align(Alignment.CenterHorizontally)
                 ) {
                     Button(
@@ -180,7 +241,7 @@ fun MainScreen(
                     Row(
                         modifier
                             .fillMaxWidth()
-                            .padding(top = 50.dp),
+                            .padding(top = 52.dp),
                         horizontalArrangement = Arrangement.Center
                     ) {
                         CircularProgressIndicator(
@@ -209,7 +270,7 @@ fun MainScreen(
                     Row(
                         modifier
                             .fillMaxWidth()
-                            .padding(start = 10.dp, end = 10.dp)
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                     ) {
                         Text(stringResource(R.string.data_source))
                     }
@@ -232,7 +293,7 @@ private fun YearsRangeSelection(
     }
     Row(
         modifier = Modifier
-            .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             .fillMaxWidth()
     ) {
         DropdownPicker(
@@ -244,7 +305,7 @@ private fun YearsRangeSelection(
             },
             modifier = Modifier
                 .weight(0.5f)
-                .padding(end = 3.dp)
+                .padding(end = 8.dp)
         )
         DropdownPicker(
             label = stringResource(R.string.end_year),
@@ -255,7 +316,7 @@ private fun YearsRangeSelection(
             },
             modifier = Modifier
                 .weight(0.5f)
-                .padding(start = 3.dp)
+                .padding(start = 8.dp)
         )
     }
 }
@@ -275,7 +336,7 @@ private fun ColumnScope.DatesRangeSection(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 10.dp)
+            .padding(top = 16.dp)
             .align(Alignment.CenterHorizontally)
     )
     {
@@ -293,17 +354,17 @@ private fun ColumnScope.DatesRangeSection(
             )
             Box(
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 10.dp, end = 10.dp)
+                    .padding(top = 24.dp, start = 16.dp, end = 16.dp)
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.outline,
                         RoundedCornerShape(10.dp)
                     )
                     .padding(
-                        top = 10.dp,
-                        start = 5.dp,
-                        end = 5.dp,
-                        bottom = 5.dp
+                        top = 16.dp,
+                        start = 8.dp,
+                        end = 8.dp,
+                        bottom = 8.dp
                     )
                     .align(Alignment.TopCenter)
                     .zIndex(0f)
@@ -323,10 +384,7 @@ private fun ColumnScope.DatesRangeSection(
                     }
                     Row(
                         modifier = Modifier
-                            .padding(
-                                top = 10.dp, start = 10.dp,
-                                end = 10.dp, bottom = 10.dp
-                            )
+                            .padding(8.dp)
                     ) {
                         DropdownPicker(
                             label = stringResource(R.string.start_month),
@@ -341,7 +399,7 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(end = 3.dp)
+                                .padding(end = 8.dp)
                         )
                         DropdownPicker(
                             label = stringResource(R.string.end_month),
@@ -358,10 +416,15 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(start = 3.dp)
+                                .padding(start = 8.dp)
                         )
                     }
-                    Row(modifier = Modifier.padding(10.dp))
+                    Row(
+                        modifier = Modifier.padding(
+                            top = 8.dp, start = 8.dp,
+                            end = 8.dp, bottom = 16.dp
+                        )
+                    )
                     {
                         DropdownPicker(
                             label = stringResource(R.string.start_day),
@@ -372,7 +435,7 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(end = 3.dp)
+                                .padding(end = 8.dp)
                         )
                         DropdownPicker(
                             label = stringResource(R.string.end_day),
@@ -383,7 +446,7 @@ private fun ColumnScope.DatesRangeSection(
                             },
                             modifier = Modifier
                                 .weight(0.5f)
-                                .padding(start = 3.dp)
+                                .padding(start = 8.dp)
                         )
                     }
                 }
@@ -402,7 +465,7 @@ private fun DateText(
     Row(
         modifier
             .fillMaxWidth()
-            .padding(top = 10.dp, start = 10.dp, end = 10.dp),
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
@@ -455,7 +518,7 @@ private fun WeatherCards(
     Row(
         modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
+            .padding(top = 24.dp)
     ) {
         //Text("Weather: ${searchDataUI.weatherData}")
         WeatherGraphLineCard(

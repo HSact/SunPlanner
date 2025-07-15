@@ -17,6 +17,7 @@ enum class LanguageMode {
         RUSSIAN -> "ru"
     }
 
+    @Suppress("DEPRECATION")
     fun toLocale(): Locale = Locale(this.toName())
 }
 
