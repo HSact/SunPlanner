@@ -39,6 +39,20 @@
     <string name="gusts">Gusts</string>
     <string name="avg">Average</string>
     <string name="curved_edges">Curved edges</string>
+    <string name="error_too_many_requests">You\'ve sent too many requests in a short time.
+        This is a limitation of the weather API, not the app.
+        Please wait a bit and try again.
+    </string>
+    <string name="error_bad_request">Invalid request</string>
+    <string name="error_server_error">Server error. Please try again later.</string>
+    <string name="error_invalid_response">Received invalid data from the server</string>
+    <string name="error_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="error_bad_request_with_reason">Invalid request: %1$s</string>
+
+    <string name="error">Error</string>
+    <string name="button_retry">Retry</string>
+    <string name="button_ok">OK</string>
     <string-array name="month_choices">
         <item>January</item>
         <item>February</item>

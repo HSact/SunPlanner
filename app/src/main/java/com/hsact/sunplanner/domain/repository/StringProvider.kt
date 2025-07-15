@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.data.utils
+package com.hsact.sunplanner.domain.repository
 
 interface StringProvider {
     fun locationEmpty(): String

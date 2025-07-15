@@ -7,7 +7,9 @@ import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.WeatherResponse
-import com.hsact.sunplanner.data.utils.StringProvider
+import com.hsact.sunplanner.domain.error.ApiError
+import com.hsact.sunplanner.domain.error.toApiError
+import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
@@ -28,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -132,10 +135,10 @@ class MainViewModel @Inject constructor(
                 }
 
                 is MainScreenIntents.CleanValidationError -> {
-                    clearValidationError()
+                    cleanValidationError()
                 }
-                is MainScreenIntents.ClearNetworkError -> {
-                    clearNetworkError()
+                is MainScreenIntents.CleanNetworkError -> {
+                    cleanNetworkError()
                 }
 
                 is MainScreenIntents.WeatherSearchClick -> {
@@ -206,15 +209,17 @@ class MainViewModel @Inject constructor(
         _mainUiState.value = _mainUiState.value.copy(validationError = error)
     }
 
-    private fun setNetworkError(error: String) {
-        _mainUiState.value = _mainUiState.value.copy(networkError = error)
+    private fun setNetworkError(error: ApiError) {
+        _mainUiState.value = _mainUiState.value.copy(
+            networkError = error,
+            networkErrorId = UUID.randomUUID().toString())
     }
 
-    private fun clearValidationError() {
+    private fun cleanValidationError() {
         _mainUiState.value = _mainUiState.value.copy(validationError = null)
     }
 
-    private fun clearNetworkError() {
+    private fun cleanNetworkError() {
         _mainUiState.value = _mainUiState.value.copy(networkError = null)
     }
     private fun updateConfirmedDates(dates: DatesBundle) {
@@ -287,7 +292,7 @@ class MainViewModel @Inject constructor(
                     _mainUiState.value = _mainUiState.value.copy(cities = cities)
                 }
             } catch (e: Exception) {
-                setNetworkError(stringProvider.fetchCitiesError(e))
+                setNetworkError(e.toApiError())
             }
         }
     }
@@ -303,7 +308,7 @@ class MainViewModel @Inject constructor(
                 )
                 updateWeatherState(filteredWeather)
             } catch (e: Exception) {
-                setNetworkError(stringProvider.fetchWeatherError(e))
+                setNetworkError(e.toApiError())
             }
             _mainUiState.value = _mainUiState.value.copy(isLoading = false)
         }

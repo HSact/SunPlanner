@@ -1,6 +1,6 @@
 package com.hsact.sunplanner.ui.components.cards
 
-import com.hsact.sunplanner.data.utils.StringProvider
+import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.model.WeatherGraphData
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphBarsUseCase

@@ -23,6 +23,6 @@ interface SettingsRepository {
     suspend fun setWindSpeedUnit(windMode: WindSpeedUnitMode)
     suspend fun setPrecipitationUnit(precipitationMode: PrecipitationUnitMode)
     suspend fun setDotsVisibility(isVisible: Boolean)
-    suspend fun setGraphCurved(isVisible: Boolean)
+    suspend fun setGraphCurved(isCurved: Boolean)
     suspend fun setLocation(location: Location)
 }

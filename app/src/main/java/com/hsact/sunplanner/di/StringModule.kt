@@ -2,7 +2,7 @@ package com.hsact.sunplanner.di
 
 import android.content.Context
 import com.hsact.sunplanner.data.utils.DefaultStringProvider
-import com.hsact.sunplanner.data.utils.StringProvider
+import com.hsact.sunplanner.domain.repository.StringProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

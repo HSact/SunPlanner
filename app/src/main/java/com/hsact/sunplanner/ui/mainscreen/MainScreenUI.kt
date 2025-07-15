@@ -21,12 +21,14 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +51,7 @@ import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
 import java.time.LocalDate
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
@@ -84,11 +87,30 @@ fun MainScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scrollState = rememberScrollState()
     val canScroll = remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
     var query by remember {
         mutableStateOf(
             if (mainDataUI.settingsBundle.location != null)
                 LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else ""
         )
+    }
+    val networkErrorMessage = mainDataUI.networkError?.let { error ->
+        when (error) {
+            ApiError.TooManyRequests -> context.getString(R.string.error_too_many_requests)
+            is ApiError.BadRequest -> context.getString(
+                if (error.reason.isNullOrBlank())
+                    R.string.error_bad_request
+                else
+                    R.string.error_bad_request_with_reason,
+                error.reason.orEmpty()
+            )
+
+            ApiError.ServerError -> context.getString(R.string.error_server_error)
+            ApiError.InvalidResponse -> context.getString(R.string.error_invalid_response)
+            ApiError.NoInternet -> context.getString(R.string.error_no_internet)
+            ApiError.EmptyResponse -> context.getString(R.string.error_invalid_response)
+            is ApiError.Unknown -> context.getString(R.string.error_unknown)
+        }
     }
 
     LaunchedEffect(scrollState.maxValue) {
@@ -100,10 +122,14 @@ fun MainScreen(
             viewModel.handleIntent(MainScreenIntents.CleanValidationError)
         }
     }
-    LaunchedEffect(mainDataUI.networkError) {
-        if (mainDataUI.networkError != null) {
-            Toast.makeText(context, mainDataUI.networkError, Toast.LENGTH_SHORT).show()
-            viewModel.handleIntent(MainScreenIntents.ClearNetworkError)
+    LaunchedEffect(mainDataUI.networkErrorId) {
+        networkErrorMessage?.let {
+            if (mainDataUI.networkError == ApiError.TooManyRequests) {
+                showErrorDialog = true
+            } else {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+            }
         }
     }
     LaunchedEffect(mainDataUI.settingsBundle.location) {
@@ -113,6 +139,37 @@ fun MainScreen(
                     mainDataUI.settingsBundle.location ?: return@LaunchedEffect
                 )
         }
+    }
+    if (showErrorDialog && networkErrorMessage != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showErrorDialog = false
+                viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+            },
+            title = {
+                Text(text = stringResource(R.string.error))
+            },
+            text = {
+                Text(text = networkErrorMessage)
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showErrorDialog = false
+                    viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+                    viewModel.handleIntent(MainScreenIntents.WeatherSearchClick)
+                }) {
+                    Text(text = stringResource(R.string.button_retry))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showErrorDialog = false
+                    viewModel.handleIntent(MainScreenIntents.CleanNetworkError)
+                }) {
+                    Text(text = stringResource(R.string.button_ok))
+                }
+            }
+        )
     }
     Scaffold(
         modifier = Modifier
