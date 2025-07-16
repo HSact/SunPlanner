@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>create</title>
+    <title>get</title>
 <!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../../"}-->    <link href="###images/logo-icon.svg" rel="icon" type="image/svg">
 <!--[-]cmd-->    <!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../../"}--><script>var pathToRoot = "###";</script><!--[-]cmd-->
     <script>document.documentElement.classList.replace("no-js","js");</script>
@@ -46,7 +46,7 @@
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;com.hsact.sunplanner.domain.factory/-weather-avg-values-factory/create.html&quot;}"></dokka-template-command>        </div>
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;com.hsact.sunplanner.di/[android-jvm]-analytics-module_-provide-analytics-helper-factory/get.html&quot;}"></dokka-template-command>        </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active=""
@@ -104,12 +104,12 @@
                 </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="member" id="content" pageIds="app::com.hsact.sunplanner.domain.factory/WeatherAvgValuesFactory/create/#com.hsact.sunplanner.data.responses.WeatherResponse#com.hsact.sunplanner.domain.model.WeatherMetrics/PointingToDeclaration//1259010394">
-  <div class="breadcrumbs"><a href="../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.hsact.sunplanner.domain.factory</a><span class="delimiter">/</span><a href="index.html">WeatherAvgValuesFactory</a><span class="delimiter">/</span><span class="current">create</span></div>
+<div class="main-content" data-page-type="member" id="content" pageIds="app::com.hsact.sunplanner.di/AnalyticsModule_ProvideAnalyticsHelperFactory/get/#/PointingToDeclaration//1259010394">
+  <div class="breadcrumbs"><a href="../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.hsact.sunplanner.di</a><span class="delimiter">/</span><a href="index.html">[androidJvm]AnalyticsModule_ProvideAnalyticsHelperFactory</a><span class="delimiter">/</span><span class="current">get</span></div>
   <div class="cover ">
-    <h1 class="cover"><span><span>create</span></span></h1>
+    <h1 class="cover"><span><span>get</span></span></h1>
   </div>
-  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="../../com.hsact.sunplanner.data.responses/-weather-response/index.html">WeatherResponse</a><span class="token punctuation">, </span></span><span class="parameter ">weatherMetrics<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a></div><p class="paragraph">Creates and populates a <a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a> instance with averaged weather data based on the provided raw <a href="../../com.hsact.sunplanner.data.responses/-weather-response/index.html">WeatherResponse</a>.</p><p class="paragraph">The following fields are populated with averaged values:</p><ul><li><p class="paragraph">Max, average, and min temperatures</p></li><li><p class="paragraph">Sunshine duration (in hours, rounded to 1 decimal)</p></li><li><p class="paragraph">Daylight duration (in hours, rounded to 1 decimal)</p></li><li><p class="paragraph">Precipitation sum</p></li><li><p class="paragraph">Wind speed and gusts</p></li></ul><p class="paragraph"><strong>Note:</strong> This method mutates the input <a href="create.html">weatherMetrics</a> object and also returns it.</p><span class="kdoc-tag"><h4 class="">Return</h4><p class="paragraph">The same <a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a> instance, updated with average values.</p></span><h4 class="">Parameters</h4><div class="table"><div class="table-row" data-filterable-current=":app/release" data-filterable-set=":app/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span><span>data</span></span></u></div></span></div><div><div class="title"><p class="paragraph">Raw weather response containing daily weather information.</p></div></div></div></div><div class="table-row" data-filterable-current=":app/release" data-filterable-set=":app/release"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><u><span>weather</span><wbr></wbr><span><span>Metrics</span></span></u></div></span></div><div><div class="title"><p class="paragraph">The target <a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a> object to populate.</p></div></div></div></div></div></div></div>
+  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get.html"><span class="token function">get</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span>AnalyticsHelper</div></div></div>
 </div>
     <div class="footer">
         <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>

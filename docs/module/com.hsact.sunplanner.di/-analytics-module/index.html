@@ -2,7 +2,7 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>WeatherAvgValuesFactory</title>
+    <title>AnalyticsModule</title>
 <!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../../"}-->    <link href="###images/logo-icon.svg" rel="icon" type="image/svg">
 <!--[-]cmd-->    <!--[+]cmd:{"@class":"org.jetbrains.dokka.base.templating.PathToRootSubstitutionCommand","pattern":"###","default":"../../"}--><script>var pathToRoot = "###";</script><!--[-]cmd-->
     <script>document.documentElement.classList.replace("no-js","js");</script>
@@ -46,7 +46,7 @@
         </button>
         <div class="navigation-controls--break ui-kit_mobile-only"></div>
         <div class="library-version" id="library-version">
-<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;com.hsact.sunplanner.domain.factory/-weather-avg-values-factory/index.html&quot;}"></dokka-template-command>        </div>
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;com.hsact.sunplanner.di/-analytics-module/index.html&quot;}"></dokka-template-command>        </div>
         <div class="navigation-controls">
         <div class="filter-section filter-section_loading" id="filter-section">
                 <button class="platform-tag platform-selector jvm-like" data-active=""
@@ -104,47 +104,43 @@
                 </div>
             </div>
             <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageIds="app::com.hsact.sunplanner.domain.factory/WeatherAvgValuesFactory///PointingToDeclaration//1259010394">
-  <div class="breadcrumbs"><a href="../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.hsact.sunplanner.domain.factory</a><span class="delimiter">/</span><span class="current">WeatherAvgValuesFactory</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageIds="app::com.hsact.sunplanner.di/AnalyticsModule///PointingToDeclaration//1259010394">
+  <div class="breadcrumbs"><a href="../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.hsact.sunplanner.di</a><span class="delimiter">/</span><span class="current">AnalyticsModule</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Weather</span><wbr></wbr><span>Avg</span><wbr></wbr><span>Values</span><wbr></wbr><span><span>Factory</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">WeatherAvgValuesFactory</a> <span><span class="token annotation builtin">@</span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;javax.inject&quot;,&quot;classNames&quot;:&quot;Inject&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}"><span class="token annotation builtin">Inject</span></dokka-template-command> </span><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">aggregateWeatherByDateUseCase<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.usecase.weather/-aggregate-weather-by-date-use-case/index.html">AggregateWeatherByDateUseCase</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">A factory class responsible for generating average weather metric values from raw weather API data.</p><p class="paragraph">It uses <a href="../../com.hsact.sunplanner.domain.usecase.weather/-aggregate-weather-by-date-use-case/index.html">AggregateWeatherByDateUseCase</a> to aggregate daily weather data by date and then fills the <a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a> object with averaged values.</p></div></div>
+    <h1 class="cover"><span>Analytics</span><wbr></wbr><span><span>Module</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;dagger&quot;,&quot;classNames&quot;:&quot;Module&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}"><span class="token annotation builtin">Module</span></dokka-template-command></div></div><span class="token keyword">object </span><a href="index.html">AnalyticsModule</a></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
-      <div data-togglable="CONSTRUCTOR">
-        <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="1457563129%2FConstructors%2F1259010394" anchor-label="WeatherAvgValuesFactory" id="1457563129%2FConstructors%2F1259010394" data-filterable-set=":app/release"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":app/release" data-filterable-set=":app/release">
+      <div data-togglable="FUNCTION">
+        <h2 class="">Functions</h2>
+        <div class="table"><a data-name="-1544907405%2FFunctions%2F1259010394" anchor-label="provideAnalyticsHelper" id="-1544907405%2FFunctions%2F1259010394" data-filterable-set=":app/release"></a>
+          <div class="table-row" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-weather-avg-values-factory.html"><span>Weather</span><wbr></wbr><span>Avg</span><wbr></wbr><span>Values</span><wbr></wbr><span><span>Factory</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1457563129%2FConstructors%2F1259010394"></span>
+                  <div><a href="provide-analytics-helper.html"><span>provide</span><wbr></wbr><span>Analytics</span><wbr></wbr><span><span>Helper</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1544907405%2FFunctions%2F1259010394"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;javax.inject&quot;,&quot;classNames&quot;:&quot;Inject&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}"><span class="token annotation builtin">Inject</span></dokka-template-command></div></div><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">aggregateWeatherByDateUseCase<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.usecase.weather/-aggregate-weather-by-date-use-case/index.html">AggregateWeatherByDateUseCase</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;dagger&quot;,&quot;classNames&quot;:&quot;Provides&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}"><span class="token annotation builtin">Provides</span></dokka-template-command></div><div class="block"><span class="token annotation builtin">@</span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;javax.inject&quot;,&quot;classNames&quot;:&quot;Singleton&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}"><span class="token annotation builtin">Singleton</span></dokka-template-command></div></div><span class="token keyword">fun </span><a href="provide-analytics-helper.html"><span class="token function">provideAnalyticsHelper</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">firebaseAnalytics<span class="token operator">: </span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;com.google.firebase.analytics&quot;,&quot;classNames&quot;:&quot;FirebaseAnalytics&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}">FirebaseAnalytics</dokka-template-command></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.analytics/-analytics-helper/index.html">AnalyticsHelper</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="-1056798691%2FFunctions%2F1259010394" anchor-label="create" id="-1056798691%2FFunctions%2F1259010394" data-filterable-set=":app/release"></a>
+<a data-name="-1623531685%2FFunctions%2F1259010394" anchor-label="provideFirebaseAnalytics" id="-1623531685%2FFunctions%2F1259010394" data-filterable-set=":app/release"></a>
           <div class="table-row" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="create.html"><span><span>create</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1056798691%2FFunctions%2F1259010394"></span>
+                  <div><a href="provide-firebase-analytics.html"><span>provide</span><wbr></wbr><span>Firebase</span><wbr></wbr><span><span>Analytics</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1623531685%2FFunctions%2F1259010394"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">fun </span><a href="create.html"><span class="token function">create</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">data<span class="token operator">: </span><a href="../../com.hsact.sunplanner.data.responses/-weather-response/index.html">WeatherResponse</a><span class="token punctuation">, </span></span><span class="parameter ">weatherMetrics<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a></div><div class="brief "><p class="paragraph">Creates and populates a <a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a> instance with averaged weather data based on the provided raw <a href="../../com.hsact.sunplanner.data.responses/-weather-response/index.html">WeatherResponse</a>.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;dagger&quot;,&quot;classNames&quot;:&quot;Provides&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}"><span class="token annotation builtin">Provides</span></dokka-template-command></div><div class="block"><span class="token annotation builtin">@</span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;javax.inject&quot;,&quot;classNames&quot;:&quot;Singleton&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}"><span class="token annotation builtin">Singleton</span></dokka-template-command></div></div><span class="token keyword">fun </span><a href="provide-firebase-analytics.html"><span class="token function">provideFirebaseAnalytics</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ResolveLinkCommand&quot;,&quot;dri&quot;:{&quot;packageName&quot;:&quot;com.google.firebase.analytics&quot;,&quot;classNames&quot;:&quot;FirebaseAnalytics&quot;,&quot;callable&quot;:null,&quot;target&quot;:{&quot;@class&quot;:&quot;org.jetbrains.dokka.links.PointingToDeclaration&quot;},&quot;extra&quot;:null}}">FirebaseAnalytics</dokka-template-command></div></div></div>
                 </div>
               </div>
             </div>

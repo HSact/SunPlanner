@@ -2,15 +2,16 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import com.hsact.sunplanner.domain.analytics.AnalyticsHelper
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.error.toApiError
-import com.hsact.sunplanner.domain.factory.WeatherAvgValuesFactory
+import com.hsact.sunplanner.domain.factory.WeatherMetricsFactory
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
-import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
@@ -32,8 +33,6 @@ import java.time.LocalDate
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.math.round
-import kotlin.math.roundToInt
 
 @FlowPreview
 @HiltViewModel
@@ -43,13 +42,16 @@ class MainViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val updateLocationUseCase: UpdateLocationUseCase,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
-    private val weatherAvgValuesFactory: WeatherAvgValuesFactory,
+    private val weatherMetricsFactory: WeatherMetricsFactory,
+    private val analyticsHelper: AnalyticsHelper,
+    private val firebaseAnalytics: FirebaseAnalytics
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow(MainUIState())
     val mainUiState: StateFlow<MainUIState> get() = _mainUiState
 
     init {
+        analyticsHelper.logAppStarted()
         viewModelScope.launch {
             combine(
                 getSettingsUseCase.location,
@@ -258,6 +260,11 @@ class MainViewModel @Inject constructor(
         }
         if (params != null) {
             updateConfirmedDates(state.tempDates)
+            analyticsHelper.logWeatherSearchClicked(
+                location = state.settingsBundle.location?.name ?: "unknown",
+                startDate = state.tempDates.startDate.toString(),
+                endDate = state.tempDates.endDate.toString()
+            )
             fetchWeather(params)
         }
     }
@@ -310,8 +317,15 @@ class MainViewModel @Inject constructor(
                     _mainUiState.value.tempDates.endDate
                 )
                 updateWeatherState(filteredWeather)
+                analyticsHelper.logWeatherFetched(
+                    location = _mainUiState.value.settingsBundle.location?.name ?: "unknown"
+                )
             } catch (e: Exception) {
                 setNetworkError(e.toApiError())
+                analyticsHelper.logWeatherFetchFailed(
+                    location = _mainUiState.value.settingsBundle.location?.name ?: "unknown",
+                    error = e.message ?: "unknown"
+                )
             }
             _mainUiState.value = _mainUiState.value.copy(isLoading = false)
         }
@@ -343,33 +357,8 @@ class MainViewModel @Inject constructor(
         } else {
             state.copy(isOneDay = true)
         }
-        val weatherMetrics = createWeatherMetrics(data, state.isOneDay)
+        val weatherMetrics = weatherMetricsFactory.create(data, state.isOneDay)
         state = state.copy(weatherMetrics = weatherMetrics)
         return state
-    }
-
-    private fun createWeatherMetrics(data: WeatherResponse, isOneDay: Boolean): WeatherMetrics {
-        val daily = data.daily
-        var weatherMetrics = WeatherMetrics()
-        weatherMetrics.maxTemps = daily.maxTemperature
-        weatherMetrics.minTemps = daily.minTemperature
-        weatherMetrics.averageTemps = weatherMetrics.maxTemps.indices.map { i ->
-            val avg = (weatherMetrics.maxTemps[i] + weatherMetrics.minTemps[i]) / 2
-            round(avg * 10) / 10
-        }
-        weatherMetrics.sunshine = daily.sunshineDuration
-            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-        weatherMetrics.dayLight = daily.daylightDuration
-            .map { ((it / 3600.0) * 10).roundToInt() / 10.0 }
-        weatherMetrics.precipitation = daily.precipitationSum
-        weatherMetrics.windSpeed = daily.windSpeedMax
-        weatherMetrics.gustSpeed = daily.windGustsMax
-        if (isOneDay) {
-            weatherMetrics.dayLight =
-                weatherMetrics.dayLight.map { weatherMetrics.dayLight.average() }.toList()
-        } else {
-            weatherMetrics = weatherAvgValuesFactory.create(data, weatherMetrics)
-        }
-        return weatherMetrics
     }
 }
