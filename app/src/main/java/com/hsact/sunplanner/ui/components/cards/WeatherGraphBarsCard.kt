@@ -64,8 +64,10 @@ fun WeatherGraphBarsCard(
             theme == ThemeMode.DARK
         }
     val textStyle = remember(isDarkTheme) {
-        if (isDarkTheme) TextStyle(color = Color.White,
-            fontSize = 12.sp)
+        if (isDarkTheme) TextStyle(
+            color = Color.White,
+            fontSize = 12.sp
+        )
         else TextStyle(color = Color.Black)
     }
 

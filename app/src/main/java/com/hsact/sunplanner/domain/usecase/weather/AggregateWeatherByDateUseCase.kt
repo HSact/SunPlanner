@@ -12,7 +12,8 @@ class AggregateWeatherByDateUseCase @Inject constructor() {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         val grouped = daily.time.mapIndexed { index, dateStr ->
-            val dayKey = LocalDate.parse(dateStr, formatter).format(DateTimeFormatter.ofPattern("MM-dd"))
+            val dayKey =
+                LocalDate.parse(dateStr, formatter).format(DateTimeFormatter.ofPattern("MM-dd"))
             dayKey to index
         }.groupBy({ it.first }, { it.second })
 

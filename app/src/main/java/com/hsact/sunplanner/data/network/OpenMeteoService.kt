@@ -4,7 +4,28 @@ import com.hsact.sunplanner.data.responses.WeatherResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
+/**
+ * Retrofit service interface for accessing historical weather data
+ * from the Open-Meteo API.
+ */
 interface OpenMeteoService {
+
+    /**
+     * Fetches historical daily weather data for a given location and date range.
+     *
+     * @param latitude Latitude of the location.
+     * @param longitude Longitude of the location.
+     * @param startDate Start date in the format "yyyy-MM-dd".
+     * @param endDate End date in the format "yyyy-MM-dd".
+     * @param daily Comma-separated list of daily weather variables to retrieve.
+     *              Default includes weather code, temperature, wind, etc.
+     * @param temperatureUnit Unit for temperature values (e.g., "celsius" or "fahrenheit").
+     * @param windSpeedUnit Unit for wind speed (e.g., "kmh", "ms", "mph", "kn").
+     * @param precipitationUnit Unit for precipitation (e.g., "mm" or "inch").
+     * @param timezone Timezone to use for date alignment (e.g., "auto").
+     *
+     * @return A [WeatherResponse] object containing the weather data.
+     */
     @GET("v1/archive")
     suspend fun getHistoricalWeather(
         @Query("latitude") latitude: Double,

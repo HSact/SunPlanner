@@ -7,6 +7,18 @@ import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
 import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 
+/**
+ * Data class that aggregates user settings for the application.
+ *
+ * @property location The selected geographic location, or null if not set.
+ * @property isDotsVisible Flag indicating whether dots are visible on graphs.
+ * @property isEdgesCurved Flag indicating whether graph edges are curved.
+ * @property languageMode The selected language mode.
+ * @property themeMode The selected theme mode (light/dark/system).
+ * @property temperatureUnitMode The selected temperature unit.
+ * @property windUnitMode The selected wind speed unit.
+ * @property precipitationUnitMode The selected precipitation unit.
+ */
 data class SettingsBundle(
     val location: Location? = null,
     val isDotsVisible: Boolean = true,

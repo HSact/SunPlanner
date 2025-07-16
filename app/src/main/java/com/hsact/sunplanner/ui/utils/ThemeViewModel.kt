@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui
+package com.hsact.sunplanner.ui.utils
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,8 +14,9 @@ import javax.inject.Inject
 class ThemeViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase
 ) : ViewModel() {
-    private val _theme = MutableStateFlow<ThemeMode>(ThemeMode.SYSTEM)
+    private val _theme = MutableStateFlow(ThemeMode.SYSTEM)
     val theme: StateFlow<ThemeMode> = _theme
+
     init {
         viewModelScope.launch {
             getSettingsUseCase.theme.collect { theme: ThemeMode ->

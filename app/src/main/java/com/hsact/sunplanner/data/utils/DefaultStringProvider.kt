@@ -16,7 +16,8 @@ class DefaultStringProvider @Inject constructor(
 
     override fun invalidDateRange() = context.getString(R.string.error_invalid_date_range)
 
-    override fun yearsRangeTooBig(limit: Int) = context.getString(R.string.error_years_range_too_big, limit)
+    override fun yearsRangeTooBig(limit: Int) =
+        context.getString(R.string.error_years_range_too_big, limit)
 
     override fun fetchCitiesError(e: Exception) =
         context.getString(R.string.error_fetching_cities, e.message ?: "unknown")

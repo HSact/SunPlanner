@@ -13,6 +13,8 @@ sealed class SettingsIntents {
     data class UpdateCurveOption(val curve: Int) : SettingsIntents()
     data class UpdateTemperatureUnit(val unitTemp: TemperatureUnitMode) : SettingsIntents()
     data class UpdateWindSpeedUnit(val unitWind: WindSpeedUnitMode) : SettingsIntents()
-    data class UpdatePrecipitationUnit(val unitPrecipitation: PrecipitationUnitMode) : SettingsIntents()
+    data class UpdatePrecipitationUnit(val unitPrecipitation: PrecipitationUnitMode) :
+        SettingsIntents()
+
     object ApplySettings : SettingsIntents()
 }

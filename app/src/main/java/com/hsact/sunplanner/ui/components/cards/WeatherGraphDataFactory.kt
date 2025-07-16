@@ -82,7 +82,8 @@ class WeatherGraphDataFactory @Inject constructor(
             )
 
         graphData.precipitation =
-            createWeatherGraphBarsUseCase.invoke("", weatherMetrics.precipitation,
+            createWeatherGraphBarsUseCase.invoke(
+                "", weatherMetrics.precipitation,
                 colors.precipitationBarColor
             )
 

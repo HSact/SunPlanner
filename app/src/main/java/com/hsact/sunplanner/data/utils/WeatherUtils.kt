@@ -4,13 +4,33 @@ import com.hsact.sunplanner.data.responses.DailyWeather
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+/**
+ * Utility object for filtering daily weather data based on a date range.
+ */
 object WeatherUtils {
+    /**
+     * Filters the provided [DailyWeather] object to include only entries that match the date range
+     * specified by [fromDate] and [toDate]. The comparison is done by day and month, ignoring the year.
+     *
+     * This allows filtering across multiple years using only the day and month components.
+     * For example, January 1st of any year will match if [fromDate] is January 1st.
+     *
+     * Handles the case where the date range wraps around the end of the year, e.g., from December 20 to January 10.
+     *
+     * @param dailyWeather The original weather data to be filtered. May be `null`.
+     * @param fromDate The start of the date range to filter by.
+     * @param toDate The end of the date range to filter by.
+     * @return A new [DailyWeather] object containing only the entries within the specified date range,
+     *         or `null` if the input [dailyWeather] is `null`.
+     */
     fun filterDailyWeatherByDateRange(
         dailyWeather: DailyWeather?,
         fromDate: LocalDate,
         toDate: LocalDate
     ): DailyWeather? {
-        if (dailyWeather == null) { return null }
+        if (dailyWeather == null) {
+            return null
+        }
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
         val startMonthDay = fromDate.monthValue * 100 + fromDate.dayOfMonth

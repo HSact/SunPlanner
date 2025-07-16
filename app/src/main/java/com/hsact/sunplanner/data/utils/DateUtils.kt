@@ -5,7 +5,27 @@ import java.time.Year
 import java.time.format.TextStyle
 import java.util.Locale
 
+/**
+ * Utility object for date formatting and label generation used in weather data visualization.
+ */
 object DateUtils {
+    /**
+     * Formats a date range into a localized string.
+     *
+     * The formatting depends on whether the range is a single day or spans one or multiple years.
+     * Pre-formatted string templates are passed as arguments to allow localization via resources.
+     *
+     * @param startDate Start of the range.
+     * @param endDate End of the range.
+     * @param isOneDay Whether the range consists of a single day.
+     * @param isOneYear Whether the range spans only one year.
+     * @param locale Target locale for month names.
+     * @param singleDayOneYearString Template for single day in one year.
+     * @param singleDaySting Template for single day in multiple years.
+     * @param dateRangeOneYearSting Template for date range in one year.
+     * @param dateRangeString Template for date range in multiple years.
+     * @return A localized string representing the date range.
+     */
     fun formatDateRange(
         startDate: LocalDate,
         endDate: LocalDate,
@@ -67,6 +87,15 @@ object DateUtils {
         }
     }
 
+    /**
+     * Generates X-axis labels for popup tooltips on weather graphs based on date range and locale.
+     * Labels are either years (if it's one day repeated over many years) or short day/month names.
+     *
+     * @param startDate Start of the date range.
+     * @param endDate End of the date range.
+     * @param locale Target locale for formatting.
+     * @return List of strings for popup labels.
+     */
     fun generatePopUpLabels(
         startDate: LocalDate,
         endDate: LocalDate,
@@ -104,7 +133,17 @@ object DateUtils {
         return labels
     }
 
-
+    /**
+     * Determines which kind of X-axis labels to generate based on the date range:
+     * - Years if the same day is repeated.
+     * - Days if range is short (less than ~3 months).
+     * - Months if range is longer.
+     *
+     * @param startDate Start of the range.
+     * @param endDate End of the range.
+     * @param locale Target locale.
+     * @return A list of appropriate labels for the graph's X axis.
+     */
     fun generateAxisXLabels(
         startDate: LocalDate,
         endDate: LocalDate,
@@ -122,13 +161,17 @@ object DateUtils {
                 monthLabels(startDate, endDate, locale)
             }
         }
-//        if (rawLabels.size <= maxCount)
-            return rawLabels
-//        val step = (rawLabels.size / maxCount).toInt().coerceAtLeast(2)
-//        val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
-//        return filteredLabels
+        return rawLabels
     }
 
+    /**
+     * Reduces the number of X-axis labels so they fit within the available width.
+     *
+     * @param rawLabels Original list of labels.
+     * @param labelsWidth Total width required by all labels.
+     * @param maxWidth Maximum width available for labels.
+     * @return A filtered list of labels with spacing.
+     */
     fun reduceAxisXLabels(
         rawLabels: List<String>,
         labelsWidth: Double,
@@ -142,6 +185,9 @@ object DateUtils {
         return filteredLabels
     }
 
+    /**
+     * Generates a list of abbreviated years (e.g. `'23`, `'24`) for X-axis labels.
+     */
     private fun yearLabels(
         startDate: LocalDate,
         endDate: LocalDate
@@ -149,6 +195,9 @@ object DateUtils {
         return (startDate.year..endDate.year).map { "'${(it % 100).toString().padStart(2, '0')}" }
     }
 
+    /**
+     * Generates a list of localized short month labels for X-axis.
+     */
     private fun monthLabels(
         startDate: LocalDate,
         endDate: LocalDate,
@@ -172,6 +221,9 @@ object DateUtils {
         return labels
     }
 
+    /**
+     * Generates a list of day-of-month numbers as strings (e.g., `["1", "2", ..., "31"]`).
+     */
     private fun dayLabels(
         startDate: LocalDate,
         endDate: LocalDate

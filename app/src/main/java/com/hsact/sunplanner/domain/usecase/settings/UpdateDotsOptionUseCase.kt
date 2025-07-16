@@ -4,9 +4,9 @@ import com.hsact.sunplanner.domain.repository.SettingsRepository
 import javax.inject.Inject
 
 class UpdateDotsOptionUseCase @Inject constructor(
-private val repository: SettingsRepository
+    private val repository: SettingsRepository
 ) {
-    suspend operator fun invoke (dots: Int) {
+    suspend operator fun invoke(dots: Int) {
         val flag = when (dots) {
             0 -> false
             else -> true
