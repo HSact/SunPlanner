@@ -6,9 +6,14 @@ plugins {
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.jetbrains.dokka)
 }
 hilt {
     enableAggregatingTask = false
+}
+
+tasks.dokkaHtml {
+    outputDirectory.set(buildDir.resolve("dokka"))
 }
 
 android {
