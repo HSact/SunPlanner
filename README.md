@@ -38,6 +38,10 @@ The app follows a unidirectional data flow:
 - Sealed `UiState` handles loading, success, and error states
 - ViewModel uses a use-case layer to abstract API logic
 
+## 📖 Documentation
+
+See the documentation [here](https://hsact.github.io/SunPlanner/).
+
 ## Screenshots
 
 <table>
@@ -51,7 +55,7 @@ The app follows a unidirectional data flow:
   </tr>
 </table>
 
-📥 **Installation**  
+## 📥 Installation 
 
 🔹 **Via [Obtainium](https://github.com/ImranR98/Obtainium)**  
 Obtainium is an app that allows automatic APK updates from GitHub. If you have Obtainium installed, add this repository to keep TaxiLog up to date.  
@@ -96,18 +100,12 @@ SunPlanner — это приложение для анализа истории 
 - Используются `sealed` классы для представления UI-состояний (`Loading`, `Error`, `Data`)
 - Вся логика получения данных инкапсулирована в UseCase
 
-<table>
-  <tr>
-    <td><img src="screenshots/ru/main_screen.png" alt="Main screen" width="250"/></td>
-    <td><img src="screenshots/ru/search.png" alt="Search your city" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/ru/graph1.png" alt="Weather data 1" width="250"/></td>
-    <td><img src="screenshots/ru/graph2.png" alt="Weather data 2" width="250"/></td>
-  </tr>
-</table>
+## 📖 Документация
 
-📥 **Установка**
+Смотрите документацию [тут](https://hsact.github.io/SunPlanner/).
+
+
+## 📥 Установка
 
 🔹 **Через [Obtainium](https://github.com/ImranR98/Obtainium)** — это приложение для автоматического обновления APK с GitHub. Если у вас установлен Obtainium, добавьте этот репозиторий и получайте обновления автоматически.
 
