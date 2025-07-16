@@ -8,7 +8,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class FetchFilteredWeatherUseCase @Inject constructor(
-    private val repository: WeatherRepository) {
+    private val repository: WeatherRepository
+) {
     suspend fun execute(
         params: WeatherRequestParams,
         startLD: LocalDate,

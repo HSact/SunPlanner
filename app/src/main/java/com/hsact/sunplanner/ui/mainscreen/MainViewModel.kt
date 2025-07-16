@@ -137,6 +137,7 @@ class MainViewModel @Inject constructor(
                 is MainScreenIntents.CleanValidationError -> {
                     cleanValidationError()
                 }
+
                 is MainScreenIntents.CleanNetworkError -> {
                     cleanNetworkError()
                 }
@@ -212,7 +213,8 @@ class MainViewModel @Inject constructor(
     private fun setNetworkError(error: ApiError) {
         _mainUiState.value = _mainUiState.value.copy(
             networkError = error,
-            networkErrorId = UUID.randomUUID().toString())
+            networkErrorId = UUID.randomUUID().toString()
+        )
     }
 
     private fun cleanValidationError() {
@@ -222,6 +224,7 @@ class MainViewModel @Inject constructor(
     private fun cleanNetworkError() {
         _mainUiState.value = _mainUiState.value.copy(networkError = null)
     }
+
     private fun updateConfirmedDates(dates: DatesBundle) {
         _mainUiState.value =
             _mainUiState.value.copy(

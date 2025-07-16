@@ -17,15 +17,15 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
-import com.hsact.sunplanner.ui.AppLocaleManager
-import com.hsact.sunplanner.ui.ThemeViewModel
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.mainscreen.MainScreen
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
-import com.hsact.sunplanner.ui.settings.LocalizedContextWrapper
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.ThemeMode
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
+import com.hsact.sunplanner.ui.utils.AppLocaleManager
+import com.hsact.sunplanner.ui.utils.LocalizedContextWrapper
+import com.hsact.sunplanner.ui.utils.ThemeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.firstOrNull
@@ -63,6 +63,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             getSettingsUseCase.language.firstOrNull()?.let { languageMode ->
+                @Suppress("DEPRECATION")
                 selectedLocale = when (languageMode) {
                     LanguageMode.ENGLISH -> Locale.ENGLISH
                     LanguageMode.RUSSIAN -> Locale("ru")

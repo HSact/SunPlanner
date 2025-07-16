@@ -13,9 +13,19 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Named
 import javax.inject.Singleton
 
+/**
+ * Dagger Hilt module that provides network-related dependencies such as Retrofit instances,
+ * API services, and repositories.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    /**
+     * Provides a singleton [Retrofit] instance configured for accessing weather data.
+     *
+     * @return A [Retrofit] instance with the base URL for historical weather data.
+     */
     @Provides
     @Singleton
     @Named("WeatherRetrofit")
@@ -26,6 +36,11 @@ object NetworkModule {
             .build()
     }
 
+    /**
+     * Provides a singleton [Retrofit] instance configured for accessing geolocation data.
+     *
+     * @return A [Retrofit] instance with the base URL for geolocation services.
+     */
     @Provides
     @Singleton
     @Named("GeoRetrofit")
@@ -36,6 +51,12 @@ object NetworkModule {
             .build()
     }
 
+    /**
+     * Provides the [OpenMeteoService] API interface for weather data requests.
+     *
+     * @param retrofit A [Retrofit] instance for weather API.
+     * @return An implementation of [OpenMeteoService].
+     */
     @Provides
     @Singleton
     fun provideOpenMeteoService(
@@ -44,6 +65,12 @@ object NetworkModule {
         return retrofit.create(OpenMeteoService::class.java)
     }
 
+    /**
+     * Provides the [OpenMeteoGeo] API interface for geolocation requests.
+     *
+     * @param geoRetrofit A [Retrofit] instance for geolocation API.
+     * @return An implementation of [OpenMeteoGeo].
+     */
     @Provides
     @Singleton
     fun provideOpenMeteoGeo(
@@ -52,6 +79,13 @@ object NetworkModule {
         return geoRetrofit.create(OpenMeteoGeo::class.java)
     }
 
+    /**
+     * Provides an implementation of the [WeatherRepository] interface.
+     *
+     * @param service The weather API service.
+     * @param geoService The geolocation API service.
+     * @return A [WeatherRepositoryImpl] instance.
+     */
     @Provides
     @Singleton
     fun provideWeatherRepository(

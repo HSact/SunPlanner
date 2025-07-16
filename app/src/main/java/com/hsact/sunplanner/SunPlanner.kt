@@ -6,9 +6,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
-import com.hsact.sunplanner.ui.AppLocaleManager
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
+import com.hsact.sunplanner.ui.utils.AppLocaleManager
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

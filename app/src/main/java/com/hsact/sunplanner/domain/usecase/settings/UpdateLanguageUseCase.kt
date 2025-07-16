@@ -4,9 +4,19 @@ import com.hsact.sunplanner.domain.repository.SettingsRepository
 import com.hsact.sunplanner.ui.settings.modes.LanguageMode
 import javax.inject.Inject
 
+/**
+ * Use case for updating the application's language setting.
+ *
+ * @property repository Repository for managing app settings.
+ */
 class UpdateLanguageUseCase @Inject constructor(
     private val repository: SettingsRepository
 ) {
+    /**
+     * Updates the language mode in the settings repository.
+     *
+     * @param languageMode The new language mode to set.
+     */
     suspend operator fun invoke(languageMode: LanguageMode) {
         repository.setLanguage(languageMode)
     }

@@ -7,7 +7,7 @@ import javax.inject.Inject
 class UpdateLocationUseCase @Inject constructor(
     private val repository: SettingsRepository
 ) {
-    suspend operator fun invoke (location: Location) {
+    suspend operator fun invoke(location: Location) {
         repository.setLocation(location)
     }
 }

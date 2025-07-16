@@ -1,4 +1,4 @@
-package com.hsact.sunplanner.ui
+package com.hsact.sunplanner.ui.utils
 
 import android.app.LocaleManager
 import android.content.Context
