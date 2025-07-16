@@ -31,9 +31,9 @@ sealed class ApiError {
     object InvalidResponse : ApiError()
 
     /**
-     * Indicates that no internet connection is available when attempting the request.
+     * Indicates that no connection to the server could be established.
      */
-    object NoInternet : ApiError()
+    object NoConnection : ApiError()
 
     /**
      * Indicates that the API returned an empty or incomplete response when data was expected.

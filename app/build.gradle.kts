@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.tasks.DokkaGenerateModuleTask
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -12,8 +14,8 @@ hilt {
     enableAggregatingTask = false
 }
 
-tasks.dokkaHtml {
-    outputDirectory.set(buildDir.resolve("dokka"))
+tasks.named<DokkaGenerateModuleTask>("dokkaGenerateModuleHtml") {
+    outputDirectory.set(rootDir.resolve("docs"))
 }
 
 android {
@@ -24,8 +26,8 @@ android {
         applicationId = "com.hsact.sunplanner"
         minSdk = 26
         targetSdk = 36
-        versionCode = 7
-        versionName = "0.8.5"
+        versionCode = 8
+        versionName = "0.8.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
