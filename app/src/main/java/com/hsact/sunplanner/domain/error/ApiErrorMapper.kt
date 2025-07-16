@@ -14,7 +14,7 @@ import java.net.UnknownHostException
  * and convert them into domain-specific error types that can be handled consistently in the app.
  *
  * ## Mapping rules:
- * - [UnknownHostException], [ConnectException], or [SocketTimeoutException] → [ApiError.NoInternet]
+ * - [UnknownHostException], [ConnectException], or [SocketTimeoutException] → [ApiError.NoConnection]
  * - [HttpException] with:
  *   - HTTP 429 → [ApiError.TooManyRequests]
  *   - HTTP 5xx → [ApiError.ServerError]
@@ -26,7 +26,7 @@ import java.net.UnknownHostException
  * @return The corresponding [ApiError] for this [Throwable].
  */
 fun Throwable.toApiError(): ApiError = when (this) {
-    is UnknownHostException, is ConnectException, is SocketTimeoutException -> ApiError.NoInternet
+    is UnknownHostException, is ConnectException, is SocketTimeoutException -> ApiError.NoConnection
     is HttpException -> when (code()) {
         429 -> ApiError.TooManyRequests
         in 500..599 -> ApiError.ServerError

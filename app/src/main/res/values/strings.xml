@@ -46,7 +46,7 @@
     <string name="error_bad_request">Invalid request</string>
     <string name="error_server_error">Server error. Please try again later.</string>
     <string name="error_invalid_response">Received invalid data from the server</string>
-    <string name="error_no_internet">No internet connection. Please check your network.</string>
+    <string name="error_no_connection">No connection to the server</string>
     <string name="error_unknown">An unknown error occurred</string>
     <string name="error_bad_request_with_reason">Invalid request: %1$s</string>
     <string name="error">Error</string>

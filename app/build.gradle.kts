@@ -1,3 +1,5 @@
+import org.jetbrains.dokka.gradle.tasks.DokkaGenerateModuleTask
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -12,8 +14,8 @@ hilt {
     enableAggregatingTask = false
 }
 
-tasks.dokkaHtml {
-    outputDirectory.set(buildDir.resolve("dokka"))
+tasks.named<DokkaGenerateModuleTask>("dokkaGenerateModuleHtml") {
+    outputDirectory.set(rootDir.resolve("docs"))
 }
 
 android {

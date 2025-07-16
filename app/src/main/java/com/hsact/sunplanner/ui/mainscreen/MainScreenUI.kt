@@ -106,7 +106,7 @@ fun MainScreen(
 
             ApiError.ServerError -> context.getString(R.string.error_server_error)
             ApiError.InvalidResponse -> context.getString(R.string.error_invalid_response)
-            ApiError.NoInternet -> context.getString(R.string.error_no_internet)
+            ApiError.NoConnection -> context.getString(R.string.error_no_connection)
             ApiError.EmptyResponse -> context.getString(R.string.error_invalid_response)
             is ApiError.Unknown -> context.getString(R.string.error_unknown)
         }

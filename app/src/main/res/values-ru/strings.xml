@@ -47,7 +47,7 @@
     <string name="error_bad_request">Некорректный запрос</string>
     <string name="error_server_error">Ошибка сервера. Пожалуйста, попробуйте позже.</string>
     <string name="error_invalid_response">Получены некорректные данные от сервера</string>
-    <string name="error_no_internet">Нет подключения к интернету. Проверьте соединение.</string>
+    <string name="error_no_connection">Нет соединения с сервером</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="error_bad_request_with_reason">Некорректный запрос: %1$s</string>
     <string name="error">Ошибка</string>
