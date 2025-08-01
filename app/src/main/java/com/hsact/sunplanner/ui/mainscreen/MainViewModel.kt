@@ -2,7 +2,6 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
@@ -44,7 +43,6 @@ class MainViewModel @Inject constructor(
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val weatherMetricsFactory: WeatherMetricsFactory,
     private val analyticsHelper: AnalyticsHelper,
-    private val firebaseAnalytics: FirebaseAnalytics
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow(MainUIState())
