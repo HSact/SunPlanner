@@ -28,18 +28,18 @@ import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
  * @property selectedPrecipitationUnit Selected precipitation unit in the UI.
  */
 data class SettingsUIState(
-    var currentTheme: ThemeMode = ThemeMode.SYSTEM,
-    var selectedTheme: ThemeMode = currentTheme,
-    var currentLanguage: LanguageMode = LanguageMode.ENGLISH,
-    var selectedLanguage: LanguageMode = currentLanguage,
-    var currentDotsOption: Int = 1,
-    var selectedDotsOption: Int = currentDotsOption,
-    var currentCurvedOption: Int = 1,
-    var selectedCurvedOption: Int = currentCurvedOption,
-    var currentTemperatureUnit: TemperatureUnitMode = TemperatureUnitMode.CELSIUS,
-    var selectedTemperatureUnit: TemperatureUnitMode = currentTemperatureUnit,
-    var currentWindSpeedUnit: WindSpeedUnitMode = WindSpeedUnitMode.MS,
-    var selectedWindSpeedUnit: WindSpeedUnitMode = currentWindSpeedUnit,
-    var currentPrecipitationUnit: PrecipitationUnitMode = PrecipitationUnitMode.MM,
-    var selectedPrecipitationUnit: PrecipitationUnitMode = currentPrecipitationUnit
+    val currentTheme: ThemeMode = ThemeMode.SYSTEM,
+    val selectedTheme: ThemeMode = currentTheme,
+    val currentLanguage: LanguageMode = LanguageMode.ENGLISH,
+    val selectedLanguage: LanguageMode = currentLanguage,
+    val currentDotsOption: Int = 1,
+    val selectedDotsOption: Int = currentDotsOption,
+    val currentCurvedOption: Int = 1,
+    val selectedCurvedOption: Int = currentCurvedOption,
+    val currentTemperatureUnit: TemperatureUnitMode = TemperatureUnitMode.CELSIUS,
+    val selectedTemperatureUnit: TemperatureUnitMode = currentTemperatureUnit,
+    val currentWindSpeedUnit: WindSpeedUnitMode = WindSpeedUnitMode.MS,
+    val selectedWindSpeedUnit: WindSpeedUnitMode = currentWindSpeedUnit,
+    val currentPrecipitationUnit: PrecipitationUnitMode = PrecipitationUnitMode.MM,
+    val selectedPrecipitationUnit: PrecipitationUnitMode = currentPrecipitationUnit
 )
