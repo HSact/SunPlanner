@@ -241,11 +241,11 @@ class MainViewModel @Inject constructor(
             setValidationError(stringProvider.locationEmpty())
             return
         }
-        if (!state.tempDates.isStartYearNotAfterEndYear()) {
+        if (!state.tempDates.isStartYearNotAfterEndYear) {
             setValidationError(stringProvider.invalidYearRange())
             return
         }
-        if (!state.tempDates.isDateRangeValid()) {
+        if (!state.tempDates.isDateRangeValid) {
             setValidationError(stringProvider.invalidDateRange())
             return
         }
