@@ -5,32 +5,32 @@ import java.time.LocalDate
 /**
  * Data class representing a date range with a start and end date.
  *
- * @property startDate The start date of the range.
- * @property endDate The end date of the range.
+ * @property start The start date of the range.
+ * @property end The end date of the range.
  */
 data class DatesBundle(
-    var startDate: LocalDate,
-    var endDate: LocalDate
+    val start: LocalDate,
+    val end: LocalDate
 ) {
 
     /**
      * Checks if the start year is not after the end year.
      *
-     * @return `true` if [startDate] year is less than or equal to [endDate] year, `false` otherwise.
+     * @return `true` if [start] year is less than or equal to [end] year, `false` otherwise.
      */
-    fun isStartYearNotAfterEndYear(): Boolean {
-        return startDate.year <= endDate.year
-    }
+    val isStartYearNotAfterEndYear: Boolean
+        get() = start.year <= end.year
+
 
     /**
      * Checks if the date range is valid within the same year.
-     * Compares the day of year of [startDate] adjusted to [endDate] year with the day of year of [endDate].
+     * Compares the day of year of [start] adjusted to [end] year with the day of year of [end].
      *
      * @return `true` if the adjusted start date is before or equal to the end date, `false` otherwise.
      */
-    fun isDateRangeValid(): Boolean {
-        return startDate.withYear(endDate.year).dayOfYear <= endDate.dayOfYear
-    }
+    val isDateRangeValid: Boolean
+        get() = start.withYear(end.year).dayOfYear <= end.dayOfYear
+
 
     /**
      * Checks if the difference between the end year and start year is within a given limit.
@@ -39,6 +39,6 @@ data class DatesBundle(
      * @return `true` if the year difference is less than [maxYearRange], `false` otherwise.
      */
     fun isYearsRangeWithinLimit(maxYearRange: Int): Boolean {
-        return (endDate.year - startDate.year) < maxYearRange
+        return (end.year - start.year) < maxYearRange
     }
 }

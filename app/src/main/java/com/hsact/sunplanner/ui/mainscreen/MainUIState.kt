@@ -36,8 +36,6 @@ data class MainUIState(
     val networkError: ApiError? = null,
     val networkErrorId: String? = null,
     val isLoading: Boolean = false,
-    val isOneDay: Boolean = true,
-    val isOneYear: Boolean = false,
     val cityName: String = "",
     val cities: List<Location> = emptyList(),
     val tempDates: DatesBundle = DatesBundle(
@@ -52,7 +50,20 @@ data class MainUIState(
     /**
      * Checks whether the user's location is defined in the settings.
      */
-    fun isLocationNotNull(): Boolean {
-        return settingsBundle.location != null
-    }
+    val isLocationNotNull: Boolean
+        get() = settingsBundle.location != null
+
+    /**
+     * True if the selected start and end dates have the same month and day.
+     * Year is ignored.
+     */
+    val isOneDay: Boolean
+        get() = confirmedDates.start.month == confirmedDates.end.month &&
+                confirmedDates.start.dayOfMonth == confirmedDates.end.dayOfMonth
+
+    /**
+     * True if the selected start and end dates are in the same year.
+     */
+    val isOneYear: Boolean
+        get() = confirmedDates.start.year == confirmedDates.end.year
 }

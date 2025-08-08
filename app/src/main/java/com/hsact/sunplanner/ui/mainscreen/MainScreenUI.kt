@@ -299,7 +299,7 @@ private fun YearsRangeSelection(
         DropdownPicker(
             label = stringResource(R.string.start_year),
             list = yearChoices,
-            selected = dates.startDate.year,
+            selected = dates.start.year,
             onSelected = {
                 viewModel.handleIntent(MainScreenIntents.UpdateStartYear(it))
             },
@@ -310,7 +310,7 @@ private fun YearsRangeSelection(
         DropdownPicker(
             label = stringResource(R.string.end_year),
             list = yearChoices,
-            selected = dates.endDate.year,
+            selected = dates.end.year,
             onSelected = {
                 viewModel.handleIntent(MainScreenIntents.UpdateEndYear(it))
             },
@@ -328,8 +328,8 @@ private fun ColumnScope.DatesRangeSection(
     context: Context,
     datesBundle: DatesBundle,
 ) {
-    val date1 = datesBundle.startDate
-    val date2 = datesBundle.endDate
+    val date1 = datesBundle.start
+    val date2 = datesBundle.end
     val monthChoices = remember { context.resources.getStringArray(R.array.month_choices).toList() }
     val startDayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     val endDayChoices = remember(date2) { (1..date2.lengthOfMonth()).toList() }
@@ -470,8 +470,8 @@ private fun DateText(
     ) {
         Text(
             text = DateUtils.formatDateRange(
-                startDate = dates.startDate,
-                endDate = dates.endDate,
+                startDate = dates.start,
+                endDate = dates.end,
                 isOneDay = isOneDay,
                 isOneYear = isOneYear,
                 locale = Locale.getDefault(),
@@ -502,8 +502,8 @@ private fun WeatherCards(
         .toList()[settingsBundle.precipitationUnitMode.toIndex()]
 
     val popUpLabels = DateUtils.generatePopUpLabels(
-        dates.startDate,
-        dates.endDate,
+        dates.start,
+        dates.end,
         settingsBundle.languageMode.toLocale()
     )
     val graphData = weatherGraphDataFactory.create(
@@ -529,8 +529,8 @@ private fun WeatherCards(
                 graphData.avgTemperature!!,
                 graphData.minTemperature!!
             ),
-            dates.startDate,
-            dates.endDate,
+            dates.start,
+            dates.end,
             settingsBundle.languageMode.toLocale(),
             settingsBundle.themeMode
         )
@@ -543,8 +543,8 @@ private fun WeatherCards(
                 graphData.dayLightDuration!!,
                 graphData.sunShineDuration!!,
             ),
-            dates.startDate,
-            dates.endDate,
+            dates.start,
+            dates.end,
             settingsBundle.languageMode.toLocale(),
             settingsBundle.themeMode,
             true              //set min value 0
@@ -557,12 +557,12 @@ private fun WeatherCards(
                     + " (" + precipitationUnit + ")",
             listOf(graphData.precipitation!!),
             DateUtils.generatePopUpLabels(
-                dates.startDate,
-                dates.endDate,
+                dates.start,
+                dates.end,
                 settingsBundle.languageMode.toLocale()
             ),
-            dates.startDate,
-            dates.endDate,
+            dates.start,
+            dates.end,
             settingsBundle.languageMode.toLocale(),
             settingsBundle.themeMode
         )
@@ -575,8 +575,8 @@ private fun WeatherCards(
                 graphData.windSpeed!!,
                 graphData.windGustsSpeed!!
             ),
-            dates.startDate,
-            dates.endDate,
+            dates.start,
+            dates.end,
             settingsBundle.languageMode.toLocale(),
             settingsBundle.themeMode,
             true
