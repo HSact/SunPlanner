@@ -52,7 +52,6 @@ data class MainUIState(
     /**
      * Checks whether the user's location is defined in the settings.
      */
-    fun isLocationNotNull(): Boolean {
-        return settingsBundle.location != null
-    }
+    val isLocationNotNull: Boolean
+        get() = settingsBundle.location != null
 }

@@ -237,7 +237,7 @@ class MainViewModel @Inject constructor(
 
     private suspend fun onWeatherSearchClick() {
         val state = _mainUiState.value
-        if (!state.isLocationNotNull()) {
+        if (!state.isLocationNotNull) {
             setValidationError(stringProvider.locationEmpty())
             return
         }
