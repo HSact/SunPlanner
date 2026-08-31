@@ -72,9 +72,9 @@ class CreateWeatherGraphLineUseCase @Inject constructor() {
             popupProperties = if (!dates.isNullOrEmpty()) {
                 PopupProperties(
                     textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
-                    contentBuilder = { _, dataIndex, value ->
-                        val rounded = value.format(1).toDouble()
-                        val date = points.getOrNull(dataIndex)?.date ?: ""
+                    contentBuilder = { popup ->
+                        val rounded = popup.value.format(1).toDouble()
+                        val date = points.getOrNull(popup.dataIndex)?.date ?: ""
                         "${rounded.format(1)}\n$date"
                     }
                 )

@@ -59,7 +59,7 @@ fun WeatherGraphLineCard(
     }
 
     val hasAnyLabel = remember(lineList) {
-        lineList.any { it.label.isNotBlank() }
+        lineList.any { it.label?.isNotBlank() == true }
     }
 
     val isDarkTheme =

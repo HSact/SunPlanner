@@ -1,7 +1,6 @@
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.hilt.gradle)
@@ -13,18 +12,20 @@ hilt {
     enableAggregatingTask = false
 }
 
-tasks.dokkaHtml {
-    outputDirectory.set(file("$rootDir/docs"))
+dokka {
+    dokkaPublications.html {
+        outputDirectory.set(layout.projectDirectory.dir("../docs"))
+    }
 }
 
 android {
     namespace = "com.hsact.sunplanner"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.hsact.sunplanner"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 9
         versionName = "0.8.7"
 
@@ -44,20 +45,22 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
     buildFeatures {
         compose = true
     }
-    applicationVariants.all {
-        val variant = this
-        variant.outputs
-            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
-            .forEach { output ->
-                val outputFileName = "SunPlanner_v${variant.versionName}.apk"
-                output.outputFileName = outputFileName
-            }
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            val versionName = variant.outputs.first().versionName.get()
+            output.outputFileName.set("SunPlanner_v$versionName.apk")
+        }
     }
 }
 
@@ -71,6 +74,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.material)
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
