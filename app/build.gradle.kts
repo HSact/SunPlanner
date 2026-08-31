@@ -57,6 +57,7 @@ kotlin {
     }
 }
 
+@Suppress("UnstableApiUsage")
 androidComponents {
     onVariants { variant ->
         variant.outputs.forEach { output ->
