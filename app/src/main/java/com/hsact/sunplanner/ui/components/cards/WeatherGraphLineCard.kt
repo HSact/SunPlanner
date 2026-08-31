@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -160,6 +161,6 @@ private fun WeatherGraphLineCardPreview() {
         header = "Temperature",
         startDate = LocalDate.now().minusDays(14),
         endDate = LocalDate.now(),
-        locale = Locale.getDefault()
+        locale = LocalLocale.current.platformLocale
     )
 }
