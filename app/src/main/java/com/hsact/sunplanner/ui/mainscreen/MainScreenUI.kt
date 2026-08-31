@@ -41,11 +41,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.LocationUtils
@@ -66,7 +67,6 @@ import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
 import com.hsact.sunplanner.ui.theme.LocalExtendedColors
 import kotlinx.coroutines.FlowPreview
 import java.time.LocalDate
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @SuppressLint("LocalContextConfigurationRead")
@@ -95,8 +95,8 @@ fun MainScreen(
     }
     val networkErrorMessage = mainDataUI.networkError?.let { error ->
         when (error) {
-            ApiError.TooManyRequests -> context.getString(R.string.error_too_many_requests)
-            is ApiError.BadRequest -> context.getString(
+            ApiError.TooManyRequests -> stringResource(R.string.error_too_many_requests)
+            is ApiError.BadRequest -> stringResource(
                 if (error.reason.isNullOrBlank())
                     R.string.error_bad_request
                 else
@@ -104,11 +104,11 @@ fun MainScreen(
                 error.reason.orEmpty()
             )
 
-            ApiError.ServerError -> context.getString(R.string.error_server_error)
-            ApiError.InvalidResponse -> context.getString(R.string.error_invalid_response)
-            ApiError.NoConnection -> context.getString(R.string.error_no_connection)
-            ApiError.EmptyResponse -> context.getString(R.string.error_invalid_response)
-            is ApiError.Unknown -> context.getString(R.string.error_unknown)
+            ApiError.ServerError -> stringResource(R.string.error_server_error)
+            ApiError.InvalidResponse -> stringResource(R.string.error_invalid_response)
+            ApiError.NoConnection -> stringResource(R.string.error_no_connection)
+            ApiError.EmptyResponse -> stringResource(R.string.error_invalid_response)
+            is ApiError.Unknown -> stringResource(R.string.error_unknown)
         }
     }
 
@@ -474,7 +474,7 @@ private fun DateText(
                 endDate = dates.end,
                 isOneDay = isOneDay,
                 isOneYear = isOneYear,
-                locale = Locale.getDefault(),
+                locale = LocalLocale.current.platformLocale,
                 singleDayOneYearString = stringResource(R.string.single_day_one_year),
                 singleDaySting = stringResource(R.string.single_day_range),
                 dateRangeOneYearSting = stringResource(R.string.date_range_one_year),
