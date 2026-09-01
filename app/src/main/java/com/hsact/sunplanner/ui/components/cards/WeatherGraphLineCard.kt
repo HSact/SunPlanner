@@ -1,5 +1,6 @@
 package com.hsact.sunplanner.ui.components.cards
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -184,6 +185,7 @@ fun WeatherCardHeader(
     }
 }
 
+@SuppressLint("SuspiciousIndentation")
 @Preview(showBackground = true)
 @Composable
 private fun WeatherGraphLineCardPreview() {

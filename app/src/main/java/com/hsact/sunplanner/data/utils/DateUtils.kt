@@ -154,7 +154,7 @@ object DateUtils {
         val startMD = MonthDay.of(start.month, start.dayOfMonth)
         val endMD = MonthDay.of(end.month, end.dayOfMonth)
         
-        var current = try {
+        val current = try {
             startMD.atYear(baseYear)
         } catch (e: Exception) {
             // Handle case where start is Feb 29 but baseYear is not leap
