@@ -175,7 +175,8 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                                 overflow = TextOverflow.Clip,
                                 style = MaterialTheme.typography.bodySmall
                             )
-                        }
+                        },
+                        icon = {}
                     )
                 }
             }
@@ -271,7 +272,7 @@ private fun SegmentedButtonUnitPicker(
     onIndexSelected: (Int) -> SettingsIntents
 ) {
     SingleChoiceSegmentedButtonRow(
-        modifier = Modifier.padding(start = 24.dp),
+        modifier = Modifier.padding(start = 16.dp),
     ) {
         choices.forEachIndexed { index, label ->
             SegmentedButton(
@@ -288,10 +289,12 @@ private fun SegmentedButtonUnitPicker(
                     Text(
                         text = label,
                         maxLines = 1,
-                        overflow = TextOverflow.Clip,
+                        overflow = TextOverflow.Visible,
+                        softWrap = false,
                         style = MaterialTheme.typography.bodySmall
                     )
-                }
+                },
+                icon = {}
             )
         }
     }
