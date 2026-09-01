@@ -89,9 +89,9 @@ fun WeatherGraphBarsCard(
     val popupProperties = PopupProperties(
         textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
         contentBuilder = { popup ->
-            val rounded = popup.value.format(1).toDouble()
-            val date = dates.getOrNull(popup.dataIndex) ?: ""
-            "${rounded.format(1)}\n$date"
+            val rounded = popup.value.format(1)
+            val date = dates.getOrNull(popup.valueIndex) ?: ""
+            "$rounded\n$date"
         }
     )
 

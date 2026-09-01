@@ -537,6 +537,7 @@ private fun WeatherCards(
                 graphData.avgTemperature!!,
                 graphData.minTemperature!!
             ),
+            dates = popUpLabels,
             startDate = dates.start,
             endDate = dates.end,
             locale = settingsBundle.languageMode.toLocale(),
@@ -552,6 +553,7 @@ private fun WeatherCards(
                 graphData.dayLightDuration!!,
                 graphData.sunShineDuration!!,
             ),
+            dates = popUpLabels,
             startDate = dates.start,
             endDate = dates.end,
             locale = settingsBundle.languageMode.toLocale(),
@@ -566,11 +568,7 @@ private fun WeatherCards(
             unit = precipitationUnit,
             icon = Icons.Default.WaterDrop,
             barGroups = listOf(graphData.precipitation!!),
-            dates = DateUtils.generatePopUpLabels(
-                dates.start,
-                dates.end,
-                settingsBundle.languageMode.toLocale()
-            ),
+            dates = popUpLabels,
             startDate = dates.start,
             endDate = dates.end,
             locale = settingsBundle.languageMode.toLocale(),
@@ -586,6 +584,7 @@ private fun WeatherCards(
                 graphData.windSpeed!!,
                 graphData.windGustsSpeed!!
             ),
+            dates = popUpLabels,
             startDate = dates.start,
             endDate = dates.end,
             locale = settingsBundle.languageMode.toLocale(),

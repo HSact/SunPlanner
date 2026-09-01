@@ -158,7 +158,7 @@ object DateUtils {
             startMD.atYear(baseYear)
         } catch (e: Exception) {
             // Handle case where start is Feb 29 but baseYear is not leap
-            startMD.atYear(2024) 
+            startMD.atYear(2024)
         }
         
         val target = if (!startMD.isAfter(endMD)) {
@@ -188,7 +188,7 @@ object DateUtils {
         )
         val startMD = MonthDay.of(start.month, start.dayOfMonth)
         val endMD = MonthDay.of(end.month, end.dayOfMonth)
-        
+
         val current = startMD.atYear(2023).withDayOfMonth(1)
         val target = if (!startMD.isAfter(endMD)) {
             endMD.atYear(2023).withDayOfMonth(1)
