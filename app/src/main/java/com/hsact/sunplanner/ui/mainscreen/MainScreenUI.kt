@@ -63,6 +63,7 @@ import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.theme.LocalExtendedColors
+import com.hsact.sunplanner.ui.utils.stringArrayResource
 import kotlinx.coroutines.FlowPreview
 import java.time.LocalDate
 
@@ -326,8 +327,7 @@ private fun ColumnScope.DatesRangeSection(
 ) {
     val date1 = datesBundle.start
     val date2 = datesBundle.end
-    val context = LocalContext.current
-    val monthChoices = remember { context.resources.getStringArray(R.array.month_choices).toList() }
+    val monthChoices = stringArrayResource(R.array.month_choices).toList()
     val startDayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     val endDayChoices = remember(date2) { (1..date2.lengthOfMonth()).toList() }
     Row(
@@ -490,12 +490,11 @@ private fun WeatherCards(
     weatherMetrics: WeatherMetrics,
     settingsBundle: SettingsBundle
 ) {
-    val context = LocalContext.current
-    val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
+    val tempUnit = stringArrayResource(R.array.temp_unit_choices)
         .toList()[settingsBundle.temperatureUnitMode.toIndex()]
-    val speedUnit = context.resources.getStringArray(R.array.speed_unit_choices)
+    val speedUnit = stringArrayResource(R.array.speed_unit_choices)
         .toList()[settingsBundle.windUnitMode.toIndex()]
-    val precipitationUnit = context.resources.getStringArray(R.array.precipitation_unit_choices)
+    val precipitationUnit = stringArrayResource(R.array.precipitation_unit_choices)
         .toList()[settingsBundle.precipitationUnitMode.toIndex()]
 
     val popUpLabels = DateUtils.generatePopUpLabels(

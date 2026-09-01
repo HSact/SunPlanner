@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,6 +33,7 @@ import com.hsact.sunplanner.domain.model.TemperatureUnitMode
 import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import com.hsact.sunplanner.ui.components.DropdownPicker
+import com.hsact.sunplanner.ui.utils.stringArrayResource
 
 @Composable
 fun SettingsDialog(
@@ -74,15 +74,12 @@ fun SettingsDialog(
 private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedThemeIndex by remember(uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
-    val themeChoices =
-        LocalContext.current.resources.getStringArray(R.array.theme_choices).toList()
+    val themeChoices = stringArrayResource(R.array.theme_choices).toList()
     val selectedLanguageIndex = remember(uiState.currentLanguage) {
         mutableIntStateOf(uiState.currentLanguage.toIndex())
     }
-    val languageChoices =
-        LocalContext.current.resources.getStringArray(R.array.language_choices).toList()
-    val offOnChoices =
-        LocalContext.current.resources.getStringArray(R.array.off_on_choices).toList()
+    val languageChoices = stringArrayResource(R.array.language_choices).toList()
+    val offOnChoices = stringArrayResource(R.array.off_on_choices).toList()
     val selectedDotsOptionIndex = remember(uiState.currentDotsOption) {
         mutableIntStateOf(uiState.currentDotsOption)
     }
@@ -91,21 +88,17 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
         mutableIntStateOf(uiState.currentCurvedOption)
     }
 
-    val tempUnitChoices =
-        LocalContext.current.resources.getStringArray(R.array.temp_unit_choices).toList()
+    val tempUnitChoices = stringArrayResource(R.array.temp_unit_choices).toList()
     val selectedTempUnitIndex = remember(uiState.currentTemperatureUnit) {
         mutableIntStateOf(uiState.currentTemperatureUnit.toIndex())
     }
 
-    val windUnitChoices =
-        LocalContext.current.resources.getStringArray(R.array.speed_unit_choices).toList()
+    val windUnitChoices = stringArrayResource(R.array.speed_unit_choices).toList()
     val selectedWindUnitIndex = remember(uiState.currentWindSpeedUnit) {
         mutableIntStateOf(uiState.currentWindSpeedUnit.toIndex())
     }
 
-    val precipitationUnitChoices =
-        LocalContext.current.resources.getStringArray(R.array.precipitation_unit_choices)
-            .toList()
+    val precipitationUnitChoices = stringArrayResource(R.array.precipitation_unit_choices).toList()
     val selectedPrecipitationUnitIndex = remember(uiState.currentPrecipitationUnit) {
         mutableIntStateOf(uiState.currentPrecipitationUnit.toIndex())
     }
