@@ -3,21 +3,21 @@ package com.hsact.sunplanner.ui.components.cards
 import android.annotation.SuppressLint
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.TextStyle
@@ -42,12 +42,14 @@ import java.util.Locale
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun WeatherGraphBarsCard(
-    header: String,
+    title: String,
     barGroups: List<Bars>,
     dates: List<String>,
     startDate: LocalDate,
     endDate: LocalDate,
     locale: Locale,
+    icon: ImageVector? = null,
+    unit: String? = null,
     theme: ThemeMode = ThemeMode.SYSTEM
 ) {
     val max = remember(barGroups) {
@@ -114,41 +116,36 @@ fun WeatherGraphBarsCard(
                 rotation = LabelProperties.Rotation(degree = 0f)
             )
 
-            val totalBars = barGroups.first().values.size
-            val spacing = if ((120 / totalBars) > 2) 2.dp else (120 / totalBars).dp
-            val totalSpacing = spacing * (totalBars - 1)
-            val barThickness = (maxWidth - (18 * 2).dp - totalSpacing) / totalBars
+            val totalBars = if (barGroups.isNotEmpty()) barGroups.first().values.size else 0
+            val spacing = if (totalBars > 0 && (120 / totalBars) > 2) 2.dp else if (totalBars > 0) (120 / totalBars).dp else 0.dp
+            val totalSpacing = if (totalBars > 0) spacing * (totalBars - 1) else 0.dp
+            val barThickness = if (totalBars > 0) (maxWidth - (18 * 2).dp - totalSpacing) / totalBars else 0.dp
             val barProperties = BarProperties(
                 thickness = barThickness,
                 spacing = spacing,
                 cornerRadius = Bars.Data.Radius.Rectangle(topRight = 8.dp, topLeft = 8.dp),
             )
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
-                Text(
-                    text = header,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
-
-                ColumnChart(
-                    modifier = Modifier
-                        .heightIn(max = 300.dp)
-                        .padding(top = 52.dp),
-                    data = barGroups,
-                    barProperties = barProperties,
-                    animationMode =
+                Column {
+                    WeatherCardHeader(title = title, unit = unit, icon = icon)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ColumnChart(
+                        modifier = Modifier
+                            .heightIn(max = 300.dp),
+                        data = barGroups,
+                        barProperties = barProperties,
+                        animationMode =
                         if (totalBars < 100) AnimationMode.Together(delayBuilder = { it * 10L })
                         else AnimationMode.Together(delayBuilder = { 0L }
                         ),
-                    gridProperties = gridProperties,
-                    indicatorProperties = indicatorProperties,
-                    labelHelperProperties = labelHelperProperties,
-                    labelProperties = labelProperties,
-                    popupProperties = popupProperties,
-                    maxValue = max
-                )
+                        gridProperties = gridProperties,
+                        indicatorProperties = indicatorProperties,
+                        labelHelperProperties = labelHelperProperties,
+                        labelProperties = labelProperties,
+                        popupProperties = popupProperties,
+                        maxValue = max
+                    )
+                }
             }
         }
     }
@@ -169,7 +166,7 @@ private fun CardPreview() {
     )
 
     WeatherGraphBarsCard(
-        header = "Average Temperature",
+        title = "Average Temperature",
         barGroups = listOf(previewBars),
         dates = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
         startDate = LocalDate.now().minusDays(10),

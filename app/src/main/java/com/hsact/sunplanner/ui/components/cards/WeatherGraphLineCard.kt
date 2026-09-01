@@ -1,15 +1,20 @@
 package com.hsact.sunplanner.ui.components.cards
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.core.EaseInOutCubic
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -20,9 +25,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,18 +47,18 @@ import ir.ehsannarmani.compose_charts.models.ZeroLineProperties
 import java.time.LocalDate
 import java.util.Locale
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun WeatherGraphLineCard(
-    header: String,
+    title: String,
     lineList: List<Line>,
     startDate: LocalDate,
     endDate: LocalDate,
     locale: Locale,
+    icon: ImageVector? = null,
+    unit: String? = null,
     theme: ThemeMode = ThemeMode.SYSTEM,
     minIsZero: Boolean = false
 ) {
-
     val (min, max) = remember(lineList) {
         val allValues = lineList.flatMap { it.values }
         val max = allValues.maxOrNull() ?: 0.0
@@ -88,7 +95,7 @@ fun WeatherGraphLineCard(
         textStyle = textStyle,
     )
 
-    val animationMode = if (lineList.first().values.size < 100) {
+    val animationMode = if (lineList.isNotEmpty() && lineList.first().values.size < 100) {
         AnimationMode.Together(delayBuilder = { it * 500L })
     } else {
         AnimationMode.Together(delayBuilder = { 0L })
@@ -116,29 +123,63 @@ fun WeatherGraphLineCard(
                 rotation = LabelProperties.Rotation(degree = 0f)
             )
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
-                Text(
-                    text = header,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
-
-                LineChart(
-                    data = lineList,
-                    animationMode = animationMode,
-                    gridProperties = gridProperties,
-                    zeroLineProperties = ZeroLineProperties(enabled = false),
-                    indicatorProperties = indicatorProperties,
-                    labelHelperProperties = labelHelperProperties,
-                    labelProperties = labelProperties,
-                    minValue = min,
-                    maxValue = max,
-                    modifier = Modifier
-                        .heightIn(max = 300.dp)
-                        .padding(top = 52.dp)
-                )
+                Column {
+                    WeatherCardHeader(title = title, unit = unit, icon = icon)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LineChart(
+                        data = lineList,
+                        animationMode = animationMode,
+                        gridProperties = gridProperties,
+                        zeroLineProperties = ZeroLineProperties(enabled = false),
+                        indicatorProperties = indicatorProperties,
+                        labelHelperProperties = labelHelperProperties,
+                        labelProperties = labelProperties,
+                        minValue = min,
+                        maxValue = max,
+                        modifier = Modifier
+                            .heightIn(max = 300.dp)
+                    )
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun WeatherCardHeader(
+    modifier: Modifier = Modifier,
+    title: String,
+    unit: String? = null,
+    icon: ImageVector? = null,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        if (unit != null) {
+            Text(
+                text = " ($unit)",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .alignByBaseline()
+            )
         }
     }
 }
@@ -156,11 +197,11 @@ private fun WeatherGraphLineCardPreview() {
         gradientAnimationDelay = 1000,
         drawStyle = DrawStyle.Stroke(width = 2.dp)
     )
-    WeatherGraphLineCard(
-        lineList = listOf(previewLine),
-        header = "Temperature",
-        startDate = LocalDate.now().minusDays(14),
-        endDate = LocalDate.now(),
-        locale = LocalLocale.current.platformLocale
-    )
+        WeatherGraphLineCard(
+            title = "Temperature",
+            lineList = listOf(previewLine),
+            startDate = LocalDate.now().minusDays(14),
+            endDate = LocalDate.now(),
+            locale = LocalLocale.current.platformLocale
+        )
 }

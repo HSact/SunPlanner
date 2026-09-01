@@ -24,6 +24,11 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
+import androidx.compose.material.icons.filled.Thermostat
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -523,80 +528,69 @@ private fun WeatherCards(
             .fillMaxWidth()
             .padding(top = 24.dp)
     ) {
-        //Text("Weather: ${searchDataUI.weatherData}")
         WeatherGraphLineCard(
-            stringResource(R.string.temperature)
-                    + " (" + tempUnit + ")",
-            listOf(
+            title = stringResource(R.string.temperature),
+            unit = tempUnit,
+            icon = Icons.Default.Thermostat,
+            lineList = listOf(
                 graphData.maxTemperature!!,
                 graphData.avgTemperature!!,
                 graphData.minTemperature!!
             ),
-            dates.start,
-            dates.end,
-            settingsBundle.languageMode.toLocale(),
-            settingsBundle.themeMode
+            startDate = dates.start,
+            endDate = dates.end,
+            locale = settingsBundle.languageMode.toLocale(),
+            theme = settingsBundle.themeMode
         )
     }
     Row(modifier.fillMaxWidth())
     {
         WeatherGraphLineCard(
-            stringResource(R.string.sun_hours),
-            listOf(
+            title = stringResource(R.string.sun_hours),
+            icon = Icons.Default.WbSunny,
+            lineList = listOf(
                 graphData.dayLightDuration!!,
                 graphData.sunShineDuration!!,
             ),
-            dates.start,
-            dates.end,
-            settingsBundle.languageMode.toLocale(),
-            settingsBundle.themeMode,
-            true              //set min value 0
+            startDate = dates.start,
+            endDate = dates.end,
+            locale = settingsBundle.languageMode.toLocale(),
+            theme = settingsBundle.themeMode,
+            minIsZero = true
         )
     }
     Row(modifier.fillMaxWidth())
     {
         WeatherGraphBarsCard(
-            stringResource(R.string.precipitation)
-                    + " (" + precipitationUnit + ")",
-            listOf(graphData.precipitation!!),
-            DateUtils.generatePopUpLabels(
+            title = stringResource(R.string.precipitation),
+            unit = precipitationUnit,
+            icon = Icons.Default.WaterDrop,
+            barGroups = listOf(graphData.precipitation!!),
+            dates = DateUtils.generatePopUpLabels(
                 dates.start,
                 dates.end,
                 settingsBundle.languageMode.toLocale()
             ),
-            dates.start,
-            dates.end,
-            settingsBundle.languageMode.toLocale(),
-            settingsBundle.themeMode
+            startDate = dates.start,
+            endDate = dates.end,
+            locale = settingsBundle.languageMode.toLocale(),
+            theme = settingsBundle.themeMode
         )
     }
     Row(modifier.fillMaxWidth()) {
         WeatherGraphLineCard(
-            stringResource(R.string.wind_speed)
-                    + " (" + speedUnit + ")",
-            listOf(
+            title = stringResource(R.string.wind_speed),
+            unit = speedUnit,
+            icon = Icons.Default.Air,
+            lineList = listOf(
                 graphData.windSpeed!!,
                 graphData.windGustsSpeed!!
             ),
-            dates.start,
-            dates.end,
-            settingsBundle.languageMode.toLocale(),
-            settingsBundle.themeMode,
-            true
+            startDate = dates.start,
+            endDate = dates.end,
+            locale = settingsBundle.languageMode.toLocale(),
+            theme = settingsBundle.themeMode,
+            minIsZero = true
         )
     }
 }
-
-/*@OptIn(FlowPreview::class)
-@Preview(showBackground = true)
-@Composable
-fun MainScreenPreview() {
-
-    SunPlannerTheme {
-        MainScreen(
-            viewModel = null,
-            onApplyTheme = {},
-            onChangeLanguage = {}
-        )
-    }
-}*/
