@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -93,7 +93,7 @@ fun WeatherGraphBarsCard(
         }
     )
 
-    Card(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+    ElevatedCard(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
         BoxWithConstraints(modifier = Modifier.padding(16.dp)) {
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,

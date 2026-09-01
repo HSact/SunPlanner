@@ -2,6 +2,11 @@ package com.hsact.sunplanner.ui.mainscreen
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,10 +24,13 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -236,7 +244,11 @@ fun MainScreen(
                         Text(stringResource(R.string.search))
                     }
                 }
-                if (mainDataUI.isLoading) {
+                AnimatedVisibility(
+                    visible = mainDataUI.isLoading,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -251,27 +263,33 @@ fun MainScreen(
                         )
                     }
                 }
-                if (mainDataUI.weatherData != null && !mainDataUI.isLoading) {
-                    DateText(
-                        modifier,
-                        mainDataUI.confirmedDates,
-                        mainDataUI.isOneDay,
-                        mainDataUI.isOneYear
-                    )
-                    WeatherCards(
-                        weatherGraphDataFactory,
-                        modifier,
-                        mainDataUI.confirmedDates,
-                        mainDataUI.isOneYear,
-                        mainDataUI.weatherMetrics,
-                        mainDataUI.settingsBundle
-                    )
-                    Row(
-                        modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    ) {
-                        Text(stringResource(R.string.data_source))
+                AnimatedVisibility(
+                    visible = mainDataUI.weatherData != null && !mainDataUI.isLoading,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Column {
+                        DateText(
+                            modifier,
+                            mainDataUI.confirmedDates,
+                            mainDataUI.isOneDay,
+                            mainDataUI.isOneYear
+                        )
+                        WeatherCards(
+                            weatherGraphDataFactory,
+                            modifier,
+                            mainDataUI.confirmedDates,
+                            mainDataUI.isOneYear,
+                            mainDataUI.weatherMetrics,
+                            mainDataUI.settingsBundle
+                        )
+                        Row(
+                            modifier
+                                .fillMaxWidth()
+                                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        ) {
+                            Text(stringResource(R.string.data_source))
+                        }
                     }
                 }
             }
@@ -355,34 +373,25 @@ private fun ColumnScope.DatesRangeSection(
                     .padding(top = 24.dp, start = 16.dp, end = 16.dp)
                     .border(
                         1.dp,
-                        MaterialTheme.colorScheme.outline,
-                        RoundedCornerShape(10.dp)
+                        MaterialTheme.colorScheme.outlineVariant,
+                        RoundedCornerShape(12.dp)
                     )
                     .padding(
                         top = 16.dp,
-                        start = 8.dp,
-                        end = 8.dp,
-                        bottom = 8.dp
+                        start = 12.dp,
+                        end = 12.dp,
+                        bottom = 12.dp
                     )
                     .align(Alignment.TopCenter)
                     .zIndex(0f)
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 2.dp)
-                            .align(Alignment.CenterHorizontally)
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(horizontal = 8.dp)
-                    ) {
-
-                    }
                     Row(
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         DropdownPicker(
                             label = stringResource(R.string.start_month),
