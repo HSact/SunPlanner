@@ -1,7 +1,7 @@
 package com.hsact.sunplanner.data.responses
 
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a weather response from the Open-Meteo API containing metadata and daily forecast data.
@@ -10,7 +10,7 @@ import com.squareup.moshi.JsonClass
  * @property longitude Longitude of the requested location.
  * @property daily Daily weather data.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class WeatherResponse(
     val latitude: Double,
     val longitude: Double,
@@ -35,18 +35,18 @@ data class WeatherResponse(
  * @property windSpeedMax Maximum average wind speed per day at 10m height (km/h, m/s, mph, or kn).
  * @property windGustsMax Maximum wind gusts per day at 10m height (km/h, m/s, mph, or kn).
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class DailyWeather(
     val time: List<String>,
-    @param:Json(name = "weather_code") val code: List<String>,
-    @param:Json(name = "temperature_2m_max") val maxTemperature: List<Double>,
-    @param:Json(name = "temperature_2m_min") val minTemperature: List<Double>,
-    @param:Json(name = "apparent_temperature_max") val apparentMaxTemperature: List<Double>,
-    @param:Json(name = "apparent_temperature_min") val apparentMinTemperature: List<Double>,
-    @param:Json(name = "precipitation_sum") val precipitationSum: List<Double>,
-    @param:Json(name = "precipitation_hours") val precipitationHours: List<Double>,
-    @param:Json(name = "sunshine_duration") val sunshineDuration: List<Double>,
-    @param:Json(name = "daylight_duration") val daylightDuration: List<Double>,
-    @param:Json(name = "wind_speed_10m_max") val windSpeedMax: List<Double>,
-    @param:Json(name = "wind_gusts_10m_max") val windGustsMax: List<Double>,
+    @SerialName("weather_code") val code: List<Double>,
+    @SerialName("temperature_2m_max") val maxTemperature: List<Double>,
+    @SerialName("temperature_2m_min") val minTemperature: List<Double>,
+    @SerialName("apparent_temperature_max") val apparentMaxTemperature: List<Double>,
+    @SerialName("apparent_temperature_min") val apparentMinTemperature: List<Double>,
+    @SerialName("precipitation_sum") val precipitationSum: List<Double>,
+    @SerialName("precipitation_hours") val precipitationHours: List<Double>,
+    @SerialName("sunshine_duration") val sunshineDuration: List<Double>,
+    @SerialName("daylight_duration") val daylightDuration: List<Double>,
+    @SerialName("wind_speed_10m_max") val windSpeedMax: List<Double>,
+    @SerialName("wind_gusts_10m_max") val windGustsMax: List<Double>,
 )

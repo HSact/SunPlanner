@@ -2,6 +2,11 @@ package com.hsact.sunplanner.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
+import com.hsact.sunplanner.domain.model.TemperatureUnitMode
+import com.hsact.sunplanner.domain.model.ThemeMode
+import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateCurveOptionUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateDotsOptionUseCase
@@ -10,12 +15,6 @@ import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCa
 import com.hsact.sunplanner.domain.usecase.settings.UpdateTemperatureUnitUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateThemeUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateWindSpeedUnitUseCase
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -69,13 +68,15 @@ class SettingsViewModel @Inject constructor(
             ) { theme, language, units, showDots, isCurved ->
                 _uiState.value.copy(
                     currentTheme = theme,
-                    currentLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
+                    currentLanguage = language
+                        ?: LanguageMode.fromName(Locale.getDefault().language),
                     currentTemperatureUnit = units.temperatureUnit,
                     currentWindSpeedUnit = units.windUnit,
                     currentPrecipitationUnit = units.precipitationUnit,
                     currentDotsOption = if (showDots) 1 else 0,
                     currentCurvedOption = if (isCurved) 1 else 0,
-                    selectedLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
+                    selectedLanguage = language
+                        ?: LanguageMode.fromName(Locale.getDefault().language),
                 )
             }.collect { newState ->
                 _uiState.value = newState

@@ -24,7 +24,7 @@ Graphs by [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts)<br>
 - **Architecture:** MVVM with MVI-style state management  
 - **State Handling:** StateFlow + sealed `UiState`  
 - **Dependency Injection:** Hilt  
-- **Networking:** Retrofit + Moshi
+- **Networking:** Retrofit + Kotlinx Serialization
 - **Data Storage:** Jetpack DataStore
 - **Charts:** [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts) 
 - **Data Source:** [Open-Meteo.com](https://open-meteo.com/) API (no local database)
@@ -88,7 +88,7 @@ SunPlanner — это приложение для анализа истории 
 - **Архитектура:** MVVM с элементами MVI  
 - **Состояния:** StateFlow + `sealed` UiState  
 - **DI:** Hilt  
-- **Сеть:** Retrofit + Moshi
+- **Сеть:** Retrofit + Kotlinx Serialization
 - **Хранение настроек:** Jetpack DataStore
 - **Графики:** [ComposeCharts](https://github.com/ehsannarmani/ComposeCharts) 
 - **Источник данных:** [Open-Meteo.com](https://open-meteo.com/) API (без локальной БД)

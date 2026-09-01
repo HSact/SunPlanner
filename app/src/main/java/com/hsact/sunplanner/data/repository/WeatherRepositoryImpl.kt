@@ -27,15 +27,19 @@ class WeatherRepositoryImpl @Inject constructor(
      * @throws Exception if the network request fails.
      */
     override suspend fun getWeather(params: WeatherRequestParams) =
-        service.getHistoricalWeather(
-            latitude = params.latitude,
-            longitude = params.longitude,
-            startDate = params.startDate,
-            endDate = params.endDate,
-            temperatureUnit = params.temperatureUnit,
-            windSpeedUnit = params.windSpeedUnit,
-            precipitationUnit = params.precipitationUnit
-        )
+        try {
+            service.getHistoricalWeather(
+                latitude = params.latitude,
+                longitude = params.longitude,
+                startDate = params.startDate,
+                endDate = params.endDate,
+                temperatureUnit = params.temperatureUnit,
+                windSpeedUnit = params.windSpeedUnit,
+                precipitationUnit = params.precipitationUnit
+            )
+        } catch (e: Exception) {
+            throw e
+        }
 
     /**
      * Retrieves geographic coordinates for a given city name.

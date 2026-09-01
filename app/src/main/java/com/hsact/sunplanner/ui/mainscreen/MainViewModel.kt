@@ -10,14 +10,13 @@ import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.error.toApiError
 import com.hsact.sunplanner.domain.factory.WeatherMetricsFactory
 import com.hsact.sunplanner.domain.model.DatesBundle
+import com.hsact.sunplanner.domain.model.LanguageMode
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
-import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.toName
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
@@ -79,7 +78,7 @@ class MainViewModel @Inject constructor(
                     location = _mainUiState.value.settingsBundle.location,
                     isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
                     isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
-                    languageMode = language ?: nameToLanguageMode(Locale.getDefault().language),
+                    languageMode = language ?: LanguageMode.fromName(Locale.getDefault().language),
                     themeMode = theme,
                     temperatureUnitMode = tempUnit,
                     windUnitMode = windUnit,
@@ -156,49 +155,41 @@ class MainViewModel @Inject constructor(
     }
 
     private fun updateStartYear(year: Int) {
-        val old = _mainUiState.value.tempDates.start
-        val newDate = old.withYear(year).coerceDay()
-        _mainUiState.value =
-            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(start = newDate))
+        updateStartDate { it.withYear(year) }
     }
 
     private fun updateStartMonth(month: Int) {
-        val old = _mainUiState.value.tempDates.start
-        val newDate = old.withMonth(month).coerceDay()
-        _mainUiState.value =
-            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(start = newDate))
+        updateStartDate { it.withMonth(month) }
     }
 
     private fun updateStartDay(day: Int) {
-        val old = _mainUiState.value.tempDates.start
-        val maxDay = old.lengthOfMonth()
-        val validDay = day.coerceIn(1, maxDay)
-        val newDate = old.withDayOfMonth(validDay)
-        _mainUiState.value =
-            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(start = newDate))
+        updateStartDate { it.withDayOfMonth(day.coerceIn(1, it.lengthOfMonth())) }
     }
 
     private fun updateEndYear(year: Int) {
-        val old = _mainUiState.value.tempDates.end
-        val newDate = old.withYear(year).coerceDay()
-        _mainUiState.value =
-            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(end = newDate))
+        updateEndDate { it.withYear(year) }
     }
 
     private fun updateEndMonth(month: Int) {
-        val old = _mainUiState.value.tempDates.end
-        val newDate = old.withMonth(month).coerceDay()
-        _mainUiState.value =
-            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(end = newDate))
+        updateEndDate { it.withMonth(month) }
     }
 
     private fun updateEndDay(day: Int) {
-        val old = _mainUiState.value.tempDates.end
-        val maxDay = old.lengthOfMonth()
-        val validDay = day.coerceIn(1, maxDay)
-        val newDate = old.withDayOfMonth(validDay)
-        _mainUiState.value =
-            _mainUiState.value.copy(tempDates = _mainUiState.value.tempDates.copy(end = newDate))
+        updateEndDate { it.withDayOfMonth(day.coerceIn(1, it.lengthOfMonth())) }
+    }
+
+    private fun updateStartDate(transform: (LocalDate) -> LocalDate) {
+        _mainUiState.update { state ->
+            val newDate = transform(state.tempDates.start).coerceDay()
+            state.copy(tempDates = state.tempDates.copy(start = newDate))
+        }
+    }
+
+    private fun updateEndDate(transform: (LocalDate) -> LocalDate) {
+        _mainUiState.update { state ->
+            val newDate = transform(state.tempDates.end).coerceDay()
+            state.copy(tempDates = state.tempDates.copy(end = newDate))
+        }
     }
 
     private fun LocalDate.coerceDay(): LocalDate {
@@ -207,32 +198,35 @@ class MainViewModel @Inject constructor(
     }
 
     private fun setValidationError(error: String) {
-        _mainUiState.value = _mainUiState.value.copy(validationError = error)
+        _mainUiState.update { it.copy(validationError = error) }
     }
 
     private fun setNetworkError(error: ApiError) {
-        _mainUiState.value = _mainUiState.value.copy(
-            networkError = error,
-            networkErrorId = UUID.randomUUID().toString()
-        )
+        _mainUiState.update {
+            it.copy(
+                networkError = error,
+                networkErrorId = UUID.randomUUID().toString()
+            )
+        }
     }
 
     private fun cleanValidationError() {
-        _mainUiState.value = _mainUiState.value.copy(validationError = null)
+        _mainUiState.update { it.copy(validationError = null) }
     }
 
     private fun cleanNetworkError() {
-        _mainUiState.value = _mainUiState.value.copy(networkError = null)
+        _mainUiState.update { it.copy(networkError = null) }
     }
 
     private fun updateConfirmedDates(dates: DatesBundle) {
-        _mainUiState.value =
-            _mainUiState.value.copy(
-                confirmedDates = _mainUiState.value.confirmedDates.copy(
+        _mainUiState.update {
+            it.copy(
+                confirmedDates = it.confirmedDates.copy(
                     start = dates.start,
                     end = dates.end
                 )
             )
+        }
     }
 
     private suspend fun onWeatherSearchClick() {
@@ -297,7 +291,7 @@ class MainViewModel @Inject constructor(
                     language = _mainUiState.value.settingsBundle.languageMode.toName(),
                 )
                 if (cities != null) {
-                    _mainUiState.value = _mainUiState.value.copy(cities = cities)
+                    _mainUiState.update { it.copy(cities = cities) }
                 }
             } catch (e: Exception) {
                 setNetworkError(e.toApiError())
@@ -306,7 +300,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun fetchWeather(params: WeatherRequestParams) {
-        _mainUiState.value = _mainUiState.value.copy(isLoading = true)
+        _mainUiState.update { it.copy(isLoading = true) }
         viewModelScope.launch {
             try {
                 val filteredWeather = fetchFilteredWeatherUseCase.execute(
@@ -325,7 +319,7 @@ class MainViewModel @Inject constructor(
                     error = e.message ?: "unknown"
                 )
             }
-            _mainUiState.value = _mainUiState.value.copy(isLoading = false)
+            _mainUiState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -333,7 +327,7 @@ class MainViewModel @Inject constructor(
         val state = withContext(Dispatchers.Default) {
             buildWeatherDataState(_mainUiState.value, data)
         }
-        _mainUiState.update { current ->
+        _mainUiState.update { _ ->
             state
         }
     }

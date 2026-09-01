@@ -7,16 +7,16 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.hsact.sunplanner.data.responses.Location
+import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
+import com.hsact.sunplanner.domain.model.TemperatureUnitMode
+import com.hsact.sunplanner.domain.model.ThemeMode
+import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import com.hsact.sunplanner.domain.repository.SettingsRepository
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
-import com.squareup.moshi.Moshi
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -52,7 +52,7 @@ class SettingsRepositoryImpl @Inject constructor(
      * Emits updates when the theme setting changes.
      */
     override val theme: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
-        preferences[THEME_KEY]?.let { ThemeMode.entries[it] } ?: ThemeMode.SYSTEM
+        preferences[THEME_KEY]?.let { ThemeMode.fromIndex(it) } ?: ThemeMode.SYSTEM
     }
 
     /**
@@ -60,7 +60,7 @@ class SettingsRepositoryImpl @Inject constructor(
      * Emits updates when the language setting changes.
      */
     override val language: Flow<LanguageMode?> = context.dataStore.data.map { preferences ->
-        preferences[LANGUAGE_KEY]?.let { LanguageMode.entries[it] }
+        preferences[LANGUAGE_KEY]?.let { LanguageMode.fromIndex(it) }
     }
 
     /**
@@ -69,7 +69,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override val temperatureUnit: Flow<TemperatureUnitMode> =
         context.dataStore.data.map { preferences ->
-            preferences[TEMPERATURE_UNIT_KEY]?.let { TemperatureUnitMode.entries[it] }
+            preferences[TEMPERATURE_UNIT_KEY]?.let { TemperatureUnitMode.fromIndex(it) }
                 ?: TemperatureUnitMode.CELSIUS
         }
 
@@ -79,7 +79,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override val windSpeedUnit: Flow<WindSpeedUnitMode> =
         context.dataStore.data.map { preferences ->
-            preferences[WIND_SPEED_UNIT_KEY]?.let { WindSpeedUnitMode.entries[it] }
+            preferences[WIND_SPEED_UNIT_KEY]?.let { WindSpeedUnitMode.fromIndex(it) }
                 ?: WindSpeedUnitMode.MS
         }
 
@@ -89,7 +89,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override val precipitationUnit: Flow<PrecipitationUnitMode> =
         context.dataStore.data.map { preferences ->
-            preferences[PRECIPITATION_UNIT_KEY]?.let { PrecipitationUnitMode.entries[it] }
+            preferences[PRECIPITATION_UNIT_KEY]?.let { PrecipitationUnitMode.fromIndex(it) }
                 ?: PrecipitationUnitMode.MM
         }
 
@@ -115,13 +115,13 @@ class SettingsRepositoryImpl @Inject constructor(
 
     /**
      * Flow of the saved [Location], or `null` if none is saved.
-     * The location is stored as a JSON string and parsed using Moshi.
+     * The location is stored as a JSON string and parsed using Kotlinx Serialization.
      */
     override val location: Flow<Location?> =
         context.dataStore.data.map { prefs ->
             prefs[LOCATION_KEY]?.let { json ->
                 runCatching {
-                    Moshi.Builder().build().adapter(Location::class.java).fromJson(json)
+                    Json.decodeFromString<Location>(json)
                 }.getOrNull()
             }
         }
@@ -133,7 +133,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override suspend fun setTheme(themeMode: ThemeMode) {
         context.dataStore.edit { preferences ->
-            preferences[THEME_KEY] = themeMode.ordinal
+            preferences[THEME_KEY] = themeMode.toIndex()
         }
     }
 
@@ -144,7 +144,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override suspend fun setLanguage(languageMode: LanguageMode) {
         context.dataStore.edit { preferences ->
-            preferences[LANGUAGE_KEY] = languageMode.ordinal
+            preferences[LANGUAGE_KEY] = languageMode.toIndex()
         }
     }
 
@@ -155,7 +155,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override suspend fun setTemperatureUnit(temperatureMode: TemperatureUnitMode) {
         context.dataStore.edit { preferences ->
-            preferences[TEMPERATURE_UNIT_KEY] = temperatureMode.ordinal
+            preferences[TEMPERATURE_UNIT_KEY] = temperatureMode.toIndex()
         }
     }
 
@@ -166,7 +166,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override suspend fun setWindSpeedUnit(windMode: WindSpeedUnitMode) {
         context.dataStore.edit { preferences ->
-            preferences[WIND_SPEED_UNIT_KEY] = windMode.ordinal
+            preferences[WIND_SPEED_UNIT_KEY] = windMode.toIndex()
         }
     }
 
@@ -177,7 +177,7 @@ class SettingsRepositoryImpl @Inject constructor(
      */
     override suspend fun setPrecipitationUnit(precipitationMode: PrecipitationUnitMode) {
         context.dataStore.edit { preferences ->
-            preferences[PRECIPITATION_UNIT_KEY] = precipitationMode.ordinal
+            preferences[PRECIPITATION_UNIT_KEY] = precipitationMode.toIndex()
         }
     }
 
@@ -209,8 +209,7 @@ class SettingsRepositoryImpl @Inject constructor(
      * @param location The location object to save.
      */
     override suspend fun setLocation(location: Location) {
-        val adapter = Moshi.Builder().build().adapter(Location::class.java)
-        val json = adapter.toJson(location)
+        val json = Json.encodeToString(location)
         context.dataStore.edit { preferences ->
             preferences[LOCATION_KEY] = json
         }

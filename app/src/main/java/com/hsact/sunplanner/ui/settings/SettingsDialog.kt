@@ -28,16 +28,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
+import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
+import com.hsact.sunplanner.domain.model.TemperatureUnitMode
+import com.hsact.sunplanner.domain.model.ThemeMode
+import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import com.hsact.sunplanner.ui.components.DropdownPicker
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.indexToLanguageMode
-import com.hsact.sunplanner.ui.settings.modes.indexToThemeMode
-import com.hsact.sunplanner.ui.settings.modes.toIndex
-import com.hsact.sunplanner.ui.settings.modes.unitModes.indexToPrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.indexToTemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.indexToWindSpeedUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
 
 @Composable
 fun SettingsDialog(
@@ -134,7 +130,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                     selectedLanguageIndex.intValue = languageChoices.indexOf(it)
                     viewModel.handleIntent(
                         SettingsIntents.UpdateLanguage(
-                            indexToLanguageMode(
+                            LanguageMode.fromIndex(
                                 selectedLanguageIndex.intValue
                             )
                         )
@@ -164,7 +160,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                             selectedThemeIndex = index
                             viewModel.handleIntent(
                                 SettingsIntents.UpdateTheme(
-                                    indexToThemeMode(
+                                    ThemeMode.fromIndex(
                                         index
                                     )
                                 )
@@ -229,7 +225,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                 tempUnitChoices,
                 selectedTempUnitIndex
             ) { index ->
-                SettingsIntents.UpdateTemperatureUnit(indexToTemperatureUnitMode(index))
+                SettingsIntents.UpdateTemperatureUnit(TemperatureUnitMode.fromIndex(index))
             }
         }
         Row(
@@ -245,7 +241,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                 windUnitChoices,
                 selectedWindUnitIndex
             ) { index ->
-                SettingsIntents.UpdateWindSpeedUnit(indexToWindSpeedUnitMode(index))
+                SettingsIntents.UpdateWindSpeedUnit(WindSpeedUnitMode.fromIndex(index))
             }
         }
         Row(
@@ -261,7 +257,7 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                 precipitationUnitChoices,
                 selectedPrecipitationUnitIndex
             ) { index ->
-                SettingsIntents.UpdatePrecipitationUnit(indexToPrecipitationUnitMode(index))
+                SettingsIntents.UpdatePrecipitationUnit(PrecipitationUnitMode.fromIndex(index))
             }
         }
     }

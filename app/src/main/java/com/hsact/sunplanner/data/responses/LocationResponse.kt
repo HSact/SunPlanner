@@ -1,15 +1,15 @@
 package com.hsact.sunplanner.data.responses
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a response from the geolocation API containing a list of possible location matches.
  *
  * @property results A list of [Location] entries returned by the API. Can be null if no matches found.
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class LocationResponse(
-    val results: List<Location>?
+    val results: List<Location>? = null
 )
 
 /**
@@ -25,15 +25,15 @@ data class LocationResponse(
  * @property admin3 Optional administrative level 3 (e.g., district).
  * @property admin4 Optional administrative level 4 (e.g., municipality).
  */
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Location(
     val id: Int,
     val name: String,
     val latitude: Double,
     val longitude: Double,
-    val country: String?,
-    val admin1: String?,
-    val admin2: String?,
-    val admin3: String?,
-    val admin4: String?,
+    val country: String? = null,
+    val admin1: String? = null,
+    val admin2: String? = null,
+    val admin3: String? = null,
+    val admin4: String? = null,
 )

@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hsact.sunplanner.data.utils.DateUtils
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.domain.model.ThemeMode
 import ir.ehsannarmani.compose_charts.LineChart
 import ir.ehsannarmani.compose_charts.models.AnimationMode
 import ir.ehsannarmani.compose_charts.models.DrawStyle

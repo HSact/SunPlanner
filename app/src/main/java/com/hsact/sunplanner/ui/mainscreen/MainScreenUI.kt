@@ -1,7 +1,6 @@
 package com.hsact.sunplanner.ui.mainscreen
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,7 +51,9 @@ import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.model.DatesBundle
+import com.hsact.sunplanner.domain.model.LanguageMode
 import com.hsact.sunplanner.domain.model.SettingsBundle
+import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.ui.components.CollapsibleTopBar
 import com.hsact.sunplanner.ui.components.DropdownPicker
@@ -61,9 +62,6 @@ import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.settings.SettingsDialog
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.toIndex
 import com.hsact.sunplanner.ui.theme.LocalExtendedColors
 import kotlinx.coroutines.FlowPreview
 import java.time.LocalDate
@@ -221,7 +219,7 @@ fun MainScreen(
             }
             if (!isSearchExpanded) {
                 YearsRangeSelection(viewModel, mainDataUI.tempDates)
-                DatesRangeSection(viewModel, context, mainDataUI.tempDates)
+                DatesRangeSection(viewModel, mainDataUI.tempDates)
                 Row(
                     modifier = Modifier
                         .padding(top = 16.dp, start = 16.dp, end = 16.dp)
@@ -260,7 +258,6 @@ fun MainScreen(
                     )
                     WeatherCards(
                         weatherGraphDataFactory,
-                        context,
                         modifier,
                         mainDataUI.confirmedDates,
                         mainDataUI.isOneYear,
@@ -325,11 +322,11 @@ private fun YearsRangeSelection(
 @Composable
 private fun ColumnScope.DatesRangeSection(
     viewModel: MainViewModel,
-    context: Context,
     datesBundle: DatesBundle,
 ) {
     val date1 = datesBundle.start
     val date2 = datesBundle.end
+    val context = LocalContext.current
     val monthChoices = remember { context.resources.getStringArray(R.array.month_choices).toList() }
     val startDayChoices = remember(date1) { (1..date1.lengthOfMonth()).toList() }
     val endDayChoices = remember(date2) { (1..date2.lengthOfMonth()).toList() }
@@ -487,13 +484,13 @@ private fun DateText(
 @Composable
 private fun WeatherCards(
     weatherGraphDataFactory: WeatherGraphDataFactory,
-    context: Context,
     modifier: Modifier,
     dates: DatesBundle,
     isOneYear: Boolean,
     weatherMetrics: WeatherMetrics,
     settingsBundle: SettingsBundle
 ) {
+    val context = LocalContext.current
     val tempUnit = context.resources.getStringArray(R.array.temp_unit_choices)
         .toList()[settingsBundle.temperatureUnitMode.toIndex()]
     val speedUnit = context.resources.getStringArray(R.array.speed_unit_choices)
