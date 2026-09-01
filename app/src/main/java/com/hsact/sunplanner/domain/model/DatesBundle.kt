@@ -21,17 +21,6 @@ data class DatesBundle(
     val isStartYearNotAfterEndYear: Boolean
         get() = start.year <= end.year
 
-
-    /**
-     * Checks if the date range is valid within the same year.
-     * Compares the day of year of [start] adjusted to [end] year with the day of year of [end].
-     *
-     * @return `true` if the adjusted start date is before or equal to the end date, `false` otherwise.
-     */
-    val isDateRangeValid: Boolean
-        get() = start.withYear(end.year).dayOfYear <= end.dayOfYear
-
-
     /**
      * Checks if the difference between the end year and start year is within a given limit.
      *

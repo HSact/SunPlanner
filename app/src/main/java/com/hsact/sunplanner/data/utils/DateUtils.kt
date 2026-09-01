@@ -1,8 +1,10 @@
 package com.hsact.sunplanner.data.utils
 
 import java.time.LocalDate
+import java.time.MonthDay
 import java.time.Year
 import java.time.format.TextStyle
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 /**
@@ -11,20 +13,6 @@ import java.util.Locale
 object DateUtils {
     /**
      * Formats a date range into a localized string.
-     *
-     * The formatting depends on whether the range is a single day or spans one or multiple years.
-     * Pre-formatted string templates are passed as arguments to allow localization via resources.
-     *
-     * @param startDate Start of the range.
-     * @param endDate End of the range.
-     * @param isOneDay Whether the range consists of a single day.
-     * @param isOneYear Whether the range spans only one year.
-     * @param locale Target locale for month names.
-     * @param singleDayOneYearString Template for single day in one year.
-     * @param singleDaySting Template for single day in multiple years.
-     * @param dateRangeOneYearSting Template for date range in one year.
-     * @param dateRangeString Template for date range in multiple years.
-     * @return A localized string representing the date range.
      */
     fun formatDateRange(
         startDate: LocalDate,
@@ -32,10 +20,10 @@ object DateUtils {
         isOneDay: Boolean,
         isOneYear: Boolean,
         locale: Locale,
-        singleDayOneYearString: String = "",    //For resource String
-        singleDaySting: String = "",            //For resource String
-        dateRangeOneYearSting: String = "",     //For resource String
-        dateRangeString: String = ""            //For resource String
+        singleDayOneYearString: String = "",
+        singleDaySting: String = "",
+        dateRangeOneYearSting: String = "",
+        dateRangeString: String = ""
     ): String {
         return if (isOneDay) {
             val monthName = startDate.month
@@ -88,61 +76,39 @@ object DateUtils {
     }
 
     /**
-     * Generates X-axis labels for popup tooltips on weather graphs based on date range and locale.
-     * Labels are either years (if it's one day repeated over many years) or short day/month names.
-     *
-     * @param startDate Start of the date range.
-     * @param endDate End of the date range.
-     * @param locale Target locale for formatting.
-     * @return List of strings for popup labels.
+     * Generates X-axis labels for popup tooltips.
      */
     fun generatePopUpLabels(
         startDate: LocalDate,
         endDate: LocalDate,
         locale: Locale
     ): List<String> {
-        val russianMonthLabels = listOf(
-            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
-            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
-        )
         val isOneDay = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
 
         if (isOneDay) {
             return (startDate.year..endDate.year).map { it.toString() }
         }
-        val leapYearDate = (startDate.year..endDate.year)
-            .firstOrNull { Year.isLeap(it.toLong()) }
-            ?.let { LocalDate.of(it, startDate.month, startDate.dayOfMonth) }
-            ?: startDate
 
-        val singleYearEndDate = endDate.minusYears((endDate.year - leapYearDate.year).toLong())
-        val labels = mutableListOf<String>()
-        var current = leapYearDate
+        val sequence = generateSafeDaySequence(startDate, endDate)
+        val russianMonthLabels = listOf(
+            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
+            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+        )
 
-        while (!current.isAfter(singleYearEndDate)) {
-            val day = current.dayOfMonth
+        return sequence.map { date ->
+            val day = date.dayOfMonth
             val month = if (locale.language == "ru") {
-                russianMonthLabels[current.monthValue - 1]
+                russianMonthLabels[date.monthValue - 1]
             } else {
-                current.month.getDisplayName(TextStyle.SHORT, locale)
+                date.month.getDisplayName(TextStyle.SHORT, locale)
             }
-            labels.add("$day $month")
-            current = current.plusDays(1)
+            "$day $month"
         }
-        return labels
     }
 
     /**
-     * Determines which kind of X-axis labels to generate based on the date range:
-     * - Years if the same day is repeated.
-     * - Days if range is short (less than ~3 months).
-     * - Months if range is longer.
-     *
-     * @param startDate Start of the range.
-     * @param endDate End of the range.
-     * @param locale Target locale.
-     * @return A list of appropriate labels for the graph's X axis.
+     * Determines kind of X-axis labels to generate.
      */
     fun generateAxisXLabels(
         startDate: LocalDate,
@@ -152,26 +118,97 @@ object DateUtils {
         val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
 
-        val rawLabels = if (useYearsAsLabels) {
-            yearLabels(startDate, endDate)
-        } else {
-            if (endDate.dayOfYear - startDate.withYear(endDate.year).dayOfYear <= 92) {
-                dayLabels(startDate, endDate)
-            } else {
-                monthLabels(startDate, endDate, locale)
-            }
+        if (useYearsAsLabels) {
+            return (startDate.year..endDate.year).map { "'${(it % 100).toString().padStart(2, '0')}" }
         }
-        return rawLabels
+
+        val daysCount = calculateDaysInWindow(startDate, endDate)
+        return if (daysCount <= 92) {
+            generateSafeDaySequence(startDate, endDate).map { it.dayOfMonth.toString() }
+        } else {
+            generateMonthLabels(startDate, endDate, locale)
+        }
     }
 
     /**
-     * Reduces the number of X-axis labels so they fit within the available width.
-     *
-     * @param rawLabels Original list of labels.
-     * @param labelsWidth Total width required by all labels.
-     * @param maxWidth Maximum width available for labels.
-     * @return A filtered list of labels with spacing.
+     * Calculates the number of days in the seasonal window, regardless of specific years.
      */
+    private fun calculateDaysInWindow(start: LocalDate, end: LocalDate): Int {
+        val anyLeap = (start.year..end.year).any { Year.isLeap(it.toLong()) }
+        val baseYear = if (anyLeap) 2024 else 2023
+        val d1 = MonthDay.of(start.month, start.dayOfMonth).atYear(baseYear)
+        var d2 = MonthDay.of(end.month, end.dayOfMonth).atYear(baseYear)
+        if (d1.isAfter(d2)) {
+            d2 = d2.plusYears(1)
+        }
+        return ChronoUnit.DAYS.between(d1, d2).toInt() + 1
+    }
+
+    /**
+     * Generates a sequence of dates for the window, accounting for leap years in history depth.
+     */
+    private fun generateSafeDaySequence(start: LocalDate, end: LocalDate): List<LocalDate> {
+        val anyLeap = (start.year..end.year).any { Year.isLeap(it.toLong()) }
+        val baseYear = if (anyLeap) 2024 else 2023
+        
+        val startMD = MonthDay.of(start.month, start.dayOfMonth)
+        val endMD = MonthDay.of(end.month, end.dayOfMonth)
+        
+        var current = try {
+            startMD.atYear(baseYear)
+        } catch (e: Exception) {
+            // Handle case where start is Feb 29 but baseYear is not leap
+            startMD.atYear(2024) 
+        }
+        
+        val target = if (!startMD.isAfter(endMD)) {
+            endMD.atYear(current.year)
+        } else {
+            endMD.atYear(current.year + 1)
+        }
+
+        val result = mutableListOf<LocalDate>()
+        var temp = current
+        while (!temp.isAfter(target)) {
+            // Only add Feb 29 if history depth actually contains a leap year
+            if (temp.monthValue == 2 && temp.dayOfMonth == 29 && !anyLeap) {
+                temp = temp.plusDays(1)
+                continue
+            }
+            result.add(temp)
+            temp = temp.plusDays(1)
+        }
+        return result
+    }
+
+    private fun generateMonthLabels(start: LocalDate, end: LocalDate, locale: Locale): List<String> {
+        val russianMonthLabels = listOf(
+            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
+            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+        )
+        val startMD = MonthDay.of(start.month, start.dayOfMonth)
+        val endMD = MonthDay.of(end.month, end.dayOfMonth)
+        
+        val current = startMD.atYear(2023).withDayOfMonth(1)
+        val target = if (!startMD.isAfter(endMD)) {
+            endMD.atYear(2023).withDayOfMonth(1)
+        } else {
+            endMD.atYear(2024).withDayOfMonth(1)
+        }
+
+        val labels = mutableListOf<String>()
+        var temp = current
+        while (!temp.isAfter(target)) {
+            var label = temp.month.getDisplayName(TextStyle.SHORT, locale)
+            if (locale.language == "ru") {
+                label = russianMonthLabels[temp.monthValue - 1]
+            }
+            labels.add(label)
+            temp = temp.plusMonths(1)
+        }
+        return labels
+    }
+
     fun reduceAxisXLabels(
         rawLabels: List<String>,
         labelsWidth: Double,
@@ -181,61 +218,6 @@ object DateUtils {
             return rawLabels
         }
         val step = (labelsWidth / maxWidth).toInt().coerceAtLeast(1) + 1
-        val filteredLabels = rawLabels.filterIndexed { index, _ -> index % step == 0 }
-        return filteredLabels
-    }
-
-    /**
-     * Generates a list of abbreviated years (e.g. `'23`, `'24`) for X-axis labels.
-     */
-    private fun yearLabels(
-        startDate: LocalDate,
-        endDate: LocalDate
-    ): List<String> {
-        return (startDate.year..endDate.year).map { "'${(it % 100).toString().padStart(2, '0')}" }
-    }
-
-    /**
-     * Generates a list of localized short month labels for X-axis.
-     */
-    private fun monthLabels(
-        startDate: LocalDate,
-        endDate: LocalDate,
-        locale: Locale
-    ): List<String> {
-        val russianMonthLabels = listOf(
-            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
-            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
-        )
-        val singleYearEndDate = endDate.minusYears((endDate.year - startDate.year).toLong())
-        val labels = mutableListOf<String>()
-        var current = startDate.withDayOfMonth(1)
-        while (!current.isAfter(singleYearEndDate)) {
-            var label = current.month.getDisplayName(TextStyle.SHORT, locale)
-            if (locale.language == "ru") {
-                label = russianMonthLabels[current.monthValue - 1]
-            }
-            labels.add(label)
-            current = current.plusMonths(1)
-        }
-        return labels
-    }
-
-    /**
-     * Generates a list of day-of-month numbers as strings (e.g., `["1", "2", ..., "31"]`).
-     */
-    private fun dayLabels(
-        startDate: LocalDate,
-        endDate: LocalDate
-    ): List<String> {
-        val leapYearDate = (startDate.year..endDate.year)
-            .firstOrNull { Year.isLeap(it.toLong()) }
-            ?.let { LocalDate.of(it, startDate.month, startDate.dayOfMonth) }
-            ?: startDate
-        val singleYearEndDate = endDate.minusYears((endDate.year - leapYearDate.year).toLong())
-        return generateSequence(leapYearDate) { it.plusDays(1) }
-            .takeWhile { !it.isAfter(singleYearEndDate) }
-            .map { it.dayOfMonth.toString() }
-            .toList()
+        return rawLabels.filterIndexed { index, _ -> index % step == 0 }
     }
 }

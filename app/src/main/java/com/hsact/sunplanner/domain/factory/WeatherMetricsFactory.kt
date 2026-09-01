@@ -3,6 +3,7 @@ package com.hsact.sunplanner.domain.factory
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.usecase.weather.AggregateWeatherByDateUseCase
+import java.time.LocalDate
 import javax.inject.Inject
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -10,10 +11,6 @@ import kotlin.math.roundToInt
 /**
  * Factory class responsible for converting raw [WeatherResponse] data into a domain-specific
  * [WeatherMetrics] model, optionally performing aggregation if the data spans multiple days.
- *
- * This class is used to decouple raw API data transformation logic from the rest of the app's domain layer.
- *
- * @property aggregateWeatherByDateUseCase Use case for aggregating weather data by date.
  */
 class WeatherMetricsFactory @Inject constructor(
     private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase
@@ -21,21 +18,16 @@ class WeatherMetricsFactory @Inject constructor(
 
     /**
      * Creates a [WeatherMetrics] object from the given [WeatherResponse].
-     *
-     * If the data represents a single day (`isOneDay == true`), it performs direct mapping
-     * and averages some values like daylight duration.
-     * Otherwise, it computes average values using [aggregateWeatherByDateUseCase].
-     *
-     * All temperature values are rounded to 1 decimal place.
-     * Sunshine and daylight durations are converted from seconds to hours and also rounded.
-     *
-     * @param data The raw weather response from the API.
-     * @param isOneDay Flag indicating whether the data covers a single day or a longer range.
-     * @return A populated [WeatherMetrics] instance.
      */
-    fun create(data: WeatherResponse, isOneDay: Boolean): WeatherMetrics {
+    fun create(
+        data: WeatherResponse, 
+        isOneDay: Boolean, 
+        filterStart: LocalDate, 
+        filterEnd: LocalDate
+    ): WeatherMetrics {
         val daily = data.daily
         var weatherMetrics = WeatherMetrics()
+        
         weatherMetrics.maxTemps = daily.maxTemperature
         weatherMetrics.minTemps = daily.minTemperature
         weatherMetrics.averageTemps = weatherMetrics.maxTemps.indices.map { i ->
@@ -49,30 +41,23 @@ class WeatherMetricsFactory @Inject constructor(
         weatherMetrics.precipitation = daily.precipitationSum
         weatherMetrics.windSpeed = daily.windSpeedMax
         weatherMetrics.gustSpeed = daily.windGustsMax
+        
         if (isOneDay) {
             weatherMetrics.dayLight =
                 weatherMetrics.dayLight.map { weatherMetrics.dayLight.average() }.toList()
         } else {
-            weatherMetrics = createAverage(data, weatherMetrics)
+            weatherMetrics = createAverage(data, weatherMetrics, filterStart, filterEnd)
         }
         return weatherMetrics
     }
 
-    /**
-     * Applies averaging logic to the provided [WeatherMetrics] based on the aggregated daily data.
-     *
-     * Uses [aggregateWeatherByDateUseCase] to compute average values across the given date range.
-     * Converts durations from seconds to hours and rounds values to 1 decimal place where applicable.
-     *
-     * @param data Raw weather response with detailed daily values.
-     * @param weatherMetrics A partially filled [WeatherMetrics] object to be updated.
-     * @return The same [WeatherMetrics] instance, populated with averaged values.
-     */
     private fun createAverage(
         data: WeatherResponse,
-        weatherMetrics: WeatherMetrics
+        weatherMetrics: WeatherMetrics,
+        filterStart: LocalDate,
+        filterEnd: LocalDate
     ): WeatherMetrics {
-        val aggregated = aggregateWeatherByDateUseCase.execute(data.daily)
+        val aggregated = aggregateWeatherByDateUseCase.execute(data.daily, filterStart, filterEnd)
         weatherMetrics.maxTemps = aggregated.map { it.avgMaxTemp }
         weatherMetrics.averageTemps = aggregated.map { it.avgAvgTemp }
         weatherMetrics.minTemps = aggregated.map { it.avgMinTemp }

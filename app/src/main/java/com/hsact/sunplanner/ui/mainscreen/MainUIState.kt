@@ -40,7 +40,7 @@ data class MainUIState(
     val cities: List<Location> = emptyList(),
     val tempDates: DatesBundle = DatesBundle(
         LocalDate.now().minusYears(10),
-        LocalDate.now().minusYears(1)
+        LocalDate.now().plusDays(13).minusYears(1)
     ),
     val confirmedDates: DatesBundle = tempDates,
     val weatherData: WeatherResponse? = null,

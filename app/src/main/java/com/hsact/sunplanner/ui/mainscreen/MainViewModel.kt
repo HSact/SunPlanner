@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
@@ -45,7 +46,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow(MainUIState())
-    val mainUiState: StateFlow<MainUIState> get() = _mainUiState
+    val mainUiState: StateFlow<MainUIState> get() = _mainUiState.asStateFlow()
 
     init {
         analyticsHelper.logAppStarted()
@@ -239,10 +240,6 @@ class MainViewModel @Inject constructor(
             setValidationError(stringProvider.invalidYearRange())
             return
         }
-        if (!state.tempDates.isDateRangeValid) {
-            setValidationError(stringProvider.invalidDateRange())
-            return
-        }
         if (!state.tempDates.isYearsRangeWithinLimit(state.maxYearRange)) {
             setValidationError(stringProvider.yearsRangeTooBig(state.maxYearRange))
             return
@@ -340,7 +337,12 @@ class MainViewModel @Inject constructor(
         state = state.copy(
             weatherData = data
         )
-        val weatherMetrics = weatherMetricsFactory.create(data, state.isOneDay)
+        val weatherMetrics = weatherMetricsFactory.create(
+            data,
+            state.isOneDay,
+            state.confirmedDates.start,
+            state.confirmedDates.end
+        )
         state = state.copy(weatherMetrics = weatherMetrics)
         return state
     }

@@ -8,14 +8,26 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 class AggregateWeatherByDateUseCase @Inject constructor() {
-    fun execute(daily: DailyWeather): List<DailyAggregatedData> {
+    fun execute(daily: DailyWeather, filterStart: LocalDate, filterEnd: LocalDate): List<DailyAggregatedData> {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val startMD = filterStart.monthValue * 100 + filterStart.dayOfMonth
+        val endMD = filterEnd.monthValue * 100 + filterEnd.dayOfMonth
+        val isWrapping = startMD > endMD
 
-        val grouped = daily.time.mapIndexed { index, dateStr ->
-            val dayKey =
-                LocalDate.parse(dateStr, formatter).format(DateTimeFormatter.ofPattern("MM-dd"))
-            dayKey to index
-        }.groupBy({ it.first }, { it.second })
+        val filteredIndices = daily.time.mapIndexedNotNull { index, dateStr ->
+            val date = LocalDate.parse(dateStr, formatter)
+            val currentMD = date.monthValue * 100 + date.dayOfMonth
+            
+            val isInRange = if (isWrapping) {
+                currentMD >= startMD || currentMD <= endMD
+            } else {
+                currentMD in startMD..endMD
+            }
+            
+            if (isInRange) dayToKey(date) to index else null
+        }
+
+        val grouped = filteredIndices.groupBy({ it.first }, { it.second })
 
         return grouped.map { (day, indices) ->
             val avg = { list: List<Double> -> indices.map { list[it] }.average() }
@@ -31,6 +43,22 @@ class AggregateWeatherByDateUseCase @Inject constructor() {
                 avgWindSpeed = (avg(daily.windSpeedMax) * 10).roundToInt() / 10.0,
                 avgWindGustSpeed = (avg(daily.windGustsMax) * 10).roundToInt() / 10.0
             )
-        }.sortedBy { it.date }
+        }.sortedBy { aggregated ->
+            // Сортировка по порядку дней относительно начала диапазона
+            val dateMD = monthDayToValue(aggregated.date)
+            if (isWrapping) {
+                if (dateMD >= startMD) dateMD - 1300 else dateMD
+            } else {
+                dateMD
+            }
+        }
+    }
+
+    private fun dayToKey(date: LocalDate): String = 
+        date.format(DateTimeFormatter.ofPattern("MM-dd"))
+
+    private fun monthDayToValue(mmDd: String): Int {
+        val parts = mmDd.split("-")
+        return parts[0].toInt() * 100 + parts[1].toInt()
     }
 }
