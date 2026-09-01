@@ -338,7 +338,8 @@ class MainViewModel @Inject constructor(
     ): MainUIState {
         var state = state
         state = state.copy(
-            weatherData = data)
+            weatherData = data
+        )
         val weatherMetrics = weatherMetricsFactory.create(data, state.isOneDay)
         state = state.copy(weatherMetrics = weatherMetrics)
         return state

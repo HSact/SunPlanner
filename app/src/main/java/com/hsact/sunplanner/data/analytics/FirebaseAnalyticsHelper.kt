@@ -21,7 +21,7 @@ class FirebaseAnalyticsHelper @Inject constructor(
     }
 
     override fun logAppStarted() {
-        firebaseAnalytics.logEvent(EVENT_APP_STARTED){}
+        firebaseAnalytics.logEvent(EVENT_APP_STARTED) {}
     }
 
     override fun logWeatherSearchClicked(location: String, startDate: String, endDate: String) {

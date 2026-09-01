@@ -105,7 +105,7 @@ fun LocationSearch(
 @OptIn(FlowPreview::class)
 @Composable
 private fun CityList(
-    viewModel: MainViewModel, 
+    viewModel: MainViewModel,
     onCitySelected: (Location) -> Unit,
     onSearchExpandedChange: (Boolean) -> Unit
 ) {
@@ -127,7 +127,7 @@ private fun CityList(
 
 @Composable
 private fun CityCard(
-    city: Location, 
+    city: Location,
     onCityClick: (Location) -> Unit,
     onSearchExpandedChange: (Boolean) -> Unit
 ) {
