@@ -70,6 +70,7 @@ import com.hsact.sunplanner.ui.components.DropdownPicker
 import com.hsact.sunplanner.ui.components.LocationSearch
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
+import com.hsact.sunplanner.ui.components.cards.WeatherGraphLabels
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
 import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.theme.LocalExtendedColors
@@ -514,13 +515,23 @@ private fun WeatherCards(
         dates.end,
         settingsBundle.languageMode.toLocale()
     )
+    val weatherLabels = WeatherGraphLabels(
+        max = stringResource(R.string.max),
+        avg = stringResource(R.string.avg),
+        min = stringResource(R.string.min),
+        sunshine = stringResource(R.string.sunshine),
+        daylight = stringResource(R.string.daylight),
+        wind = stringResource(R.string.wind),
+        gusts = stringResource(R.string.gusts)
+    )
     val graphData = weatherGraphDataFactory.create(
-        weatherMetrics,
-        settingsBundle.isDotsVisible,
-        settingsBundle.isEdgesCurved,
-        isOneYear,
-        LocalExtendedColors.current,
-        popUpLabels
+        weatherMetrics = weatherMetrics,
+        isDotsVisible = settingsBundle.isDotsVisible,
+        isEdgesCurved = settingsBundle.isEdgesCurved,
+        isOneYear = isOneYear,
+        colors = LocalExtendedColors.current,
+        popUpLabels = popUpLabels,
+        labels = weatherLabels
     )
 
     Row(

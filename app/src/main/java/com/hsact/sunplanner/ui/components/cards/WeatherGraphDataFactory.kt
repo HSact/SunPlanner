@@ -2,29 +2,35 @@ package com.hsact.sunplanner.ui.components.cards
 
 import com.hsact.sunplanner.domain.model.WeatherGraphData
 import com.hsact.sunplanner.domain.model.WeatherMetrics
-import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphBarsUseCase
 import com.hsact.sunplanner.domain.usecase.weather.CreateWeatherGraphLineUseCase
 import com.hsact.sunplanner.ui.theme.ExtendedColors
 import javax.inject.Inject
 
+/**
+ * Factory class responsible for creating [WeatherGraphData] from [WeatherMetrics].
+ * Labels for the graphs are provided as a [WeatherGraphLabels] object to ensure proper localization.
+ */
 class WeatherGraphDataFactory @Inject constructor(
     private val createWeatherGraphLineUseCase: CreateWeatherGraphLineUseCase,
-    private val createWeatherGraphBarsUseCase: CreateWeatherGraphBarsUseCase,
-    private val stringProvider: StringProvider
+    private val createWeatherGraphBarsUseCase: CreateWeatherGraphBarsUseCase
 ) {
+    /**
+     * Creates a [WeatherGraphData] instance.
+     */
     fun create(
         weatherMetrics: WeatherMetrics,
         isDotsVisible: Boolean,
         isEdgesCurved: Boolean,
         isOneYear: Boolean,
         colors: ExtendedColors,
-        popUpLabels: List<String>
+        popUpLabels: List<String>,
+        labels: WeatherGraphLabels
     ): WeatherGraphData {
         val graphData = WeatherGraphData()
         graphData.maxTemperature =
             createWeatherGraphLineUseCase.invoke(
-                label = stringProvider.max(),
+                label = labels.max,
                 values = weatherMetrics.maxTemps,
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
@@ -35,7 +41,7 @@ class WeatherGraphDataFactory @Inject constructor(
             )
         graphData.avgTemperature =
             createWeatherGraphLineUseCase.invoke(
-                label = stringProvider.avg(),
+                label = labels.avg,
                 values = weatherMetrics.averageTemps,
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
@@ -47,7 +53,7 @@ class WeatherGraphDataFactory @Inject constructor(
 
         graphData.minTemperature =
             createWeatherGraphLineUseCase.invoke(
-                label = stringProvider.min(),
+                label = labels.min,
                 values = weatherMetrics.minTemps,
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
@@ -59,7 +65,7 @@ class WeatherGraphDataFactory @Inject constructor(
 
         graphData.sunShineDuration =
             createWeatherGraphLineUseCase.invoke(
-                label = stringProvider.sunshine(),
+                label = labels.sunshine,
                 values = weatherMetrics.sunshine,
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
@@ -71,7 +77,7 @@ class WeatherGraphDataFactory @Inject constructor(
 
         graphData.dayLightDuration =
             createWeatherGraphLineUseCase.invoke(
-                label = stringProvider.daylight(),
+                label = labels.daylight,
                 values = weatherMetrics.dayLight,
                 dates = popUpLabels,
                 isDotsVisible = false,
@@ -89,7 +95,7 @@ class WeatherGraphDataFactory @Inject constructor(
 
         graphData.windSpeed =
             createWeatherGraphLineUseCase.invoke(
-                label = stringProvider.wind(),
+                label = labels.wind,
                 values = weatherMetrics.windSpeed,
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
@@ -101,7 +107,7 @@ class WeatherGraphDataFactory @Inject constructor(
 
         graphData.windGustsSpeed =
             createWeatherGraphLineUseCase.invoke(
-                label = stringProvider.gusts(),
+                label = labels.gusts,
                 values = weatherMetrics.gustSpeed,
                 dates = popUpLabels,
                 isDotsVisible = isDotsVisible,
