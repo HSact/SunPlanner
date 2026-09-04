@@ -61,6 +61,7 @@ object WeatherUtils {
             daylightDuration = matchingIndices.map { dailyWeather.daylightDuration[it] },
             windSpeedMax = matchingIndices.map { dailyWeather.windSpeedMax[it] },
             windGustsMax = matchingIndices.map { dailyWeather.windGustsMax[it] },
+            european_aqi = matchingIndices.map { dailyWeather.european_aqi.getOrNull(it) }
         )
     }
 }

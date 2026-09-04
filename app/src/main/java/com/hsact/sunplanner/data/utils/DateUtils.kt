@@ -1,10 +1,10 @@
 package com.hsact.sunplanner.data.utils
 
+import android.util.Log
 import java.time.LocalDate
 import java.time.MonthDay
 import java.time.Year
 import java.time.format.TextStyle
-import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 /**
@@ -13,6 +13,11 @@ import java.util.Locale
 object DateUtils {
     /**
      * Formats a date range into a localized string.
+     * 
+     * Supports special formatting for:
+     * - Single day vs Range of days.
+     * - Single year vs Range of years.
+     * - Russian genitive case for months (e.g., "11 сентября" instead of "11 Сентябрь").
      */
     fun formatDateRange(
         startDate: LocalDate,
@@ -25,10 +30,22 @@ object DateUtils {
         dateRangeOneYearSting: String = "",
         dateRangeString: String = ""
     ): String {
+        val russianGenitiveMonths = listOf(
+            "января", "февраля", "марта", "апреля", "мая", "июня",
+            "июля", "августа", "сентября", "октября", "ноября", "декабря"
+        )
+
+        fun getMonthName(date: LocalDate): String {
+            return if (locale.language == "ru") {
+                russianGenitiveMonths[date.monthValue - 1]
+            } else {
+                date.month.getDisplayName(TextStyle.FULL, locale)
+                    .replaceFirstChar { it.uppercase() }
+            }
+        }
+
         return if (isOneDay) {
-            val monthName = startDate.month
-                .getDisplayName(TextStyle.FULL, locale)
-                .replaceFirstChar { it.uppercase() }
+            val monthName = getMonthName(startDate)
             if (isOneYear) {
                 String.format(
                     singleDayOneYearString,
@@ -46,12 +63,8 @@ object DateUtils {
                 )
             }
         } else {
-            val monthName1 = startDate.month
-                .getDisplayName(TextStyle.FULL, locale)
-                .replaceFirstChar { it.uppercase() }
-            val monthName2 = endDate.month
-                .getDisplayName(TextStyle.FULL, locale)
-                .replaceFirstChar { it.uppercase() }
+            val monthName1 = getMonthName(startDate)
+            val monthName2 = getMonthName(endDate)
             if (isOneYear) {
                 String.format(
                     dateRangeOneYearSting,
@@ -77,6 +90,9 @@ object DateUtils {
 
     /**
      * Generates X-axis labels for popup tooltips.
+     * 
+     * In RU locale, ensures months are correctly abbreviated (e.g., "сент." instead of "Сен").
+     * Returns either a list of years (for single-day windows) or "Day Month" strings.
      */
     fun generatePopUpLabels(
         startDate: LocalDate,
@@ -92,8 +108,8 @@ object DateUtils {
 
         val sequence = generateSafeDaySequence(startDate, endDate)
         val russianMonthLabels = listOf(
-            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
-            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+            "янв.", "февр.", "марта", "апр.", "мая", "июня",
+            "июля", "авг.", "сент.", "окт.", "нояб.", "дек."
         )
 
         return sequence.map { date ->
@@ -115,33 +131,19 @@ object DateUtils {
         endDate: LocalDate,
         locale: Locale
     ): List<String> {
-        val useYearsAsLabels = startDate.dayOfMonth == endDate.dayOfMonth &&
+        val isOneDayWindow = startDate.dayOfMonth == endDate.dayOfMonth &&
                 startDate.month == endDate.month
 
-        if (useYearsAsLabels) {
+        if (isOneDayWindow) {
             return (startDate.year..endDate.year).map { "'${(it % 100).toString().padStart(2, '0')}" }
         }
 
-        val daysCount = calculateDaysInWindow(startDate, endDate)
-        return if (daysCount <= 92) {
-            generateSafeDaySequence(startDate, endDate).map { it.dayOfMonth.toString() }
+        val sequence = generateSafeDaySequence(startDate, endDate)
+        return if (sequence.size <= 92) {
+            sequence.map { it.dayOfMonth.toString() }
         } else {
             generateMonthLabels(startDate, endDate, locale)
         }
-    }
-
-    /**
-     * Calculates the number of days in the seasonal window, regardless of specific years.
-     */
-    private fun calculateDaysInWindow(start: LocalDate, end: LocalDate): Int {
-        val anyLeap = (start.year..end.year).any { Year.isLeap(it.toLong()) }
-        val baseYear = if (anyLeap) 2024 else 2023
-        val d1 = MonthDay.of(start.month, start.dayOfMonth).atYear(baseYear)
-        var d2 = MonthDay.of(end.month, end.dayOfMonth).atYear(baseYear)
-        if (d1.isAfter(d2)) {
-            d2 = d2.plusYears(1)
-        }
-        return ChronoUnit.DAYS.between(d1, d2).toInt() + 1
     }
 
     /**
@@ -157,7 +159,7 @@ object DateUtils {
         val current = try {
             startMD.atYear(baseYear)
         } catch (e: Exception) {
-            // Handle case where start is Feb 29 but baseYear is not leap
+            Log.e("DateUtils", "Error adjusting date to year $baseYear", e)
             startMD.atYear(2024)
         }
         
@@ -170,7 +172,6 @@ object DateUtils {
         val result = mutableListOf<LocalDate>()
         var temp = current
         while (!temp.isAfter(target)) {
-            // Only add Feb 29 if history depth actually contains a leap year
             if (temp.monthValue == 2 && temp.dayOfMonth == 29 && !anyLeap) {
                 temp = temp.plusDays(1)
                 continue
@@ -183,8 +184,8 @@ object DateUtils {
 
     private fun generateMonthLabels(start: LocalDate, end: LocalDate, locale: Locale): List<String> {
         val russianMonthLabels = listOf(
-            "Янв", "Фев", "Мар", "Апр", "Май", "Июн",
-            "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"
+            "янв.", "февр.", "март", "апр.", "май", "июнь",
+            "июль", "авг.", "сент.", "окт.", "нояб.", "дек."
         )
         val startMD = MonthDay.of(start.month, start.dayOfMonth)
         val endMD = MonthDay.of(end.month, end.dayOfMonth)
@@ -218,6 +219,18 @@ object DateUtils {
             return rawLabels
         }
         val step = (labelsWidth / maxWidth).toInt().coerceAtLeast(1) + 1
-        return rawLabels.filterIndexed { index, _ -> index % step == 0 }
+        return rawLabels.mapIndexed { index, label ->
+            if (index % step == 0) label else ""
+        }
+    }
+
+    /**
+     * Ensures the day of month is valid for the current month/year.
+     * If the day exceeds the maximum days in the month (e.g., Feb 30), 
+     * it is coerced to the last day of that month.
+     */
+    fun coerceDay(date: LocalDate): LocalDate {
+        val maxDay = date.lengthOfMonth()
+        return if (date.dayOfMonth > maxDay) date.withDayOfMonth(maxDay) else date
     }
 }

@@ -4,10 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -24,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
@@ -40,6 +45,7 @@ fun SettingsDialog(
     viewModel: SettingsViewModel,
     onApplyTheme: (ThemeMode) -> Unit,
     onChangeLanguage: (LanguageMode) -> Unit,
+    onClearCache: () -> Unit,
     onDismiss: () -> Unit
 ) {
     AlertDialog(
@@ -65,13 +71,17 @@ fun SettingsDialog(
             Text(stringResource(R.string.settings))
         },
         text = {
-            DialogContainer(viewModel, onApplyTheme)
+            DialogContainer(viewModel, onApplyTheme, onClearCache)
         }
     )
 }
 
 @Composable
-private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMode) -> Unit) {
+private fun DialogContainer(
+    viewModel: SettingsViewModel,
+    onApplyTheme: (ThemeMode) -> Unit,
+    onClearCache: () -> Unit
+) {
     val uiState by viewModel.uiState.collectAsState()
     var selectedThemeIndex by remember(uiState.currentTheme) { mutableIntStateOf(viewModel.uiState.value.currentTheme.toIndex()) }
     val themeChoices = stringArrayResource(R.array.theme_choices).toList()
@@ -254,6 +264,29 @@ private fun DialogContainer(viewModel: SettingsViewModel, onApplyTheme: (ThemeMo
                 SettingsIntents.UpdatePrecipitationUnit(PrecipitationUnitMode.fromIndex(index))
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = {
+                onClearCache()
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(stringResource(R.string.clear_data))
+        }
+        Text(
+            text = stringResource(R.string.clear_data_desc),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 8.dp, start = 4.dp, end = 4.dp),
+            textAlign = TextAlign.Center
+        )
     }
 }
 

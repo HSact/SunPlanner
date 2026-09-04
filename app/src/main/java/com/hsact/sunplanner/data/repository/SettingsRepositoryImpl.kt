@@ -1,11 +1,11 @@
 package com.hsact.sunplanner.data.repository
 
-import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.domain.model.LanguageMode
 import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
@@ -13,27 +13,19 @@ import com.hsact.sunplanner.domain.model.TemperatureUnitMode
 import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import com.hsact.sunplanner.domain.repository.SettingsRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private val Context.dataStore by preferencesDataStore(name = "settings")
-
 /**
  * Implementation of [SettingsRepository] that manages user preferences using
  * Jetpack DataStore.
- *
- * This class provides reactive [Flow] properties to observe changes in settings
- * and suspend functions to update preferences.
- *
- * @property context The application context injected by Hilt.
  */
 @Singleton
 class SettingsRepositoryImpl @Inject constructor(
-    @param:ApplicationContext private val context: Context
+    private val dataStore: DataStore<Preferences>
 ) : SettingsRepository {
 
     companion object {
@@ -47,78 +39,46 @@ class SettingsRepositoryImpl @Inject constructor(
         private val LOCATION_KEY = stringPreferencesKey("location")
     }
 
-    /**
-     * Flow of the current [ThemeMode] preference.
-     * Emits updates when the theme setting changes.
-     */
-    override val theme: Flow<ThemeMode> = context.dataStore.data.map { preferences ->
+    override val theme: Flow<ThemeMode> = dataStore.data.map { preferences ->
         preferences[THEME_KEY]?.let { ThemeMode.fromIndex(it) } ?: ThemeMode.SYSTEM
     }
 
-    /**
-     * Flow of the current [LanguageMode] preference.
-     * Emits updates when the language setting changes.
-     */
-    override val language: Flow<LanguageMode?> = context.dataStore.data.map { preferences ->
+    override val language: Flow<LanguageMode?> = dataStore.data.map { preferences ->
         preferences[LANGUAGE_KEY]?.let { LanguageMode.fromIndex(it) }
     }
 
-    /**
-     * Flow of the current [TemperatureUnitMode] preference.
-     * Emits updates when the temperature unit changes.
-     */
     override val temperatureUnit: Flow<TemperatureUnitMode> =
-        context.dataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[TEMPERATURE_UNIT_KEY]?.let { TemperatureUnitMode.fromIndex(it) }
                 ?: TemperatureUnitMode.CELSIUS
         }
 
-    /**
-     * Flow of the current [WindSpeedUnitMode] preference.
-     * Emits updates when the wind speed unit changes.
-     */
     override val windSpeedUnit: Flow<WindSpeedUnitMode> =
-        context.dataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[WIND_SPEED_UNIT_KEY]?.let { WindSpeedUnitMode.fromIndex(it) }
                 ?: WindSpeedUnitMode.MS
         }
 
-    /**
-     * Flow of the current [PrecipitationUnitMode] preference.
-     * Emits updates when the precipitation unit changes.
-     */
     override val precipitationUnit: Flow<PrecipitationUnitMode> =
-        context.dataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[PRECIPITATION_UNIT_KEY]?.let { PrecipitationUnitMode.fromIndex(it) }
                 ?: PrecipitationUnitMode.MM
         }
 
-    /**
-     * Flow indicating whether dots are visible on graphs.
-     * Defaults to `true` if no preference is saved.
-     */
     @Suppress("NullableBooleanElvis")
     override val isDotsVisible: Flow<Boolean> =
-        context.dataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[IS_DOTS_VISIBLE_KEY] ?: true
         }
 
-    /**
-     * Flow indicating whether graphs are drawn with curved lines.
-     * Defaults to `true` if no preference is saved.
-     */
     @Suppress("NullableBooleanElvis")
     override val isGraphCurved: Flow<Boolean> =
-        context.dataStore.data.map { preferences ->
+        dataStore.data.map { preferences ->
             preferences[IS_GRAPH_CURVED_KEY] ?: true
         }
 
-    /**
-     * Flow of the saved [Location], or `null` if none is saved.
-     * The location is stored as a JSON string and parsed using Kotlinx Serialization.
-     */
     override val location: Flow<Location?> =
-        context.dataStore.data.map { prefs ->
+        dataStore.data.map { prefs ->
             prefs[LOCATION_KEY]?.let { json ->
                 runCatching {
                     Json.decodeFromString<Location>(json)
@@ -126,91 +86,51 @@ class SettingsRepositoryImpl @Inject constructor(
             }
         }
 
-    /**
-     * Saves the [ThemeMode] preference.
-     *
-     * @param themeMode The theme mode to save.
-     */
     override suspend fun setTheme(themeMode: ThemeMode) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[THEME_KEY] = themeMode.toIndex()
         }
     }
 
-    /**
-     * Saves the [LanguageMode] preference.
-     *
-     * @param languageMode The language mode to save.
-     */
     override suspend fun setLanguage(languageMode: LanguageMode) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = languageMode.toIndex()
         }
     }
 
-    /**
-     * Saves the [TemperatureUnitMode] preference.
-     *
-     * @param temperatureMode The temperature unit to save.
-     */
     override suspend fun setTemperatureUnit(temperatureMode: TemperatureUnitMode) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[TEMPERATURE_UNIT_KEY] = temperatureMode.toIndex()
         }
     }
 
-    /**
-     * Saves the [WindSpeedUnitMode] preference.
-     *
-     * @param windMode The wind speed unit to save.
-     */
     override suspend fun setWindSpeedUnit(windMode: WindSpeedUnitMode) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[WIND_SPEED_UNIT_KEY] = windMode.toIndex()
         }
     }
 
-    /**
-     * Saves the [PrecipitationUnitMode] preference.
-     *
-     * @param precipitationMode The precipitation unit to save.
-     */
     override suspend fun setPrecipitationUnit(precipitationMode: PrecipitationUnitMode) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[PRECIPITATION_UNIT_KEY] = precipitationMode.toIndex()
         }
     }
 
-    /**
-     * Saves the preference for dots visibility on graphs.
-     *
-     * @param isVisible `true` to show dots, `false` to hide.
-     */
     override suspend fun setDotsVisibility(isVisible: Boolean) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[IS_DOTS_VISIBLE_KEY] = isVisible
         }
     }
 
-    /**
-     * Saves the preference for graph curvature.
-     *
-     * @param isCurved `true` to use curved graphs, `false` otherwise.
-     */
     override suspend fun setGraphCurved(isCurved: Boolean) {
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[IS_GRAPH_CURVED_KEY] = isCurved
         }
     }
 
-    /**
-     * Saves the [Location] as a JSON string.
-     *
-     * @param location The location object to save.
-     */
     override suspend fun setLocation(location: Location) {
         val json = Json.encodeToString(location)
-        context.dataStore.edit { preferences ->
+        dataStore.edit { preferences ->
             preferences[LOCATION_KEY] = json
         }
     }

@@ -1,5 +1,6 @@
 package com.hsact.sunplanner.di
 
+import com.hsact.sunplanner.data.network.OpenMeteoAirQuality
 import com.hsact.sunplanner.data.network.OpenMeteoGeo
 import com.hsact.sunplanner.data.network.OpenMeteoService
 import com.hsact.sunplanner.data.repository.WeatherRepositoryImpl
@@ -29,6 +30,7 @@ abstract class NetworkModule {
     companion object {
         private const val WEATHER_BASE_URL = "https://archive-api.open-meteo.com/"
         private const val GEO_BASE_URL = "https://geocoding-api.open-meteo.com/"
+        private const val AIR_QUALITY_BASE_URL = "https://air-quality-api.open-meteo.com/"
 
         @Provides
         @Singleton
@@ -73,6 +75,17 @@ abstract class NetworkModule {
 
         @Provides
         @Singleton
+        @Named("AirQualityRetrofit")
+        fun provideAirQualityRetrofit(okHttpClient: OkHttpClient, json: Json): Retrofit {
+            return Retrofit.Builder()
+                .baseUrl(AIR_QUALITY_BASE_URL)
+                .client(okHttpClient)
+                .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+                .build()
+        }
+
+        @Provides
+        @Singleton
         fun provideOpenMeteoService(
             @Named("WeatherRetrofit") retrofit: Retrofit
         ): OpenMeteoService = retrofit.create(OpenMeteoService::class.java)
@@ -82,5 +95,11 @@ abstract class NetworkModule {
         fun provideOpenMeteoGeo(
             @Named("GeoRetrofit") retrofit: Retrofit
         ): OpenMeteoGeo = retrofit.create(OpenMeteoGeo::class.java)
+
+        @Provides
+        @Singleton
+        fun provideOpenMeteoAirQuality(
+            @Named("AirQualityRetrofit") retrofit: Retrofit
+        ): OpenMeteoAirQuality = retrofit.create(OpenMeteoAirQuality::class.java)
     }
 }

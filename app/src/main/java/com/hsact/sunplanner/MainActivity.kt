@@ -8,6 +8,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -16,10 +18,15 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.hsact.sunplanner.domain.model.LanguageMode
 import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
+import com.hsact.sunplanner.ui.detailscreen.WeatherDetailScreen
 import com.hsact.sunplanner.ui.mainscreen.MainScreen
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
@@ -33,7 +40,7 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
+@OptIn(FlowPreview::class, ExperimentalSharedTransitionApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -99,13 +106,50 @@ class MainActivity : ComponentActivity() {
                     setAppLocaleLegacy(selectedLanguage)
                 }
             }
+            val navController = rememberNavController()
             SunPlannerTheme(darkTheme = isDarkTheme) {
-                MainScreen(
-                    viewModel,
-                    weatherGraphDataFactory = weatherGraphDataFactory,
-                    onApplyTheme = onApplyTheme,
-                    onChangeLanguage = onChangeLanguage
-                )
+                SharedTransitionLayout {
+                    NavHost(navController = navController, startDestination = "main") {
+                        composable("main") {
+                            MainScreen(
+                                viewModel,
+                                weatherGraphDataFactory = weatherGraphDataFactory,
+                                onApplyTheme = onApplyTheme,
+                                onChangeLanguage = onChangeLanguage,
+                                onNavigateToDetail = { metricType ->
+                                    val state = viewModel.mainUiState.value
+                                    val start = state.confirmedDates.start
+                                    val end = state.confirmedDates.end
+                                    val comp = state.comparisonLocation
+                                    val route = if (comp != null) {
+                                        "detail/${metricType.name}/$start/$end?compLat=${comp.latitude}&compLon=${comp.longitude}&compName=${comp.name}"
+                                    } else {
+                                        "detail/${metricType.name}/$start/$end"
+                                    }
+                                    navController.navigate(route)
+                                },
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@composable
+                            )
+                        }
+                        composable(
+                            route = "detail/{metricType}/{start}/{end}?compLat={compLat}&compLon={compLon}&compName={compName}",
+                            arguments = listOf(
+                                navArgument("compLat") { nullable = true },
+                                navArgument("compLon") { nullable = true },
+                                navArgument("compName") { nullable = true }
+                            )
+                        ) {
+                            WeatherDetailScreen(
+                                viewModel = hiltViewModel(),
+                                weatherGraphDataFactory = weatherGraphDataFactory,
+                                onBack = { navController.popBackStack() },
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@composable
+                            )
+                        }
+                    }
+                }
             }
         }
     }

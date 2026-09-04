@@ -3,6 +3,7 @@ package com.hsact.sunplanner.ui.mainscreen
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.domain.error.ApiError
+import com.hsact.sunplanner.domain.model.Bookmark
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
@@ -38,6 +39,7 @@ data class MainUIState(
     val isLoading: Boolean = false,
     val cityName: String = "",
     val cities: List<Location> = emptyList(),
+    val isSearchingCities: Boolean = false,
     val tempDates: DatesBundle = DatesBundle(
         LocalDate.now().minusYears(10),
         LocalDate.now().plusDays(13).minusYears(1)
@@ -45,6 +47,12 @@ data class MainUIState(
     val confirmedDates: DatesBundle = tempDates,
     val weatherData: WeatherResponse? = null,
     val weatherMetrics: WeatherMetrics = WeatherMetrics(),
+    val comparisonLocation: Location? = null,
+    val comparisonWeatherData: WeatherResponse? = null,
+    val comparisonWeatherMetrics: WeatherMetrics? = null,
+    val isComparisonMode: Boolean = false,
+    val bookmarks: List<Bookmark> = emptyList(),
+    val isBookmarked: Boolean = false
 ) {
 
     /**

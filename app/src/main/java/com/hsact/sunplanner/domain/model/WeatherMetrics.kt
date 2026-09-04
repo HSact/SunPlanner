@@ -8,5 +8,7 @@ data class WeatherMetrics(
     var dayLight: List<Double> = emptyList(),
     var precipitation: List<Double> = emptyList(),
     var windSpeed: List<Double> = emptyList(),
-    var gustSpeed: List<Double> = emptyList()
+    var gustSpeed: List<Double> = emptyList(),
+    var weatherCodes: List<Int> = emptyList(),
+    var airQuality: List<Double> = emptyList()
 )

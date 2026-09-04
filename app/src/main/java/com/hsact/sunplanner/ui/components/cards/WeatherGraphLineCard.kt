@@ -1,6 +1,9 @@
 package com.hsact.sunplanner.ui.components.cards
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
@@ -21,6 +25,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
@@ -51,20 +56,19 @@ fun WeatherGraphLineCard(
     startDate: LocalDate,
     endDate: LocalDate,
     locale: Locale,
+    modifier: Modifier = Modifier,
     icon: ImageVector? = null,
     unit: String? = null,
     theme: ThemeMode = ThemeMode.SYSTEM,
-    minIsZero: Boolean = false
+    minIsZero: Boolean = false,
+    animate: Boolean = true,
+    onClick: () -> Unit = {}
 ) {
     val (min, max) = remember(lineList) {
         val allValues = lineList.flatMap { it.values }
         val max = allValues.maxOrNull() ?: 0.0
         val min = if (minIsZero) 0.0 else allValues.minOrNull() ?: 0.0
         min to max
-    }
-
-    val hasAnyLabel = remember(lineList) {
-        lineList.any { it.label?.isNotBlank() == true }
     }
 
     val isDarkTheme =
@@ -80,10 +84,8 @@ fun WeatherGraphLineCard(
         else TextStyle(color = Color.Black)
     }
 
-    val labelHelperProperties = LabelHelperProperties(
-        enabled = hasAnyLabel,
-        textStyle = textStyle
-    )
+    // We disable the library's built-in label helper (legend) and draw it manually
+    val labelHelperProperties = LabelHelperProperties(enabled = false)
 
     val gridProperties = GridProperties(enabled = false)
 
@@ -95,19 +97,26 @@ fun WeatherGraphLineCard(
     val popupProperties = PopupProperties(
         textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
         contentBuilder = { popup ->
-            val rounded = popup.value.format(1)
             val date = dates.getOrNull(popup.valueIndex) ?: ""
-            "$rounded\n$date"
+            val line = lineList.getOrNull(popup.dataIndex)
+            val labelPrefix = if (line?.label != null) "${line.label}: " else ""
+            val rounded = popup.value.format(1)
+            val unitStr = if (unit != null) " $unit" else ""
+            "$labelPrefix$rounded$unitStr\n$date"
         }
     )
 
-    val animationMode = if (lineList.isNotEmpty() && lineList.first().values.size < 100) {
-        AnimationMode.Together(delayBuilder = { it * 500L })
+    val animationMode =
+        if (animate && lineList.isNotEmpty() && lineList.first().values.size < 100) {
+            AnimationMode.Together(delayBuilder = { it * 10L })
     } else {
-        AnimationMode.Together(delayBuilder = { 0L })
+            AnimationMode.None
     }
 
-    ElevatedCard(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+    ElevatedCard(
+        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+        onClick = onClick
+    ) {
         BoxWithConstraints(modifier = Modifier.padding(16.dp)) {
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
@@ -131,7 +140,40 @@ fun WeatherGraphLineCard(
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
                 Column {
                     WeatherCardHeader(title = title, unit = unit, icon = icon)
-                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Manual Legend for Line Cards
+                    if (lineList.size > 1) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            lineList.forEach { line ->
+                                if (line.label?.isNotBlank() == true) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(8.dp)
+                                                .clip(CircleShape)
+                                                .background(line.color)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = line.label!!,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
                     LineChart(
                         data = lineList,
                         animationMode = animationMode,
