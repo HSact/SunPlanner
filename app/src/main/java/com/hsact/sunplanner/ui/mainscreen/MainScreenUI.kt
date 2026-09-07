@@ -503,6 +503,7 @@ private fun WeatherCards(
                 dates = popUpLabels, startDate = dates.start, endDate = dates.end,
                 locale = settingsBundle.languageMode.toLocale(), theme = settingsBundle.themeMode,
                 minIsZero = true,
+                valueFormat = 0,
                 modifier = Modifier.sharedElement(
                     rememberSharedContentState(key = "AIR_QUALITY"),
                     animatedVisibilityScope = animatedContentScope

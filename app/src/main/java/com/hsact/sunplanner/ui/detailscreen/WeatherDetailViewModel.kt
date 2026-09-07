@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.domain.error.toApiError
+import com.hsact.sunplanner.domain.model.DetailedYearlyData
 import com.hsact.sunplanner.domain.model.LanguageMode
 import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
 import com.hsact.sunplanner.domain.model.SettingsBundle
@@ -90,6 +91,35 @@ class WeatherDetailViewModel @Inject constructor(
         _uiState.update { it.copy(error = null) }
     }
 
+    fun selectYear(year: Int?) {
+        _uiState.update { 
+            it.copy(
+                selectedYear = year, 
+                displayMode = if (year != null) DetailDisplayMode.TABLE else it.displayMode,
+                summary = calculateCurrentSummary(it.yearlyData, year),
+                compSummary = calculateCurrentSummary(it.compYearlyData, year)
+            ) 
+        }
+    }
+
+    fun toggleDisplayMode() {
+        _uiState.update { 
+            val newMode = if (it.displayMode == DetailDisplayMode.LIST) DetailDisplayMode.TABLE else DetailDisplayMode.LIST
+            val year = if (newMode == DetailDisplayMode.LIST) null else it.selectedYear
+            it.copy(
+                displayMode = newMode, 
+                selectedYear = year,
+                summary = calculateCurrentSummary(it.yearlyData, year),
+                compSummary = calculateCurrentSummary(it.compYearlyData, year)
+            )
+        }
+    }
+
+    private fun calculateCurrentSummary(data: List<DetailedYearlyData>, year: Int?): WeatherDetailSummary {
+        val filtered = if (year != null) data.filter { it.year == year } else data
+        return analyticHelper.calculateSummary(filtered, metricType)
+    }
+
     private fun loadData() {
         viewModelScope.launch {
             combine(
@@ -147,13 +177,13 @@ class WeatherDetailViewModel @Inject constructor(
                 val compResp = compDeferred?.await()
 
                 val mainYearly = getDetailedYearlyDataUseCase.execute(mainResp)
-                val compYearly = compResp?.let { getDetailedYearlyDataUseCase.execute(it) }
+                val compYearly = compResp?.let { getDetailedYearlyDataUseCase.execute(it) } ?: emptyList()
 
-                val summary = analyticHelper.calculateSummary(mainYearly, metricType)
-                val compSummary =
-                    compYearly?.let { analyticHelper.calculateSummary(it, metricType) }
-                        ?: WeatherDetailSummary()
-                val insights = if (compYearly != null) {
+                val currentSelectedYear = _uiState.value.selectedYear
+                val summary = calculateCurrentSummary(mainYearly, currentSelectedYear)
+                val compSummary = calculateCurrentSummary(compYearly, currentSelectedYear)
+                
+                val insights = if (compYearly.isNotEmpty()) {
                     analyticHelper.generateComparisonInsights(
                         mainYearly,
                         compYearly,
@@ -170,7 +200,7 @@ class WeatherDetailViewModel @Inject constructor(
                         cityName = location.name,
                         compCityName = compName ?: "",
                         yearlyData = mainYearly,
-                        compYearlyData = compYearly ?: emptyList(),
+                        compYearlyData = compYearly,
                         summary = summary,
                         compSummary = compSummary,
                         insights = insights,

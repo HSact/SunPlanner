@@ -62,6 +62,7 @@ fun WeatherGraphLineCard(
     theme: ThemeMode = ThemeMode.SYSTEM,
     minIsZero: Boolean = false,
     animate: Boolean = true,
+    valueFormat: Int = 1,
     onClick: () -> Unit = {}
 ) {
     val (min, max) = remember(lineList) {
@@ -100,7 +101,7 @@ fun WeatherGraphLineCard(
             val date = dates.getOrNull(popup.valueIndex) ?: ""
             val line = lineList.getOrNull(popup.dataIndex)
             val labelPrefix = if (line?.label != null) "${line.label}: " else ""
-            val rounded = popup.value.format(1)
+            val rounded = popup.value.format(valueFormat)
             val unitStr = if (unit != null) " $unit" else ""
             "$labelPrefix$rounded$unitStr\n$date"
         }

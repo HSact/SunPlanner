@@ -2,6 +2,7 @@ package com.hsact.sunplanner.ui.detailscreen
 
 import android.content.Context
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -30,17 +31,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.CompareArrows
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Air
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.TableRows
 import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -53,7 +59,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -91,6 +99,21 @@ fun WeatherDetailScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val metricTitle = getMetricTitle(uiState.metricType)
+
+    val isOneDay = uiState.startDate.month == uiState.endDate.month &&
+            uiState.startDate.dayOfMonth == uiState.endDate.dayOfMonth
+    val isOneYear = uiState.startDate.year == uiState.endDate.year
+
+    val handleBack = {
+        if (uiState.selectedYear != null && !(isOneDay || isOneYear)) {
+            viewModel.toggleDisplayMode()
+        } else {
+            onBack()
+        }
+    }
+
+    // Intercept back button only if we specifically entered a year detail from a card
+    BackHandler(enabled = uiState.selectedYear != null && !(isOneDay || isOneYear), onBack = handleBack)
 
     if (uiState.error != null) {
         val errorMessage = when (val err = uiState.error!!) {
@@ -135,7 +158,7 @@ fun WeatherDetailScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = handleBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back)
@@ -143,6 +166,12 @@ fun WeatherDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = viewModel::toggleDisplayMode) {
+                        Icon(
+                            imageVector = if (uiState.displayMode == DetailDisplayMode.LIST) Icons.Default.TableRows else Icons.AutoMirrored.Filled.List,
+                            contentDescription = "Toggle View"
+                        )
+                    }
                     IconButton(onClick = {
                         shareWeatherDetail(context, uiState, metricTitle)
                     }) {
@@ -194,7 +223,8 @@ fun WeatherDetailScreen(
                             sharedTransitionScope = sharedTransitionScope,
                             animatedContentScope = animatedContentScope,
                             onToggleMain = viewModel::toggleMainVisibility,
-                            onToggleComp = viewModel::toggleCompVisibility
+                            onToggleComp = viewModel::toggleCompVisibility,
+                            onYearClick = viewModel::selectYear
                         )
                     }
 
@@ -207,7 +237,8 @@ fun WeatherDetailScreen(
                             hoursUnit = hoursUnit,
                             displayUnit = displayUnit,
                             onToggleMain = viewModel::toggleMainVisibility,
-                            onToggleComp = viewModel::toggleCompVisibility
+                            onToggleComp = viewModel::toggleCompVisibility,
+                            onYearClick = viewModel::selectYear
                         )
                     }
                 }
@@ -307,7 +338,7 @@ private fun InsightsSection(insights: List<String>) {
 }
 
 @Composable
-private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName: String? = null) {
+private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName: String? = null, isInteger: Boolean = false) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -330,21 +361,24 @@ private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName:
                 summary.maxValue,
                 unit,
                 Modifier.weight(1f),
-                MaterialTheme.colorScheme.errorContainer
+                MaterialTheme.colorScheme.errorContainer,
+                isInteger = isInteger
             )
             SummaryItem(
                 stringResource(R.string.average_stats),
                 summary.avgValue,
                 unit,
                 Modifier.weight(1f),
-                MaterialTheme.colorScheme.primaryContainer
+                MaterialTheme.colorScheme.primaryContainer,
+                isInteger = isInteger
             )
             SummaryItem(
                 stringResource(R.string.record_low),
                 summary.minValue,
                 unit,
                 Modifier.weight(1f),
-                MaterialTheme.colorScheme.tertiaryContainer
+                MaterialTheme.colorScheme.tertiaryContainer,
+                isInteger = isInteger
             )
         }
     }
@@ -356,7 +390,8 @@ private fun SummaryItem(
     value: Double,
     unit: String,
     modifier: Modifier,
-    color: Color
+    color: Color,
+    isInteger: Boolean = false
 ) {
     Surface(modifier = modifier, shape = RoundedCornerShape(12.dp), color = color) {
         Column(
@@ -364,8 +399,13 @@ private fun SummaryItem(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(label, style = MaterialTheme.typography.labelSmall)
+            val formattedValue = if (isInteger) {
+                value.roundToInt().toString()
+            } else {
+                "${(value * 10).roundToInt() / 10.0}"
+            }
             Text(
-                text = "${(value * 10).roundToInt() / 10.0}${if (unit.isNotEmpty()) " $unit" else ""}",
+                text = "$formattedValue${if (unit.isNotEmpty()) " $unit" else ""}",
                 style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold
             )
         }
@@ -384,7 +424,8 @@ private fun YearlyDataList(
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope,
     onToggleMain: () -> Unit,
-    onToggleComp: () -> Unit
+    onToggleComp: () -> Unit,
+    onYearClick: (Int) -> Unit
 ) {
     val weatherLabels = WeatherGraphLabels(
         max = stringResource(R.string.max),
@@ -416,7 +457,8 @@ private fun YearlyDataList(
                             SummaryHeader(
                                 summary = uiState.summary,
                                 unit = displayUnit,
-                                cityName = if (uiState.compCityName.isNotEmpty()) uiState.cityName else null
+                                cityName = if (uiState.compCityName.isNotEmpty()) uiState.cityName else null,
+                                isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY
                             )
                         }
                         AnimatedVisibility(
@@ -427,7 +469,8 @@ private fun YearlyDataList(
                             SummaryHeader(
                                 summary = uiState.compSummary,
                                 unit = displayUnit,
-                                cityName = uiState.compCityName
+                                cityName = uiState.compCityName,
+                                isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY
                             )
                         }
                     }
@@ -511,7 +554,8 @@ private fun YearlyDataList(
                                 endDate = uiState.endDate,
                                 locale = uiState.settings.languageMode.toLocale(),
                                 theme = uiState.settings.themeMode,
-                                animate = shouldAnimate
+                                animate = shouldAnimate,
+                                onClick = { onYearClick(data.year) }
                             )
                         }
 
@@ -529,7 +573,8 @@ private fun YearlyDataList(
                                 locale = uiState.settings.languageMode.toLocale(),
                                 theme = uiState.settings.themeMode,
                                 minIsZero = true,
-                                animate = shouldAnimate
+                                animate = shouldAnimate,
+                                onClick = { onYearClick(data.year) }
                             )
                         }
 
@@ -544,7 +589,8 @@ private fun YearlyDataList(
                                 endDate = uiState.endDate,
                                 locale = uiState.settings.languageMode.toLocale(),
                                 theme = uiState.settings.themeMode,
-                                animate = shouldAnimate
+                                animate = shouldAnimate,
+                                onClick = { onYearClick(data.year) }
                             )
                         }
 
@@ -563,7 +609,8 @@ private fun YearlyDataList(
                                 locale = uiState.settings.languageMode.toLocale(),
                                 theme = uiState.settings.themeMode,
                                 minIsZero = true,
-                                animate = shouldAnimate
+                                animate = shouldAnimate,
+                                onClick = { onYearClick(data.year) }
                             )
                         }
 
@@ -581,7 +628,9 @@ private fun YearlyDataList(
                                 locale = uiState.settings.languageMode.toLocale(),
                                 theme = uiState.settings.themeMode,
                                 minIsZero = true,
-                                animate = shouldAnimate
+                                animate = shouldAnimate,
+                                valueFormat = 0,
+                                onClick = { onYearClick(data.year) }
                             )
                         }
                     }
@@ -595,13 +644,16 @@ private fun YearlyDataList(
 private fun WeatherDataTable(
     uiState: WeatherDetailUiState, tempUnit: String, speedUnit: String,
     precUnit: String, hoursUnit: String, displayUnit: String,
-    onToggleMain: () -> Unit, onToggleComp: () -> Unit
+    onToggleMain: () -> Unit, onToggleComp: () -> Unit,
+    onYearClick: (Int?) -> Unit
 ) {
     val isOneDay = uiState.startDate.month == uiState.endDate.month &&
             uiState.startDate.dayOfMonth == uiState.endDate.dayOfMonth
     val isComparison =
         uiState.compCityName.isNotEmpty() && (uiState.isMainVisible && uiState.isCompVisible)
     val locale = LocalLocale.current.platformLocale
+
+    val yearsChoices = remember(uiState.yearlyData) { uiState.yearlyData.map { it.year } }
 
     LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = 16.dp)) {
         item {
@@ -614,7 +666,8 @@ private fun WeatherDataTable(
                     SummaryHeader(
                         summary = uiState.summary,
                         unit = displayUnit,
-                        cityName = if (uiState.compCityName.isNotEmpty()) uiState.cityName else null
+                        cityName = if (uiState.compCityName.isNotEmpty()) uiState.cityName else null,
+                        isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY
                     )
                 }
                 AnimatedVisibility(
@@ -625,7 +678,8 @@ private fun WeatherDataTable(
                     SummaryHeader(
                         summary = uiState.compSummary,
                         unit = displayUnit,
-                        cityName = uiState.compCityName
+                        cityName = uiState.compCityName,
+                        isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY
                     )
                 }
             }
@@ -635,13 +689,64 @@ private fun WeatherDataTable(
             item { InsightsSection(uiState.insights) }
         }
 
-        if (uiState.compCityName.isNotEmpty()) {
+        if (uiState.compCityName.isNotEmpty() || !isOneDay) {
             item {
-                LocationFilterSection(
-                    uiState.cityName, uiState.compCityName,
-                    uiState.isMainVisible, uiState.isCompVisible,
-                    onToggleMain, onToggleComp
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (uiState.compCityName.isNotEmpty()) {
+                        FilterChip(
+                            selected = uiState.isMainVisible, onClick = onToggleMain,
+                            label = { Text(uiState.cityName, maxLines = 1) },
+                            leadingIcon = if (uiState.isMainVisible) {
+                                { Icon(Icons.Default.Check, null, Modifier.size(16.dp)) }
+                            } else null,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                        FilterChip(
+                            selected = uiState.isCompVisible, onClick = onToggleComp,
+                            label = { Text(uiState.compCityName, maxLines = 1) },
+                            leadingIcon = if (uiState.isCompVisible) {
+                                { Icon(Icons.Default.Check, null, Modifier.size(16.dp)) }
+                            } else null,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+                    }
+
+                    if (!isOneDay && uiState.yearlyData.size > 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                        val currentYearLabel =
+                            uiState.selectedYear?.toString() ?: stringResource(R.string.all_years)
+                        var expanded by remember { mutableStateOf(false) }
+
+                        Box {
+                            FilterChip(
+                                selected = uiState.selectedYear != null,
+                                onClick = { expanded = true },
+                                label = { Text(currentYearLabel) },
+                                trailingIcon = { Icon(Icons.Default.ArrowDropDown, null) }
+                            )
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.all_years)) },
+                                    onClick = { onYearClick(null); expanded = false }
+                                )
+                                yearsChoices.forEach { year ->
+                                    DropdownMenuItem(
+                                        text = { Text(year.toString()) },
+                                        onClick = { onYearClick(year); expanded = false }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -649,10 +754,10 @@ private fun WeatherDataTable(
 
         item {
             if (isComparison) TableHeaderComp(uiState.cityName, uiState.compCityName)
-            else TableHeader(isOneDay)
+            else TableHeader(isOneDay && uiState.selectedYear == null)
         }
 
-        if (isOneDay) {
+        if (isOneDay && uiState.selectedYear == null) {
             itemsIndexed(uiState.yearlyData) { index, data ->
                 val compData = uiState.compYearlyData.find { it.year == data.year }
                 if (uiState.isMainVisible || uiState.isCompVisible) {
@@ -669,14 +774,16 @@ private fun WeatherDataTable(
                 }
             }
         } else {
-            uiState.yearlyData.firstOrNull()?.let { data ->
-                itemsIndexed(data.dateLabels) { index, dateLabel ->
-                    val compData = uiState.compYearlyData.firstOrNull()
+            val targetYear = uiState.selectedYear ?: uiState.yearlyData.firstOrNull()?.year
+            val data = uiState.yearlyData.find { it.year == targetYear }
+            data?.let {
+                itemsIndexed(it.dateLabels) { index, dateLabel ->
+                    val compData = uiState.compYearlyData.find { it.year == targetYear }
                     if (uiState.isMainVisible || uiState.isCompVisible) {
                         TableRow(
                             label = dateLabel,
-                            metrics = if (uiState.isMainVisible) data.metrics else (compData?.metrics
-                                ?: data.metrics),
+                            metrics = if (uiState.isMainVisible) it.metrics else (compData?.metrics
+                                ?: it.metrics),
                             dataIndex = index,
                             metricType = uiState.metricType,
                             isEven = index % 2 == 0,
@@ -837,7 +944,7 @@ private fun formatValue(
         WeatherMetricType.SUNSHINE -> "${m.sunshine.getOrNull(idx) ?: 0.0} $hU"
         WeatherMetricType.PRECIPITATION -> "${m.precipitation.getOrNull(idx) ?: 0.0} $pU"
         WeatherMetricType.WIND -> "${m.windSpeed.getOrNull(idx) ?: 0.0} $sU"
-        WeatherMetricType.AIR_QUALITY -> "${m.airQuality.getOrNull(idx) ?: 0.0}"
+        WeatherMetricType.AIR_QUALITY -> "${(m.airQuality.getOrNull(idx) ?: 0.0).roundToInt()}"
     }
 }
 

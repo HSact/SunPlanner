@@ -64,6 +64,7 @@ fun WeatherGraphBarsCard(
     unit: String? = null,
     theme: ThemeMode = ThemeMode.SYSTEM,
     animate: Boolean = true,
+    valueFormat: Int = 1,
     onClick: () -> Unit = {}
 ) {
     val max = remember(barGroups) {
@@ -103,7 +104,7 @@ fun WeatherGraphBarsCard(
 
             val date = dates.getOrNull(originalIndex) ?: ""
             val group = barGroups.getOrNull(groupIndex)
-            val valStr = popup.value.format(1)
+            val valStr = popup.value.format(valueFormat)
             val unitStr = if (unit != null) " $unit" else ""
             val labelPrefix = if (group?.label?.isNotBlank() == true) "${group.label}: " else ""
 

@@ -55,6 +55,7 @@
     <string name="button_ok">OK</string>
     <string name="details">Details</string>
     <string name="back">Back</string>
+    <string name="all_years">All Years</string>
     <string name="year_suffix"></string>
     <string name="year_label">Year</string>
     <string name="date_label">Date</string>

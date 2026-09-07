@@ -23,5 +23,6 @@ data class WeatherDetailUiState(
     val summary: WeatherDetailSummary = WeatherDetailSummary(),
     val compSummary: WeatherDetailSummary = WeatherDetailSummary(),
     val insights: List<String> = emptyList(),
-    val error: ApiError? = null
+    val error: ApiError? = null,
+    val selectedYear: Int? = null
 )
