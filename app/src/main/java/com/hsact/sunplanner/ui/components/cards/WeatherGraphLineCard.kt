@@ -93,6 +93,7 @@ fun WeatherGraphLineCard(
     val indicatorProperties = HorizontalIndicatorProperties(
         enabled = true,
         textStyle = textStyle,
+        contentBuilder = { it.format(valueFormat) }
     )
 
     val popupProperties = PopupProperties(
