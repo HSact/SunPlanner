@@ -7,6 +7,7 @@ import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.DateUtils
+import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.domain.analytics.AnalyticsHelper
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.error.toApiError
@@ -36,7 +37,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.update
@@ -78,38 +78,26 @@ class MainViewModel @Inject constructor(
             combine(
                 getSettingsUseCase.location,
                 getSettingsUseCase.isDotsVisible,
-                getSettingsUseCase.isEdgesCurved
-            ) { location, isDotsVisible, isEdgesCurved ->
-                _mainUiState.update {
-                    it.copy(
-                        settingsBundle = it.settingsBundle.copy(
-                        location = location,
-                        isDotsVisible = isDotsVisible,
-                        isEdgesCurved = isEdgesCurved
-                    )
-                    )
-                }
-            }.collect()
-        }
-
-        viewModelScope.launch {
-            combine(
+                getSettingsUseCase.isEdgesCurved,
                 getSettingsUseCase.language,
                 getSettingsUseCase.theme,
                 getSettingsUseCase.temperatureUnit,
                 getSettingsUseCase.windUnit,
                 getSettingsUseCase.precipitationUnit
             ) { args ->
-                val language = args[0] as? LanguageMode
-                val theme = args[1] as ThemeMode
-                val tempUnit = args[2] as TemperatureUnitMode
-                val windUnit = args[3] as WindSpeedUnitMode
-                val precipitationUnit = args[4] as PrecipitationUnitMode
+                val location = args[0] as? Location
+                val isDotsVisible = args[1] as Boolean
+                val isEdgesCurved = args[2] as Boolean
+                val language = args[3] as? LanguageMode
+                val theme = args[4] as ThemeMode
+                val tempUnit = args[5] as TemperatureUnitMode
+                val windUnit = args[6] as WindSpeedUnitMode
+                val precipitationUnit = args[7] as PrecipitationUnitMode
 
                 SettingsBundle(
-                    location = _mainUiState.value.settingsBundle.location,
-                    isDotsVisible = _mainUiState.value.settingsBundle.isDotsVisible,
-                    isEdgesCurved = _mainUiState.value.settingsBundle.isEdgesCurved,
+                    location = location,
+                    isDotsVisible = isDotsVisible,
+                    isEdgesCurved = isEdgesCurved,
                     languageMode = language ?: LanguageMode.fromName(Locale.getDefault().language),
                     themeMode = theme,
                     temperatureUnitMode = tempUnit,
@@ -117,7 +105,13 @@ class MainViewModel @Inject constructor(
                     precipitationUnitMode = precipitationUnit
                 )
             }.debounce(200).collect { updatedBundle ->
-                _mainUiState.update { it.copy(settingsBundle = updatedBundle) }
+                _mainUiState.update { 
+                    it.copy(
+                        settingsBundle = updatedBundle,
+                        cityName = it.cityName.ifEmpty { updatedBundle.location?.let { loc -> LocationUtils.buildCityFullName(loc) } ?: "" }
+                    ) 
+                }
+                updateBookmarkStatus()
                 if (_mainUiState.value.weatherData != null && !_mainUiState.value.isLoading) {
                     onWeatherSearchClick()
                 }
@@ -239,21 +233,30 @@ class MainViewModel @Inject constructor(
     }
 
     private fun selectBookmark(bookmark: Bookmark) {
-        viewModelScope.launch {
-            updateLocation(bookmark.location)
-            val start = LocalDate.of(
-                bookmark.dates.startYear,
-                bookmark.dates.startMonth,
-                bookmark.dates.startDay
+        // Update state immediately to avoid race conditions with Search click
+        _mainUiState.update {
+            it.copy(
+                settingsBundle = it.settingsBundle.copy(location = bookmark.location),
+                tempDates = DatesBundle(
+                    LocalDate.of(
+                        bookmark.dates.startYear,
+                        bookmark.dates.startMonth,
+                        bookmark.dates.startDay
+                    ),
+                    LocalDate.of(
+                        bookmark.dates.endYear,
+                        bookmark.dates.endMonth,
+                        bookmark.dates.endDay
+                    )
+                ),
+                cityName = LocationUtils.buildCityFullName(bookmark.location)
             )
-            val end =
-                LocalDate.of(bookmark.dates.endYear, bookmark.dates.endMonth, bookmark.dates.endDay)
-            _mainUiState.update {
-                it.copy(
-                    tempDates = DatesBundle(start, end),
-                    confirmedDates = DatesBundle(start, end)
-                )
-            }
+        }
+        _mainUiState.update { it.copy(confirmedDates = it.tempDates) }
+
+        // Sync with persistent storage and fetch weather
+        updateLocation(bookmark.location)
+        viewModelScope.launch {
             onWeatherSearchClick()
         }
     }
@@ -307,9 +310,10 @@ class MainViewModel @Inject constructor(
     private fun cleanValidationError() = _mainUiState.update { it.copy(validationError = null) }
     private fun cleanNetworkError() = _mainUiState.update { it.copy(networkError = null) }
 
-    private fun onWeatherSearchClick() {
+    private suspend fun onWeatherSearchClick() {
         val state = _mainUiState.value
         Log.d("SunPlannerDebug", "onWeatherSearchClick triggered")
+
         if (!state.isLocationNotNull) {
             setValidationError(stringProvider.locationEmpty())
             return
@@ -322,59 +326,58 @@ class MainViewModel @Inject constructor(
         _mainUiState.update { it.copy(confirmedDates = it.tempDates) }
         updateBookmarkStatus()
 
-        val params = prepareParamsForRequest(state.settingsBundle, state.confirmedDates) ?: return
+        val params =
+            prepareParamsForRequest(state.settingsBundle, state.confirmedDates) ?: return
         Log.d("SunPlannerDebug", "Params prepared: ${params.latitude}, ${params.longitude}")
 
         _mainUiState.update { it.copy(isLoading = true) }
 
-        viewModelScope.launch {
-            try {
-                coroutineScope {
-                    Log.d("SunPlannerDebug", "Executing weather fetch use case...")
-                    val mainDeferred = async {
-                        fetchFilteredWeatherUseCase.execute(
-                            params,
-                            state.confirmedDates.start,
-                            state.confirmedDates.end
-                        )
-                    }
-
-                    val compDeferred =
-                        if (state.isComparisonMode && state.comparisonLocation != null) {
-                            Log.d(
-                                "SunPlannerDebug",
-                                "Comparison mode active. Fetching second location..."
-                            )
-                            val compParams = params.copy(
-                                latitude = state.comparisonLocation.latitude,
-                                longitude = state.comparisonLocation.longitude
-                            )
-                            async {
-                                fetchFilteredWeatherUseCase.execute(
-                                    compParams,
-                                    state.confirmedDates.start,
-                                    state.confirmedDates.end
-                                )
-                            }
-                        } else null
-
-                    val mainResponse = mainDeferred.await()
-                    Log.d("SunPlannerDebug", "Main weather response received")
-                    val compResponse = compDeferred?.await()
-                    if (compResponse != null) Log.d(
-                        "SunPlannerDebug",
-                        "Comparison weather response received"
+        try {
+            coroutineScope {
+                Log.d("SunPlannerDebug", "Executing weather fetch use case...")
+                val mainDeferred = async {
+                    fetchFilteredWeatherUseCase.execute(
+                        params,
+                        state.confirmedDates.start,
+                        state.confirmedDates.end
                     )
-
-                    updateWeatherState(mainResponse, compResponse)
                 }
-            } catch (e: Exception) {
-                Log.e("SunPlannerDebug", "Critical error in fetchWeather", e)
-                setNetworkError(e.toApiError())
-            } finally {
-                Log.d("SunPlannerDebug", "fetchWeather completed, setting isLoading = false")
-                _mainUiState.update { it.copy(isLoading = false) }
+
+                val compDeferred =
+                    if (state.isComparisonMode && state.comparisonLocation != null) {
+                        Log.d(
+                            "SunPlannerDebug",
+                            "Comparison mode active. Fetching second location..."
+                        )
+                        val compParams = params.copy(
+                            latitude = state.comparisonLocation.latitude,
+                            longitude = state.comparisonLocation.longitude
+                        )
+                        async {
+                            fetchFilteredWeatherUseCase.execute(
+                                compParams,
+                                state.confirmedDates.start,
+                                state.confirmedDates.end
+                            )
+                        }
+                    } else null
+
+                val mainResponse = mainDeferred.await()
+                Log.d("SunPlannerDebug", "Main weather response received")
+                val compResponse = compDeferred?.await()
+                if (compResponse != null) Log.d(
+                    "SunPlannerDebug",
+                    "Comparison weather response received"
+                )
+
+                updateWeatherState(mainResponse, compResponse)
             }
+        } catch (e: Exception) {
+            Log.e("SunPlannerDebug", "Critical error in fetchWeather", e)
+            setNetworkError(e.toApiError())
+        } finally {
+            Log.d("SunPlannerDebug", "fetchWeather completed, setting isLoading = false")
+            _mainUiState.update { it.copy(isLoading = false) }
         }
     }
 

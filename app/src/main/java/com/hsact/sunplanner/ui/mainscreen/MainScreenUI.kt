@@ -153,12 +153,7 @@ fun MainScreen(
         )
     }
 
-    var query by remember {
-        mutableStateOf(
-            if (mainDataUI.settingsBundle.location != null)
-                LocationUtils.buildCityFullName(mainDataUI.settingsBundle.location!!) else ""
-        )
-    }
+    var query by remember { mutableStateOf(mainDataUI.cityName) }
     var compQuery by remember {
         mutableStateOf(
             if (mainDataUI.comparisonLocation != null)
@@ -174,11 +169,18 @@ fun MainScreen(
         }
     }
 
-    LaunchedEffect(mainDataUI.settingsBundle.location) {
-        if (query.isBlank() || (mainDataUI.weatherData == null && mainDataUI.settingsBundle.location != null)) {
-            query = LocationUtils.buildCityFullName(
-                mainDataUI.settingsBundle.location ?: return@LaunchedEffect
-            )
+    LaunchedEffect(mainDataUI.cityName) {
+        if (query != mainDataUI.cityName) {
+            query = mainDataUI.cityName
+        }
+    }
+
+    LaunchedEffect(mainDataUI.comparisonLocation) {
+        if (mainDataUI.comparisonLocation != null) {
+            val fullName = LocationUtils.buildCityFullName(mainDataUI.comparisonLocation!!)
+            if (compQuery != fullName) {
+                compQuery = fullName
+            }
         }
     }
 
@@ -392,7 +394,7 @@ private fun BookmarksSection(
 ) {
     Column(modifier = Modifier.padding(top = 16.dp)) {
         Text(
-            text = stringResource(R.string.saved_plans),
+            text = stringResource(R.string.favorites),
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(horizontal = 16.dp),
             color = MaterialTheme.colorScheme.primary

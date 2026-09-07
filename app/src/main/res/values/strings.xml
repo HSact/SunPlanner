@@ -81,7 +81,7 @@
     <string name="metric_dry_weather_best">driest 3-day period</string>
     <string name="metric_wind_best">3-day period with the lowest wind speed</string>
     <string name="metric_aqi_best">3-day period with the best air quality</string>
-    <string name="saved_plans">Your Plans</string>
+    <string name="favorites">Favorites</string>
     <string name="clear_data">Clear Cached Data</string>
     <string name="clear_data_desc">This will remove all saved plans and cached weather data.</string>
     <string name="compare_with_hint">Compare with…</string>

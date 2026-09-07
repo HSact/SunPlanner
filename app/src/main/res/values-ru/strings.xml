@@ -82,7 +82,7 @@
     <string name="metric_dry_weather_best">Самый сухой 3-дневный период</string>
     <string name="metric_wind_best">3-дневный период с наименьшей скоростью ветра</string>
     <string name="metric_aqi_best">3-дневный период с наилучшим качеством воздуха</string>
-    <string name="saved_plans">Ваши планы</string>
+    <string name="favorites">Избанное</string>
     <string name="clear_data">Очистить данные</string>
     <string name="clear_data_desc">Это удалит все сохраненные планы и кэш погоды.</string>
     <string name="compare_with_hint">Сравнить с…</string>
