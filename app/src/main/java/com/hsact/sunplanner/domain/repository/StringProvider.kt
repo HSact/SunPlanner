@@ -4,6 +4,7 @@ import com.hsact.sunplanner.domain.error.ApiError
 
 interface StringProvider {
     fun locationEmpty(): String
+    fun locationNotFound(): String
     fun invalidYearRange(): String
     fun invalidDateRange(): String
     fun yearsRangeTooBig(limit: Int): String

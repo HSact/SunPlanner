@@ -584,7 +584,7 @@ private fun DateText(dates: DatesBundle, isOneDay: Boolean, isOneYear: Boolean) 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp, start = 16.dp, end = 16.dp),
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         Text(

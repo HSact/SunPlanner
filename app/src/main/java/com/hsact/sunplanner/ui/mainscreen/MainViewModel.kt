@@ -105,14 +105,28 @@ class MainViewModel @Inject constructor(
                     precipitationUnitMode = precipitationUnit
                 )
             }.debounce(200).collect { updatedBundle ->
-                _mainUiState.update { 
+                val oldLocation = _mainUiState.value.settingsBundle.location
+                val isLocationChanged = updatedBundle.location != oldLocation
+
+                _mainUiState.update {
                     it.copy(
                         settingsBundle = updatedBundle,
-                        cityName = it.cityName.ifEmpty { updatedBundle.location?.let { loc -> LocationUtils.buildCityFullName(loc) } ?: "" }
-                    ) 
+                        cityName = if (isLocationChanged) {
+                            // If location changed in settings, force update cityName to match
+                            updatedBundle.location?.let { loc -> LocationUtils.buildCityFullName(loc) } ?: ""
+                        } else {
+                            // If location is the same, only fill if empty
+                            it.cityName.ifEmpty {
+                                updatedBundle.location?.let { loc -> LocationUtils.buildCityFullName(loc) } ?: ""
+                            }
+                        }
+                    )
                 }
                 updateBookmarkStatus()
-                if (_mainUiState.value.weatherData != null && !_mainUiState.value.isLoading) {
+
+                // Only auto-refresh weather if location didn't change (e.g., unit change)
+                // AND we already have data on screen.
+                if (!isLocationChanged && _mainUiState.value.weatherData != null && !_mainUiState.value.isLoading) {
                     onWeatherSearchClick()
                 }
             }
@@ -174,13 +188,24 @@ class MainViewModel @Inject constructor(
 
     private fun useCurrentLocation() {
         viewModelScope.launch {
+            Log.d("MainViewModel", "useCurrentLocation: Started")
             _mainUiState.update { it.copy(isLoading = true) }
-            val location = appLocationManager.getCurrentLocation()
-            if (location != null) {
-                updateLocation(location)
-                onWeatherSearchClick()
+            try {
+                val location = appLocationManager.getCurrentLocation()
+                if (location != null) {
+                    Log.d("MainViewModel", "useCurrentLocation: Success, updating location to ${location.name}")
+                    updateLocation(location)
+                } else {
+                    Log.w("MainViewModel", "useCurrentLocation: Failed to get location")
+                    setValidationError(stringProvider.locationNotFound())
+                }
+            } catch (e: Exception) {
+                Log.e("MainViewModel", "useCurrentLocation: Unexpected error", e)
+                setValidationError(stringProvider.locationNotFound())
+            } finally {
+                Log.d("MainViewModel", "useCurrentLocation: Setting isLoading = false")
+                _mainUiState.update { it.copy(isLoading = false) }
             }
-            _mainUiState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -201,11 +226,17 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun updateLocation(city: Location) {
-        viewModelScope.launch {
-            updateLocationUseCase.invoke(city)
-            updateBookmarkStatus()
-        }
+    /**
+     * Updates the active location in persistent settings.
+     * Also updates the [MainUIState.cityName] to reflect the new location.
+     *
+     * @param city The [Location] to set as active.
+     */
+    private suspend fun updateLocation(city: Location) {
+        Log.d("MainViewModel", "updateLocation: Setting city to ${city.name}")
+        _mainUiState.update { it.copy(cityName = LocationUtils.buildCityFullName(city)) }
+        updateLocationUseCase.invoke(city)
+        updateBookmarkStatus()
     }
 
     private fun toggleBookmark() {
@@ -232,7 +263,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private fun selectBookmark(bookmark: Bookmark) {
+    private suspend fun selectBookmark(bookmark: Bookmark) {
         // Update state immediately to avoid race conditions with Search click
         _mainUiState.update {
             it.copy(
@@ -254,11 +285,8 @@ class MainViewModel @Inject constructor(
         }
         _mainUiState.update { it.copy(confirmedDates = it.tempDates) }
 
-        // Sync with persistent storage and fetch weather
+        // Sync with persistent storage
         updateLocation(bookmark.location)
-        viewModelScope.launch {
-            onWeatherSearchClick()
-        }
     }
 
     private fun updateBookmarkStatus() {
