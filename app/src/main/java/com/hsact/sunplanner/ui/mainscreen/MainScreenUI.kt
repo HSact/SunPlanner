@@ -96,6 +96,7 @@ import com.hsact.sunplanner.ui.theme.LocalExtendedColors
 import com.hsact.sunplanner.ui.utils.stringArrayResource
 import kotlinx.coroutines.FlowPreview
 import java.time.LocalDate
+import java.util.Locale
 
 /**
  * The main screen of the application, displaying weather search, dates selection,
@@ -315,6 +316,7 @@ fun MainScreen(
                 AnimatedVisibility(visible = mainDataUI.bookmarks.isNotEmpty() && !mainDataUI.isComparisonMode) {
                     BookmarksSection(
                         bookmarks = mainDataUI.bookmarks,
+                        locale = mainDataUI.settingsBundle.languageMode.toLocale(),
                         onSelect = {
                             viewModel.handleIntent(MainScreenIntents.SelectBookmark(it))
                             query = LocationUtils.buildCityFullName(it.location)
@@ -392,6 +394,7 @@ fun MainScreen(
 @Composable
 private fun BookmarksSection(
     bookmarks: List<Bookmark>,
+    locale: Locale,
     onSelect: (Bookmark) -> Unit,
     onDelete: (String) -> Unit
 ) {
@@ -426,7 +429,13 @@ private fun BookmarksSection(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "${bookmark.dates.startMonth}/${bookmark.dates.startDay} - ${bookmark.dates.endMonth}/${bookmark.dates.endDay}",
+                            text = DateUtils.formatBookmarkDateRange(
+                                bookmark.dates.startMonth,
+                                bookmark.dates.startDay,
+                                bookmark.dates.endMonth,
+                                bookmark.dates.endDay,
+                                locale
+                            ),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

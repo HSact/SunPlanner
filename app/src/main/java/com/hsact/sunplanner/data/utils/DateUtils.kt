@@ -233,4 +233,21 @@ object DateUtils {
         val maxDay = date.lengthOfMonth()
         return if (date.dayOfMonth > maxDay) date.withDayOfMonth(maxDay) else date
     }
+
+    /**
+     * Formats a date range for bookmarks tile based on locale.
+     */
+    fun formatBookmarkDateRange(
+        startMonth: Int,
+        startDay: Int,
+        endMonth: Int,
+        endDay: Int,
+        locale: Locale
+    ): String {
+        return if (locale.language == "ru") {
+            String.format(locale, "%02d.%02d - %02d.%02d", startDay, startMonth, endDay, endMonth)
+        } else {
+            String.format(locale, "%d/%d - %d/%d", startMonth, startDay, endMonth, endDay)
+        }
+    }
 }
