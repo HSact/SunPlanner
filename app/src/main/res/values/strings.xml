@@ -82,8 +82,19 @@
     <string name="metric_wind_best">3-day period with the lowest wind speed</string>
     <string name="metric_aqi_best">3-day period with the best air quality</string>
     <string name="favorites">Favorites</string>
+    <string name="appearance">Interface</string>
+    <string name="units">Units</string>
+    <string name="data_management">Data</string>
     <string name="clear_data">Clear Cached Data</string>
-    <string name="clear_data_desc">This will remove all saved plans and cached weather data.</string>
+    <string name="clear_data_desc">This will remove favorites and all cached weather data.</string>
+    <string name="about_app">About</string>
+    <string name="app_description">SunPlanner helps you analyze historical weather patterns and find the best time for your activities based on years of climate data.</string>
+    <string name="support_project">Support project</string>
+    <string name="donate">Donate</string>
+    <string name="confirm_clear_cache">Are you sure you want to clear favorites and all cached weather data?</string>
+    <string name="clear">Clear</string>
+    <string name="version">Version %1$s</string>
+    <string name="donation_url" translatable="false">https://pay.cloudtips.ru/p/e5a7394a</string>
     <string name="compare_with_hint">Compare with…</string>
     <string name="weather_clear">Clear</string>
     <string name="weather_cloudy">Cloudy</string>

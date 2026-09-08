@@ -39,7 +39,7 @@
     <string name="wind">Ветер</string>
     <string name="gusts">Порывы</string>
     <string name="avg">Среднее</string>
-    <string name="curved_edges">Скруглённые углы</string>
+    <string name="curved_edges">Скруглённые углы на графиках</string>
     <string name="error_too_many_requests">
         Вы отправили слишком много запросов за короткое время.
         Это ограничение со стороны погодного API, а не приложения.
@@ -82,9 +82,19 @@
     <string name="metric_dry_weather_best">Самый сухой 3-дневный период</string>
     <string name="metric_wind_best">3-дневный период с наименьшей скоростью ветра</string>
     <string name="metric_aqi_best">3-дневный период с наилучшим качеством воздуха</string>
-    <string name="favorites">Избанное</string>
-    <string name="clear_data">Очистить данные</string>
-    <string name="clear_data_desc">Это удалит все сохраненные планы и кэш погоды.</string>
+    <string name="favorites">Избранное</string>
+    <string name="appearance">Интерфейс</string>
+    <string name="units">Единицы измерения</string>
+    <string name="data_management">Данные</string>
+    <string name="clear_data">Очистить кэш</string>
+    <string name="clear_data_desc">Это удалит избранное и все закэшированные данные о погоде.</string>
+    <string name="about_app">О приложении</string>
+    <string name="app_description">SunPlanner помогает анализировать историю погоды и находить лучшее время для поездок и мероприятий, основываясь на данных за десятки лет.</string>
+    <string name="support_project">Поддержать проект</string>
+    <string name="donate">Донат</string>
+    <string name="confirm_clear_cache">Вы уверены, что хотите очистить избранное и все закэшированные данные о погоде?</string>
+    <string name="clear">Очистить</string>
+    <string name="version">Версия %1$s</string>
     <string name="compare_with_hint">Сравнить с…</string>
     <string name="weather_clear">Ясно</string>
     <string name="weather_cloudy">Облачно</string>

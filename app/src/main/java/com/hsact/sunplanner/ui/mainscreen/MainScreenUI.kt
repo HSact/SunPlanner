@@ -76,16 +76,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.LocationUtils
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.model.Bookmark
 import com.hsact.sunplanner.domain.model.DatesBundle
-import com.hsact.sunplanner.domain.model.LanguageMode
 import com.hsact.sunplanner.domain.model.SettingsBundle
-import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.model.WeatherMetricType
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.ui.components.CollapsibleTopBar
@@ -95,12 +92,22 @@ import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphLabels
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphLineCard
-import com.hsact.sunplanner.ui.settings.SettingsDialog
 import com.hsact.sunplanner.ui.theme.LocalExtendedColors
 import com.hsact.sunplanner.ui.utils.stringArrayResource
 import kotlinx.coroutines.FlowPreview
 import java.time.LocalDate
 
+/**
+ * The main screen of the application, displaying weather search, dates selection,
+ * bookmarks, and weather metric cards.
+ *
+ * @param viewModel The [MainViewModel] providing state and handling intents.
+ * @param weatherGraphDataFactory Factory to create data structures for weather graphs.
+ * @param onNavigateToDetail Callback to navigate to a specific metric's detail screen.
+ * @param onNavigateToSettings Callback to navigate to settings.
+ * @param sharedTransitionScope Scope for shared element transitions.
+ * @param animatedContentScope Scope for animated content transitions.
+ */
 @OptIn(ExperimentalMaterial3Api::class, FlowPreview::class, ExperimentalSharedTransitionApi::class)
 @SuppressLint("LocalContextConfigurationRead")
 @Composable
@@ -108,9 +115,8 @@ fun MainScreen(
     viewModel: MainViewModel,
     modifier: Modifier = Modifier,
     weatherGraphDataFactory: WeatherGraphDataFactory,
-    onApplyTheme: (ThemeMode) -> Unit,
-    onChangeLanguage: (LanguageMode) -> Unit,
     onNavigateToDetail: (WeatherMetricType) -> Unit,
+    onNavigateToSettings: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedContentScope
 ) {
@@ -122,7 +128,6 @@ fun MainScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scrollState = rememberScrollState()
     val canScroll = remember { mutableStateOf(false) }
-    var showSettingsDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(mainDataUI.validationError) {
         mainDataUI.validationError?.let {
@@ -192,20 +197,11 @@ fun MainScreen(
             if (!isSearchExpanded && !isCompSearchExpanded) {
                 CollapsibleTopBar(
                     scrollBehavior = scrollBehavior,
-                    onSettingsClick = { showSettingsDialog = true }
+                    onSettingsClick = onNavigateToSettings
                 )
             }
         }
     ) { innerPadding ->
-        if (showSettingsDialog) {
-            SettingsDialog(
-                viewModel = hiltViewModel(),
-                onApplyTheme = onApplyTheme,
-                onChangeLanguage = onChangeLanguage,
-                onClearCache = { viewModel.handleIntent(MainScreenIntents.ClearAppCache) },
-                onDismiss = { showSettingsDialog = false }
-            )
-        }
         val topPadding = if (isSearchExpanded || isCompSearchExpanded) 0.dp
         else (innerPadding.calculateTopPadding() - 8.dp).coerceAtLeast(0.dp)
         Column(
@@ -385,6 +381,13 @@ fun MainScreen(
     }
 }
 
+/**
+ * Renders the bookmarks/favorites section.
+ *
+ * @param bookmarks List of saved [Bookmark]s.
+ * @param onSelect Callback when a bookmark is clicked.
+ * @param onDelete Callback when a bookmark is long-pressed for deletion (takes bookmark ID).
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BookmarksSection(
@@ -434,6 +437,18 @@ private fun BookmarksSection(
     }
 }
 
+/**
+ * Renders the weather metric cards (Temperature, Air Quality, etc.).
+ *
+ * @param dates The selected dates bundle.
+ * @param isOneYear True if the selected range is exactly one year.
+ * @param weatherMetrics Weather data for the primary location.
+ * @param settingsBundle Current user settings.
+ * @param onNavigateToDetail Callback for metric card click.
+ * @param compMetrics Weather data for the comparison location (optional).
+ * @param mainCityName Name of the primary city.
+ * @param compCityName Name of the comparison city.
+ */
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun WeatherCards(
@@ -561,6 +576,9 @@ private fun WeatherCards(
     }
 }
 
+/**
+ * Displays the selected date range text.
+ */
 @Composable
 private fun DateText(dates: DatesBundle, isOneDay: Boolean, isOneYear: Boolean) {
     Row(
@@ -585,6 +603,9 @@ private fun DateText(dates: DatesBundle, isOneDay: Boolean, isOneYear: Boolean) 
     }
 }
 
+/**
+ * Renders the range selection for years.
+ */
 @OptIn(FlowPreview::class)
 @Composable
 private fun YearsRangeSelection(viewModel: MainViewModel, dates: DatesBundle) {
@@ -619,6 +640,9 @@ private fun YearsRangeSelection(viewModel: MainViewModel, dates: DatesBundle) {
     }
 }
 
+/**
+ * Renders the month and day range selection section.
+ */
 @OptIn(FlowPreview::class)
 @Composable
 private fun ColumnScope.DatesRangeSection(viewModel: MainViewModel, datesBundle: DatesBundle) {

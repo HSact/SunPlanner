@@ -10,11 +10,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * A lightweight ViewModel used to manage the app-wide theme state.
+ * This is primarily used in MainActivity to observe theme changes and update the UI.
+ */
 @HiltViewModel
 class ThemeViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase
 ) : ViewModel() {
     private val _theme = MutableStateFlow(ThemeMode.SYSTEM)
+
+    /**
+     * Observable flow of the current [ThemeMode].
+     */
     val theme: StateFlow<ThemeMode> = _theme
 
     init {
@@ -25,6 +33,11 @@ class ThemeViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Manually updates the theme state.
+     *
+     * @param themeMode The new [ThemeMode] to apply.
+     */
     fun updateTheme(themeMode: ThemeMode) {
         _theme.value = themeMode
     }
