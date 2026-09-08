@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
@@ -96,6 +97,8 @@ fun LocationSearch(
         if (isSearchExpanded) {
             queryOrigin.value = query
             onQueryChange("")
+            viewModel.handleIntent(MainScreenIntents.UpdateSearchQuery(""))
+            viewModel.handleIntent(MainScreenIntents.FetchCityList(""))
         } else {
             if (query.isBlank()) {
                 onQueryChange(queryOrigin.value)
@@ -111,7 +114,7 @@ fun LocationSearch(
                     query = query,
                     onQueryChange = {
                         onQueryChange(it)
-                        viewModel.handleIntent(MainScreenIntents.UpdateCityName(it))
+                        viewModel.handleIntent(MainScreenIntents.UpdateSearchQuery(it))
                         if (it.length >= minCityLetters) {
                             viewModel.handleIntent(MainScreenIntents.FetchCityList(it))
                         }
@@ -167,6 +170,13 @@ fun LocationSearch(
     }
 }
 
+/**
+ * Displays a list of cities, combining search history and API search results.
+ *
+ * @param viewModel The ViewModel to handle intents and state.
+ * @param onCitySelected Callback when a city is chosen.
+ * @param onSearchExpandedChange Callback to close/open search mode.
+ */
 @OptIn(FlowPreview::class)
 @Composable
 private fun CityList(
@@ -174,27 +184,103 @@ private fun CityList(
     onCitySelected: (Location) -> Unit,
     onSearchExpandedChange: (Boolean) -> Unit
 ) {
-    val searchDataUI by viewModel.mainUiState.collectAsState()
-    if (searchDataUI.cities.isNotEmpty()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(searchDataUI.cities) { city ->
-                CityCard(city, onCitySelected, onSearchExpandedChange)
+    val state by viewModel.mainUiState.collectAsState()
+    val query = state.searchQuery
+
+    val filteredHistory = remember(query, state.searchHistory) {
+        if (query.isBlank()) {
+            state.searchHistory
+        } else {
+            state.searchHistory.filter { it.name.contains(query, ignoreCase = true) }
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        // Show history items
+        if (filteredHistory.isNotEmpty()) {
+            items(
+                items = filteredHistory,
+                key = { "hist_${it.latitude}_${it.longitude}_${it.name}" }
+            ) { city ->
+                Box(modifier = Modifier.animateItem()) {
+                    CityCard(
+                        city = city,
+                        onCityClick = onCitySelected,
+                        onSearchExpandedChange = onSearchExpandedChange,
+                        isHistory = true,
+                        onDeleteHistory = {
+                            viewModel.handleIntent(
+                                MainScreenIntents.DeleteHistoryItem(
+                                    city
+                                )
+                            )
+                        }
+                    )
+                }
             }
         }
-    } else if (searchDataUI.cityName.length >= minCityLetters) {
-        Text(stringResource(R.string.no_cities), modifier = Modifier.padding(16.dp))
-    } else {
-        Text(stringResource(R.string.enter_city_hint), modifier = Modifier.padding(16.dp))
+
+        // Divider between history and API results if both exist
+        if (filteredHistory.isNotEmpty() && state.cities.isNotEmpty()) {
+            item {
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            }
+        }
+
+        // Show API results
+        if (state.cities.isNotEmpty()) {
+            items(
+                items = state.cities,
+                key = { "api_${it.latitude}_${it.longitude}_${it.name}_${it.id}" }
+            ) { city ->
+                // Avoid showing the same city from API and History
+                val isInHistory =
+                    filteredHistory.any { it.latitude == city.latitude && it.longitude == city.longitude }
+                if (!isInHistory) {
+                    Box(modifier = Modifier.animateItem()) {
+                        CityCard(
+                            city = city,
+                            onCityClick = onCitySelected,
+                            onSearchExpandedChange = onSearchExpandedChange,
+                            isHistory = false
+                        )
+                    }
+                }
+            }
+        } else if (query.length >= minCityLetters && filteredHistory.isEmpty()) {
+            item {
+                Text(stringResource(R.string.no_cities), modifier = Modifier.padding(16.dp))
+            }
+        } else if (query.isEmpty() && filteredHistory.isEmpty()) {
+            item {
+                Text(stringResource(R.string.enter_city_hint), modifier = Modifier.padding(16.dp))
+            }
+        }
     }
 }
 
+/**
+ * Renders a single city card in the search results or history list.
+ *
+ * @param city The [Location] to display.
+ * @param onCityClick Callback when the card is clicked.
+ * @param onSearchExpandedChange Callback to update expansion state.
+ * @param isHistory True if this item is from search history.
+ * @param onDeleteHistory Callback to remove this item from history.
+ */
 @Composable
 private fun CityCard(
     city: Location,
     onCityClick: (Location) -> Unit,
-    onSearchExpandedChange: (Boolean) -> Unit
+    onSearchExpandedChange: (Boolean) -> Unit,
+    isHistory: Boolean = false,
+    onDeleteHistory: (() -> Unit)? = null
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -204,7 +290,7 @@ private fun CityCard(
             Text(
                 text = city.name,
                 style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = if (isHistory) FontWeight.Normal else FontWeight.Bold
             )
         },
         supportingContent = {
@@ -216,12 +302,23 @@ private fun CityCard(
         },
         leadingContent = {
             Icon(
-                imageVector = Icons.Default.LocationOn,
+                imageVector = if (isHistory) Icons.Default.History else Icons.Default.LocationOn,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = if (isHistory) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
             )
         },
+        trailingContent = if (isHistory) {
+            {
+                IconButton(onClick = { onDeleteHistory?.invoke() }) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Remove from history",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        } else null,
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
@@ -231,10 +328,5 @@ private fun CityCard(
                 onCityClick(city)
             },
         colors = ListItemDefaults.colors(containerColor = Color.Transparent)
-    )
-    HorizontalDivider(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        thickness = 0.5.dp,
-        color = MaterialTheme.colorScheme.outlineVariant
     )
 }

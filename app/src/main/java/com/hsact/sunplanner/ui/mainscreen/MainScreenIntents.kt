@@ -5,7 +5,7 @@ import com.hsact.sunplanner.domain.model.Bookmark
 
 sealed class MainScreenIntents {
     data class FetchCityList(val query: String) : MainScreenIntents()
-    data class UpdateCityName(val name: String) : MainScreenIntents()
+    data class UpdateSearchQuery(val query: String) : MainScreenIntents()
     data class UpdateLocation(val city: Location) : MainScreenIntents()
     data class UpdateStartYear(val year: Int) : MainScreenIntents()
     data class UpdateStartMonth(val month: Int) : MainScreenIntents()
@@ -27,4 +27,9 @@ sealed class MainScreenIntents {
     data object ToggleComparisonMode : MainScreenIntents()
     data class UpdateComparisonLocation(val city: Location) : MainScreenIntents()
     data object RemoveComparison : MainScreenIntents()
+
+    /**
+     * Intent to remove a specific location from search history.
+     */
+    data class DeleteHistoryItem(val city: Location) : MainScreenIntents()
 }

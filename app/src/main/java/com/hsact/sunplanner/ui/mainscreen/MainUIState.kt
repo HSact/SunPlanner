@@ -24,6 +24,7 @@ import java.time.LocalDate
  * @property isOneDay True if the user has selected a single day, false if a range.
  * @property isOneYear True if the user is requesting stats for one year.
  * @property cityName Name of the city entered by the user.
+ * @property searchQuery Current search query for location search.
  * @property cities List of possible city matches for the entered city name.
  * @property tempDates Temporary date selection (used before confirmation).
  * @property confirmedDates Confirmed date selection (used for querying data).
@@ -38,6 +39,7 @@ data class MainUIState(
     val networkErrorId: String? = null,
     val isLoading: Boolean = false,
     val cityName: String = "",
+    val searchQuery: String = "",
     val cities: List<Location> = emptyList(),
     val isSearchingCities: Boolean = false,
     val tempDates: DatesBundle = DatesBundle(
@@ -52,7 +54,8 @@ data class MainUIState(
     val comparisonWeatherMetrics: WeatherMetrics? = null,
     val isComparisonMode: Boolean = false,
     val bookmarks: List<Bookmark> = emptyList(),
-    val isBookmarked: Boolean = false
+    val isBookmarked: Boolean = false,
+    val searchHistory: List<Location> = emptyList()
 ) {
 
     /**

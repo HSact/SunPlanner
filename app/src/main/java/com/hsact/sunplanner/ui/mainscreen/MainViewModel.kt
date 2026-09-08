@@ -23,6 +23,7 @@ import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import com.hsact.sunplanner.domain.repository.BookmarkRepository
+import com.hsact.sunplanner.domain.repository.HistoryRepository
 import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
@@ -65,6 +66,7 @@ class MainViewModel @Inject constructor(
     private val weatherMetricsFactory: WeatherMetricsFactory,
     private val analyticsHelper: AnalyticsHelper,
     private val bookmarkRepository: BookmarkRepository,
+    private val historyRepository: HistoryRepository,
     private val appLocationManager: AppLocationManager
 ) : ViewModel() {
 
@@ -112,14 +114,15 @@ class MainViewModel @Inject constructor(
                     it.copy(
                         settingsBundle = updatedBundle,
                         cityName = if (isLocationChanged) {
-                            // If location changed in settings, force update cityName to match
                             updatedBundle.location?.let { loc -> LocationUtils.buildCityFullName(loc) } ?: ""
                         } else {
-                            // If location is the same, only fill if empty
-                            it.cityName.ifEmpty {
-                                updatedBundle.location?.let { loc -> LocationUtils.buildCityFullName(loc) } ?: ""
-                            }
-                        }
+                            it.cityName
+                        },
+                        // Clear weather data if location changed
+                        weatherData = if (isLocationChanged) null else it.weatherData,
+                        weatherMetrics = if (isLocationChanged) WeatherMetrics() else it.weatherMetrics,
+                        comparisonWeatherData = if (isLocationChanged) null else it.comparisonWeatherData,
+                        comparisonWeatherMetrics = if (isLocationChanged) null else it.comparisonWeatherMetrics
                     )
                 }
                 updateBookmarkStatus()
@@ -138,14 +141,20 @@ class MainViewModel @Inject constructor(
                 updateBookmarkStatus()
             }
         }
+
+        viewModelScope.launch {
+            historyRepository.history.collect { list ->
+                _mainUiState.update { it.copy(searchHistory = list) }
+            }
+        }
     }
 
     fun handleIntent(intent: MainScreenIntents) {
         viewModelScope.launch {
             when (intent) {
                 is MainScreenIntents.FetchCityList -> fetchCityList(intent.query)
-                is MainScreenIntents.UpdateCityName -> {
-                    _mainUiState.update { it.copy(cityName = intent.name) }
+                is MainScreenIntents.UpdateSearchQuery -> {
+                    _mainUiState.update { it.copy(searchQuery = intent.query) }
                 }
 
                 is MainScreenIntents.UpdateLocation -> updateLocation(intent.city)
@@ -169,7 +178,15 @@ class MainViewModel @Inject constructor(
                 }
 
                 is MainScreenIntents.UpdateComparisonLocation -> {
-                    _mainUiState.update { it.copy(comparisonLocation = intent.city) }
+                    _mainUiState.update {
+                        it.copy(
+                            comparisonLocation = intent.city,
+                            weatherData = null,
+                            weatherMetrics = WeatherMetrics(),
+                            comparisonWeatherData = null,
+                            comparisonWeatherMetrics = null
+                        )
+                    }
                 }
 
                 is MainScreenIntents.RemoveComparison -> {
@@ -181,6 +198,10 @@ class MainViewModel @Inject constructor(
                             isComparisonMode = false
                         )
                     }
+                }
+
+                is MainScreenIntents.DeleteHistoryItem -> {
+                    historyRepository.removeFromHistory(intent.city)
                 }
             }
         }
@@ -234,9 +255,18 @@ class MainViewModel @Inject constructor(
      */
     private suspend fun updateLocation(city: Location) {
         Log.d("MainViewModel", "updateLocation: Setting city to ${city.name}")
-        _mainUiState.update { it.copy(cityName = LocationUtils.buildCityFullName(city)) }
+        _mainUiState.update {
+            it.copy(
+                cityName = LocationUtils.buildCityFullName(city),
+                weatherData = null,
+                weatherMetrics = WeatherMetrics(),
+                comparisonWeatherData = null,
+                comparisonWeatherMetrics = null
+            )
+        }
         updateLocationUseCase.invoke(city)
         updateBookmarkStatus()
+        historyRepository.addToHistory(city)
     }
 
     private fun toggleBookmark() {
@@ -428,7 +458,7 @@ class MainViewModel @Inject constructor(
 
     private fun fetchCityList(cityName: String) {
         viewModelScope.launch {
-            _mainUiState.update { it.copy(isSearchingCities = true, cityName = cityName) }
+            _mainUiState.update { it.copy(isSearchingCities = true, searchQuery = cityName) }
             try {
                 val cities = repository.getCitiesList(
                     cityName,
