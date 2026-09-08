@@ -83,6 +83,10 @@
     <string name="metric_wind_best">3-day period with the lowest wind speed</string>
     <string name="metric_aqi_best">3-day period with the best air quality</string>
     <string name="favorites">Favorites</string>
+    <string name="delete_bookmark_title">Delete Favorite</string>
+    <string name="delete_bookmark_confirmation">Are you sure you want to remove %1$s (%2$s) from favorites?</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_cancel">Cancel</string>
     <string name="appearance">Interface</string>
     <string name="units">Units</string>
     <string name="data_management">Data</string>

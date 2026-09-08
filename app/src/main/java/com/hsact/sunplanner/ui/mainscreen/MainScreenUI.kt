@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -57,6 +58,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -125,6 +127,7 @@ fun MainScreen(
     val context = LocalContext.current
     var isSearchExpanded by remember { mutableStateOf(false) }
     var isCompSearchExpanded by remember { mutableStateOf(false) }
+    var bookmarkToDelete by remember { mutableStateOf<Bookmark?>(null) }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val scrollState = rememberScrollState()
@@ -154,6 +157,46 @@ fun MainScreen(
             confirmButton = {
                 Button(onClick = { viewModel.handleIntent(MainScreenIntents.CleanNetworkError) }) {
                     Text(stringResource(R.string.button_ok))
+                }
+            }
+        )
+    }
+
+    bookmarkToDelete?.let { bookmark ->
+        val locale = mainDataUI.settingsBundle.languageMode.toLocale()
+        val dateRange = DateUtils.formatBookmarkDateRange(
+            bookmark.dates.startMonth,
+            bookmark.dates.startDay,
+            bookmark.dates.endMonth,
+            bookmark.dates.endDay,
+            locale
+        )
+        AlertDialog(
+            onDismissRequest = { bookmarkToDelete = null },
+            title = { Text(stringResource(R.string.delete_bookmark_title)) },
+            text = {
+                Text(
+                    stringResource(
+                        R.string.delete_bookmark_confirmation,
+                        bookmark.location.name,
+                        dateRange
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.handleIntent(MainScreenIntents.DeleteBookmark(bookmark.id))
+                        bookmarkToDelete = null
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(stringResource(R.string.button_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { bookmarkToDelete = null }) {
+                    Text(stringResource(R.string.button_cancel))
                 }
             }
         )
@@ -321,7 +364,9 @@ fun MainScreen(
                             viewModel.handleIntent(MainScreenIntents.SelectBookmark(it))
                             query = LocationUtils.buildCityFullName(it.location)
                         },
-                        onDelete = { viewModel.handleIntent(MainScreenIntents.DeleteBookmark(it)) }
+                        onDelete = { id ->
+                            bookmarkToDelete = mainDataUI.bookmarks.find { it.id == id }
+                        }
                     )
                 }
 

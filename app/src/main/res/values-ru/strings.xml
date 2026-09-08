@@ -84,6 +84,10 @@
     <string name="metric_wind_best">3-дневный период с наименьшей скоростью ветра</string>
     <string name="metric_aqi_best">3-дневный период с наилучшим качеством воздуха</string>
     <string name="favorites">Избранное</string>
+    <string name="delete_bookmark_title">Удалить из избранного</string>
+    <string name="delete_bookmark_confirmation">Вы уверены, что хотите удалить %1$s (%2$s) из избранного?</string>
+    <string name="button_delete">Удалить</string>
+    <string name="button_cancel">Отмена</string>
     <string name="appearance">Интерфейс</string>
     <string name="units">Единицы измерения</string>
     <string name="data_management">Данные</string>
