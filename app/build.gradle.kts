@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.google.services)
     alias(libs.plugins.firebase.crashlytics)
+    alias(libs.plugins.firebase.perf)
     alias(libs.plugins.jetbrains.dokka)
 }
 
@@ -96,7 +97,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.crashlytics.ndk)
+    implementation(libs.firebase.perf)
     ksp(libs.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

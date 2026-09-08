@@ -8,6 +8,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
 import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.monitoring.CrashReportingHelper
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.utils.AppLocaleManager
 import dagger.hilt.android.HiltAndroidApp
@@ -42,6 +43,9 @@ class SunPlanner : Application() {
     @Inject
     lateinit var appLocaleManager: AppLocaleManager
 
+    @Inject
+    lateinit var crashReportingHelper: CrashReportingHelper
+
     /**
      * Flag indicating whether the device is running an Android version older than Android 13 (Tiramisu).
      */
@@ -59,6 +63,11 @@ class SunPlanner : Application() {
         Log.d("FirebaseInit", "Firebase initialized: ${FirebaseApp.getInstance().name}")
         Log.d("FirebaseInit", "Firebase analytics: ${Firebase.analytics}")
         Firebase.analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
+        
+        crashReportingHelper.setCustomKey("app_version", BuildConfig.VERSION_NAME)
+        crashReportingHelper.setCustomKey("build_type", BuildConfig.BUILD_TYPE)
+        crashReportingHelper.setCustomKey("android_sdk", Build.VERSION.SDK_INT)
+        
         applySavedLanguage()
     }
 

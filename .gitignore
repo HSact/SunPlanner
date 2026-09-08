@@ -19,6 +19,7 @@
 .idea/navEditor.xml
 .idea/assetWizardSettings.xml
 /captures
+.artifacts
 
 # Gradle
 .gradle/

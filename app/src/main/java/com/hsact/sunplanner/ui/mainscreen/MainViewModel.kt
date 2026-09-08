@@ -22,6 +22,8 @@ import com.hsact.sunplanner.domain.model.TemperatureUnitMode
 import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
+import com.hsact.sunplanner.domain.monitoring.CrashReportingHelper
+import com.hsact.sunplanner.domain.monitoring.PerformanceHelper
 import com.hsact.sunplanner.domain.repository.BookmarkRepository
 import com.hsact.sunplanner.domain.repository.HistoryRepository
 import com.hsact.sunplanner.domain.repository.StringProvider
@@ -67,7 +69,9 @@ class MainViewModel @Inject constructor(
     private val analyticsHelper: AnalyticsHelper,
     private val bookmarkRepository: BookmarkRepository,
     private val historyRepository: HistoryRepository,
-    private val appLocationManager: AppLocationManager
+    private val appLocationManager: AppLocationManager,
+    private val crashReportingHelper: CrashReportingHelper,
+    private val performanceHelper: PerformanceHelper
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow(MainUIState())
@@ -222,6 +226,7 @@ class MainViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("MainViewModel", "useCurrentLocation: Unexpected error", e)
+                crashReportingHelper.recordException(e)
                 setValidationError(stringProvider.locationNotFound())
             } finally {
                 Log.d("MainViewModel", "useCurrentLocation: Setting isLoading = false")
@@ -388,6 +393,11 @@ class MainViewModel @Inject constructor(
             prepareParamsForRequest(state.settingsBundle, state.confirmedDates) ?: return
         Log.d("SunPlannerDebug", "Params prepared: ${params.latitude}, ${params.longitude}")
 
+        val traceName = "weather_fetch_trace"
+        performanceHelper.startTrace(traceName)
+        performanceHelper.putAttribute(traceName, "location", state.cityName)
+        performanceHelper.putAttribute(traceName, "is_comparison", state.isComparisonMode.toString())
+
         _mainUiState.update { it.copy(isLoading = true) }
 
         try {
@@ -429,9 +439,12 @@ class MainViewModel @Inject constructor(
                 )
 
                 updateWeatherState(mainResponse, compResponse)
+                performanceHelper.stopTrace(traceName)
             }
         } catch (e: Exception) {
             Log.e("SunPlannerDebug", "Critical error in fetchWeather", e)
+            crashReportingHelper.recordException(e)
+            performanceHelper.stopTrace(traceName)
             setNetworkError(e.toApiError())
         } finally {
             Log.d("SunPlannerDebug", "fetchWeather completed, setting isLoading = false")
