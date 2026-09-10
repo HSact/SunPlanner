@@ -85,6 +85,11 @@ fun WeatherGraphLineCard(
         else TextStyle(color = Color.Black)
     }
 
+    // Compression Detection for Popups
+    val datesCount = dates.size
+    val numPoints = if (lineList.isNotEmpty()) lineList.first().values.size else 0
+    val ratio = if (numPoints > 0) datesCount.toDouble() / numPoints else 1.0
+
     // We disable the library's built-in label helper (legend) and draw it manually
     val labelHelperProperties = LabelHelperProperties(enabled = false)
 
@@ -99,7 +104,17 @@ fun WeatherGraphLineCard(
     val popupProperties = PopupProperties(
         textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
         contentBuilder = { popup ->
-            val date = dates.getOrNull(popup.valueIndex) ?: ""
+            val dateIdx = (popup.valueIndex * ratio).toInt().coerceIn(0, datesCount - 1)
+            val nextDateIdx = ((popup.valueIndex + 1) * ratio).toInt().coerceIn(0, datesCount)
+
+            val date = if (nextDateIdx > dateIdx + 1) {
+                val d1 = dates.getOrNull(dateIdx) ?: ""
+                val d2 = dates.getOrNull(nextDateIdx - 1) ?: ""
+                if (d1 == d2) d1 else "$d1 - $d2"
+            } else {
+                dates.getOrNull(dateIdx) ?: ""
+            }
+            
             val line = lineList.getOrNull(popup.dataIndex)
             val labelPrefix = if (line?.label != null) "${line.label}: " else ""
             val rounded = popup.value.format(valueFormat)
@@ -109,7 +124,7 @@ fun WeatherGraphLineCard(
     )
 
     val animationMode =
-        if (animate && lineList.isNotEmpty() && lineList.first().values.size < 100) {
+        if (animate && numPoints > 0 && numPoints < 100) {
             AnimationMode.Together(delayBuilder = { it * 10L })
     } else {
             AnimationMode.None
@@ -125,6 +140,16 @@ fun WeatherGraphLineCard(
                 endDate = endDate,
                 locale = locale
             )
+
+            // Fix Axis Labels Alignment
+            if (labels.size > numPoints && numPoints > 0) {
+                val labelRatio = labels.size.toDouble() / numPoints
+                labels = (0 until numPoints).map { i ->
+                    val idx = (i * labelRatio).toInt().coerceIn(0, labels.size - 1)
+                    labels[idx]
+                }
+            }
+            
             val density = LocalDensity.current
             val screenWidthPx = with(density) { maxWidth.toPx() }
             val totalWidth = totalTextWidth(labels, textStyle)

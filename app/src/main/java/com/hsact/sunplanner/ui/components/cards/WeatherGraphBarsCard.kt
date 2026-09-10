@@ -96,30 +96,47 @@ fun WeatherGraphBarsCard(
         contentBuilder = { it.format(valueFormat) }
     )
 
-    val popupProperties = PopupProperties(
-        textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
-        contentBuilder = { popup ->
-            val numGroups = barGroups.size
-            val originalIndex = popup.valueIndex / numGroups
-            val groupIndex = popup.valueIndex % numGroups
-
-            val date = dates.getOrNull(originalIndex) ?: ""
-            val group = barGroups.getOrNull(groupIndex)
-            val valStr = popup.value.format(valueFormat)
-            val unitStr = if (unit != null) " $unit" else ""
-            val labelPrefix = if (group?.label?.isNotBlank() == true) "${group.label}: " else ""
-
-            "$labelPrefix$valStr$unitStr\n$date"
-        }
-    )
-
     ElevatedCard(
         modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
         onClick = onClick
     ) {
         BoxWithConstraints(modifier = Modifier.padding(16.dp)) {
-            val numOriginalPoints = if (barGroups.isNotEmpty()) barGroups.first().values.size else 0
+            val numOriginalPointsFromData = if (barGroups.isNotEmpty()) barGroups.first().values.size else 0
             val numGroups = barGroups.size
+
+            // Compression Detection: if we have fewer data points than dates, we need to map indices.
+            val datesCount = dates.size
+            val ratio = if (numOriginalPointsFromData > 0) datesCount.toDouble() / numOriginalPointsFromData else 1.0
+
+            val popupProperties = PopupProperties(
+                textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
+                contentBuilder = { popup ->
+                    val numGroupsInPopup = barGroups.size
+                    val valueIndexInGroup = popup.valueIndex / numGroupsInPopup
+                    val groupIndex = popup.valueIndex % numGroupsInPopup
+
+                    val dateIdx = (valueIndexInGroup * ratio).toInt().coerceIn(0, datesCount - 1)
+                    val nextDateIdx =
+                        ((valueIndexInGroup + 1) * ratio).toInt().coerceIn(0, datesCount)
+
+                    val date = if (nextDateIdx > dateIdx + 1) {
+                        val d1 = dates.getOrNull(dateIdx) ?: ""
+                        val d2 = dates.getOrNull(nextDateIdx - 1) ?: ""
+                        if (d1 == d2) d1 else "$d1 - $d2"
+                    } else {
+                        dates.getOrNull(dateIdx) ?: ""
+                    }
+                    
+                    val group = barGroups.getOrNull(groupIndex)
+                    val valStr = popup.value.format(valueFormat)
+                    val unitStr = if (unit != null) " $unit" else ""
+                    val labelPrefix = if (group?.label?.isNotBlank() == true) "${group.label}: " else ""
+
+                    "$labelPrefix$valStr$unitStr\n$date"
+                }
+            )
+
+            // Interleave logic: city1 day1, city2 day1, city1 day2...
 
             // Interleave logic: city1 day1, city2 day1, city1 day2...
             // We pad with zero-height bars to keep them side-by-side
@@ -127,7 +144,7 @@ fun WeatherGraphBarsCard(
                 barGroups.mapIndexed { groupIdx, group ->
                     val interleavedValues = mutableListOf<Bars.Data>()
                     val seriesColor = group.values.firstOrNull()?.color ?: SolidColor(Color.Gray)
-                    for (i in 0 until numOriginalPoints) {
+                    for (i in 0 until numOriginalPointsFromData) {
                         for (j in 0 until numGroups) {
                             if (j == groupIdx) {
                                 interleavedValues.add(group.values[i])
@@ -156,6 +173,15 @@ fun WeatherGraphBarsCard(
                 locale = locale
             )
 
+            // Fix Axis Labels Alignment: they must match the data points count.
+            if (axisLabels.size > numOriginalPointsFromData && numOriginalPointsFromData > 0) {
+                val labelRatio = axisLabels.size.toDouble() / numOriginalPointsFromData
+                axisLabels = (0 until numOriginalPointsFromData).map { i ->
+                    val idx = (i * labelRatio).toInt().coerceIn(0, axisLabels.size - 1)
+                    axisLabels[idx]
+                }
+            }
+
             if (numGroups > 1) {
                 axisLabels = axisLabels.flatMap { listOf(it) + List(numGroups - 1) { "" } }
             }
@@ -177,7 +203,7 @@ fun WeatherGraphBarsCard(
 
             val spacing = 2.dp
             val barThickness = if (totalInterleavedPoints > 0) {
-                (maxWidth - (16 * 2).dp - (spacing * (totalInterleavedPoints - 1))) / totalInterleavedPoints
+                (maxWidth - (spacing * (totalInterleavedPoints - 1))) / totalInterleavedPoints
             } else 15.dp
 
             val barProperties = BarProperties(
@@ -228,7 +254,7 @@ fun WeatherGraphBarsCard(
                         data = processedData,
                         barProperties = barProperties,
                         animationMode =
-                            if (animate && numOriginalPoints < 100) AnimationMode.Together(
+                            if (animate && numOriginalPointsFromData < 100) AnimationMode.Together(
                                 delayBuilder = { it * 10L })
                             else AnimationMode.None,
                         gridProperties = gridProperties,

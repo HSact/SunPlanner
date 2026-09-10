@@ -16,7 +16,7 @@ import kotlin.math.ceil
  * @property maxSize Maximum number of bars to display without reduction.
  */
 class CreateWeatherGraphBarsUseCase @Inject constructor() {
-    private val maxSize = 500
+    private val maxSize = 120
 
     /**
      * Creates a [Bars] instance with the given label, values, and color.
@@ -26,16 +26,18 @@ class CreateWeatherGraphBarsUseCase @Inject constructor() {
      * @param label The label for the bars group.
      * @param values The list of double values representing the data points.
      * @param color The color used for the bars.
+     * @param customMaxSize Optional maximum number of bars to display. Defaults to [maxSize].
      * @return A [Bars] object representing the data ready for display.
      */
     operator fun invoke(
         label: String,
         values: List<Double>,
-        color: Color
+        color: Color,
+        customMaxSize: Int = maxSize
     ): Bars {
         val brush = SolidColor(color)
-        val reducedValues = if (values.size > maxSize) {
-            reduceValues(values)
+        val reducedValues = if (values.size > customMaxSize) {
+            reduceValues(values, customMaxSize)
         } else {
             values
         }
@@ -44,10 +46,6 @@ class CreateWeatherGraphBarsUseCase @Inject constructor() {
                 value = avg,
                 color = brush,
                 animationSpec = tween(durationMillis = 1000)
-                /*properties = BarProperties(
-                    width = 16.dp,
-                    cornerRadius = 4.dp
-                )*/
             )
         }
         return Bars(
@@ -60,10 +58,10 @@ class CreateWeatherGraphBarsUseCase @Inject constructor() {
      * Reduces the size of the values list by averaging chunks of the original list.
      *
      * @param values The original list of values.
+     * @param targetSize The target maximum size.
      * @return A reduced list of averaged values.
      */
-    private fun reduceValues(values: List<Double>): List<Double> {
-        val targetSize = maxSize
+    private fun reduceValues(values: List<Double>, targetSize: Int): List<Double> {
         val chunkSize = ceil(values.size / targetSize.toDouble()).toInt()
 
         return values.chunked(chunkSize).map { chunk ->

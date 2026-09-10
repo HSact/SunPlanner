@@ -4,6 +4,7 @@ import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.model.DetailedYearlyData
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetricType
+import com.hsact.sunplanner.domain.model.WeatherMetrics
 import java.time.LocalDate
 
 data class WeatherDetailUiState(
@@ -19,6 +20,8 @@ data class WeatherDetailUiState(
     val displayMode: DetailDisplayMode = DetailDisplayMode.LIST,
     val yearlyData: List<DetailedYearlyData> = emptyList(),
     val compYearlyData: List<DetailedYearlyData> = emptyList(),
+    val overallMetrics: WeatherMetrics? = null,
+    val compOverallMetrics: WeatherMetrics? = null,
     val settings: SettingsBundle = SettingsBundle(),
     val summary: WeatherDetailSummary = WeatherDetailSummary(),
     val compSummary: WeatherDetailSummary = WeatherDetailSummary(),

@@ -44,7 +44,8 @@ class WeatherGraphDataFactory @Inject constructor(
         labels: WeatherGraphLabels,
         compMetrics: WeatherMetrics? = null,
         mainCityName: String? = null,
-        compCityName: String? = null
+        compCityName: String? = null,
+        maxSize: Int = 22
     ): WeatherGraphData {
         val graphData = WeatherGraphData()
         val isComparison = weatherMetrics != null && compMetrics != null
@@ -55,13 +56,15 @@ class WeatherGraphDataFactory @Inject constructor(
                 label = mainCityName ?: "City A",
                 values = weatherMetrics.averageTemps, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = colors.avgTempLineColor, isOneYear = isOneYear
+                color = colors.avgTempLineColor, isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
             graphData.avgTemperature = createWeatherGraphLineUseCase.invoke(
                 label = compCityName ?: "City B",
                 values = compMetrics.averageTemps, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = colors.minTempLineColor, isOneYear = isOneYear
+                color = colors.minTempLineColor, isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
         } else {
             val metrics = weatherMetrics ?: compMetrics
@@ -69,17 +72,20 @@ class WeatherGraphDataFactory @Inject constructor(
                 graphData.maxTemperature = createWeatherGraphLineUseCase.invoke(
                     label = labels.max, values = metrics.maxTemps, dates = popUpLabels,
                     isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                    color = colors.maxTempLineColor, isOneYear = isOneYear
+                    color = colors.maxTempLineColor, isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
                 graphData.avgTemperature = createWeatherGraphLineUseCase.invoke(
                     label = labels.avg, values = metrics.averageTemps, dates = popUpLabels,
                     isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                    color = colors.avgTempLineColor, isOneYear = isOneYear
+                    color = colors.avgTempLineColor, isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
                 graphData.minTemperature = createWeatherGraphLineUseCase.invoke(
                     label = labels.min, values = metrics.minTemps, dates = popUpLabels,
                     isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                    color = colors.minTempLineColor, isOneYear = isOneYear
+                    color = colors.minTempLineColor, isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
             }
         }
@@ -90,13 +96,15 @@ class WeatherGraphDataFactory @Inject constructor(
                 label = mainCityName ?: "City A",
                 values = weatherMetrics.airQuality, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = Color(0xFF8BC34A), isOneYear = isOneYear
+                color = Color(0xFF8BC34A), isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
             graphData.airQualityComp = createWeatherGraphLineUseCase.invoke(
                 label = compCityName ?: "City B",
                 values = compMetrics.airQuality, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = Color(0xFF009688), isOneYear = isOneYear
+                color = Color(0xFF009688), isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
         } else {
             val metrics = weatherMetrics ?: compMetrics
@@ -104,7 +112,8 @@ class WeatherGraphDataFactory @Inject constructor(
                 graphData.airQuality = createWeatherGraphLineUseCase.invoke(
                     label = "AQI", values = metrics.airQuality, dates = popUpLabels,
                     isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                    color = Color(0xFF8BC34A), isOneYear = isOneYear
+                    color = Color(0xFF8BC34A), isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
             }
         }
@@ -115,13 +124,15 @@ class WeatherGraphDataFactory @Inject constructor(
                 label = mainCityName ?: "City A",
                 values = weatherMetrics.windSpeed, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = colors.windSpeedColor, isOneYear = isOneYear
+                color = colors.windSpeedColor, isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
             graphData.windGustsSpeed = createWeatherGraphLineUseCase.invoke(
                 label = compCityName ?: "City B",
                 values = compMetrics.windSpeed, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = colors.windGustsSpeedColor, isOneYear = isOneYear
+                color = colors.windGustsSpeedColor, isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
         } else {
             val metrics = weatherMetrics ?: compMetrics
@@ -129,12 +140,14 @@ class WeatherGraphDataFactory @Inject constructor(
                 graphData.windSpeed = createWeatherGraphLineUseCase.invoke(
                     label = labels.wind, values = metrics.windSpeed, dates = popUpLabels,
                     isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                    color = colors.windSpeedColor, isOneYear = isOneYear
+                    color = colors.windSpeedColor, isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
                 graphData.windGustsSpeed = createWeatherGraphLineUseCase.invoke(
                     label = labels.gusts, values = metrics.gustSpeed, dates = popUpLabels,
                     isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                    color = colors.windGustsSpeedColor, isOneYear = isOneYear
+                    color = colors.windGustsSpeedColor, isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
             }
         }
@@ -145,13 +158,15 @@ class WeatherGraphDataFactory @Inject constructor(
                 label = mainCityName!!,
                 values = weatherMetrics.sunshine, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = colors.sunShineLineColor, isOneYear = isOneYear
+                color = colors.sunShineLineColor, isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
             graphData.dayLightDuration = createWeatherGraphLineUseCase.invoke(
                 label = compCityName!!,
                 values = compMetrics.sunshine, dates = popUpLabels,
                 isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                color = colors.daylightLineColor, isOneYear = isOneYear
+                color = colors.daylightLineColor, isOneYear = isOneYear,
+                customMaxSize = maxSize
             )
         } else {
             val metrics = weatherMetrics ?: compMetrics
@@ -159,12 +174,14 @@ class WeatherGraphDataFactory @Inject constructor(
                 graphData.sunShineDuration = createWeatherGraphLineUseCase.invoke(
                     label = labels.sunshine, values = metrics.sunshine, dates = popUpLabels,
                     isDotsVisible = isDotsVisible, isEdgesCurved = isEdgesCurved,
-                    color = colors.sunShineLineColor, isOneYear = isOneYear
+                    color = colors.sunShineLineColor, isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
                 graphData.dayLightDuration = createWeatherGraphLineUseCase.invoke(
                     label = labels.daylight, values = metrics.dayLight, dates = popUpLabels,
                     isDotsVisible = false, isEdgesCurved = false,
-                    color = colors.daylightLineColor, isOneYear = isOneYear
+                    color = colors.daylightLineColor, isOneYear = isOneYear,
+                    customMaxSize = maxSize
                 )
             }
         }
@@ -173,18 +190,20 @@ class WeatherGraphDataFactory @Inject constructor(
         if (isComparison) {
             val mainBars = createWeatherGraphBarsUseCase.invoke(
                 label = mainCityName ?: "",
-                values = weatherMetrics.precipitation, color = colors.precipitationBarColor
+                values = weatherMetrics.precipitation, color = colors.precipitationBarColor,
+                customMaxSize = maxSize
             )
             val compBars = createWeatherGraphBarsUseCase.invoke(
                 label = compCityName ?: "", values = compMetrics.precipitation,
-                color = Color(0xFF00BCD4)
+                color = Color(0xFF00BCD4), customMaxSize = maxSize
             )
             graphData.precipitation = listOf(mainBars, compBars)
         } else {
             val metrics = weatherMetrics ?: compMetrics
             if (metrics != null) {
                 val bars = createWeatherGraphBarsUseCase.invoke(
-                    label = "", values = metrics.precipitation, color = colors.precipitationBarColor
+                    label = "", values = metrics.precipitation, color = colors.precipitationBarColor,
+                    customMaxSize = maxSize
                 )
                 graphData.precipitation = listOf(bars)
             }

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.domain.error.toApiError
+import com.hsact.sunplanner.domain.factory.WeatherMetricsFactory
 import com.hsact.sunplanner.domain.model.DetailedYearlyData
 import com.hsact.sunplanner.domain.model.LanguageMode
 import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
@@ -47,6 +48,7 @@ class WeatherDetailViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
     private val fetchFilteredWeatherUseCase: FetchFilteredWeatherUseCase,
     private val getDetailedYearlyDataUseCase: GetDetailedYearlyDataUseCase,
+    private val weatherMetricsFactory: WeatherMetricsFactory,
     private val analyticHelper: WeatherDetailAnalyticHelper
 ) : ViewModel() {
 
@@ -95,7 +97,7 @@ class WeatherDetailViewModel @Inject constructor(
         _uiState.update { 
             it.copy(
                 selectedYear = year, 
-                displayMode = if (year != null) DetailDisplayMode.TABLE else it.displayMode,
+                displayMode = DetailDisplayMode.TABLE,
                 summary = calculateCurrentSummary(it.yearlyData, year),
                 compSummary = calculateCurrentSummary(it.compYearlyData, year)
             ) 
@@ -176,6 +178,10 @@ class WeatherDetailViewModel @Inject constructor(
                 val mainResp = mainDeferred.await()
                 val compResp = compDeferred?.await()
 
+                val isOneDay = startDate.month == endDate.month && startDate.dayOfMonth == endDate.dayOfMonth
+                val mainOverall = weatherMetricsFactory.create(mainResp, isOneDay, startDate, endDate)
+                val compOverall = compResp?.let { weatherMetricsFactory.create(it, isOneDay, startDate, endDate) }
+
                 val mainYearly = getDetailedYearlyDataUseCase.execute(mainResp)
                 val compYearly = compResp?.let { getDetailedYearlyDataUseCase.execute(it) } ?: emptyList()
 
@@ -201,6 +207,8 @@ class WeatherDetailViewModel @Inject constructor(
                         compCityName = compName ?: "",
                         yearlyData = mainYearly,
                         compYearlyData = compYearly,
+                        overallMetrics = mainOverall,
+                        compOverallMetrics = compOverall,
                         summary = summary,
                         compSummary = compSummary,
                         insights = insights,

@@ -45,6 +45,7 @@ class WeatherMetricsFactory @Inject constructor(
         // Safety: handle nulls in AQI
         weatherMetrics.weatherCodes = (0 until size).map { daily.code.getOrNull(it)?.toInt() ?: 0 }
         weatherMetrics.airQuality = (0 until size).map { daily.european_aqi.getOrNull(it) ?: 0.0 }
+        weatherMetrics.dateLabels = daily.time
 
         if (isOneDay) {
             Log.d("SunPlannerDebug", "Factory: Single day mode")
@@ -80,6 +81,7 @@ class WeatherMetricsFactory @Inject constructor(
         weatherMetrics.gustSpeed = aggregated.map { it.avgWindGustSpeed }
         weatherMetrics.airQuality = aggregated.map { it.avgAqi }
         weatherMetrics.weatherCodes = aggregated.map { it.commonWeatherCode }
+        weatherMetrics.dateLabels = aggregated.map { it.date }
 
         return weatherMetrics
     }

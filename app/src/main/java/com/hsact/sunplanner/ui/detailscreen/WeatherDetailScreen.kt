@@ -73,6 +73,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hsact.sunplanner.R
+import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.model.WeatherMetricType
 import com.hsact.sunplanner.domain.model.WeatherMetrics
@@ -106,15 +107,15 @@ fun WeatherDetailScreen(
     val isOneYear = uiState.startDate.year == uiState.endDate.year
 
     val handleBack = {
-        if (uiState.selectedYear != null && !(isOneDay || isOneYear)) {
+        if ((uiState.selectedYear != null || uiState.displayMode == DetailDisplayMode.TABLE) && !(isOneDay || isOneYear)) {
             viewModel.toggleDisplayMode()
         } else {
             onBack()
         }
     }
 
-    // Intercept back button only if we specifically entered a year detail from a card
-    BackHandler(enabled = uiState.selectedYear != null && !(isOneDay || isOneYear), onBack = handleBack)
+    // Intercept back button if we are in year detail OR in table mode for overall stats
+    BackHandler(enabled = (uiState.selectedYear != null || uiState.displayMode == DetailDisplayMode.TABLE) && !(isOneDay || isOneYear), onBack = handleBack)
 
     if (uiState.error != null) {
         val errorMessage = when (val err = uiState.error!!) {
@@ -248,7 +249,8 @@ fun WeatherDetailScreen(
                                             summary = uiState.summary,
                                             unit = displayUnit,
                                             cityName = if (uiState.compCityName.isNotEmpty()) uiState.cityName else null,
-                                            isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY
+                                            isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY,
+                                            onClick = { if (uiState.displayMode == DetailDisplayMode.LIST) viewModel.selectYear(null) }
                                         )
                                     }
                                     AnimatedVisibility(
@@ -260,8 +262,156 @@ fun WeatherDetailScreen(
                                             summary = uiState.compSummary,
                                             unit = displayUnit,
                                             cityName = uiState.compCityName,
-                                            isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY
+                                            isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY,
+                                            onClick = { if (uiState.displayMode == DetailDisplayMode.LIST) viewModel.selectYear(null) }
                                         )
+                                    }
+
+                                    AnimatedVisibility(
+                                        visible = uiState.selectedYear == null && uiState.displayMode == DetailDisplayMode.LIST,
+                                        enter = fadeIn() + expandVertically(),
+                                        exit = fadeOut() + shrinkVertically()
+                                    ) {
+                                        val colors = LocalExtendedColors.current
+                                        
+                                        val startMD = uiState.startDate.monthValue * 100 + uiState.startDate.dayOfMonth
+                                        val endMD = uiState.endDate.monthValue * 100 + uiState.endDate.dayOfMonth
+                                        val isWrapping = startMD > endMD
+                                        
+                                        val normalizedStart = uiState.startDate.withYear(2024)
+                                        val normalizedEnd = if (!isWrapping) uiState.endDate.withYear(2024) else uiState.endDate.withYear(2025)
+
+                                        val shouldAnimateSummary = remember {
+                                            val firstTime = !animatedIndices.contains(-1)
+                                            if (firstTime) animatedIndices.add(-1)
+                                            firstTime
+                                        }
+
+                                        val popUpLabels = remember(uiState.overallMetrics, uiState.compOverallMetrics) {
+                                            DateUtils.generatePopUpLabels(
+                                                uiState.startDate,
+                                                uiState.endDate,
+                                                uiState.settings.languageMode.toLocale()
+                                            )
+                                        }
+                                        val overallGraphData = remember(
+                                            uiState.overallMetrics,
+                                            uiState.compOverallMetrics,
+                                            uiState.isMainVisible,
+                                            uiState.isCompVisible,
+                                            uiState.settings,
+                                            colors
+                                        ) {
+                                            weatherGraphDataFactory.create(
+                                                weatherMetrics = if (uiState.isMainVisible) uiState.overallMetrics else null,
+                                                compMetrics = if (uiState.isCompVisible) uiState.compOverallMetrics else null,
+                                                isDotsVisible = uiState.settings.isDotsVisible,
+                                                isEdgesCurved = uiState.settings.isEdgesCurved,
+                                                isOneYear = !isWrapping,
+                                                colors = colors,
+                                                popUpLabels = popUpLabels,
+                                                labels = weatherLabels,
+                                                mainCityName = uiState.cityName,
+                                                compCityName = uiState.compCityName
+                                            )
+                                        }
+
+                                        when (uiState.metricType) {
+                                            WeatherMetricType.TEMPERATURE -> {
+                                                WeatherGraphLineCard(
+                                                    title = stringResource(R.string.average_stats),
+                                                    unit = tempUnit,
+                                                    icon = Icons.Default.Thermostat,
+                                                    lineList = listOfNotNull(
+                                                        overallGraphData.maxTemperature,
+                                                        overallGraphData.avgTemperature,
+                                                        overallGraphData.minTemperature
+                                                    ),
+                                                    dates = popUpLabels,
+                                                    startDate = normalizedStart,
+                                                    endDate = normalizedEnd,
+                                                    locale = uiState.settings.languageMode.toLocale(),
+                                                    theme = uiState.settings.themeMode,
+                                                    animate = shouldAnimateSummary,
+                                                    onClick = { viewModel.selectYear(null) }
+                                                )
+                                            }
+
+                                            WeatherMetricType.SUNSHINE -> {
+                                                WeatherGraphLineCard(
+                                                    title = stringResource(R.string.average_stats),
+                                                    icon = Icons.Default.WbSunny,
+                                                    lineList = listOfNotNull(
+                                                        overallGraphData.sunShineDuration,
+                                                        overallGraphData.dayLightDuration
+                                                    ),
+                                                    dates = popUpLabels,
+                                                    startDate = normalizedStart,
+                                                    endDate = normalizedEnd,
+                                                    locale = uiState.settings.languageMode.toLocale(),
+                                                    theme = uiState.settings.themeMode,
+                                                    minIsZero = true,
+                                                    animate = shouldAnimateSummary,
+                                                    onClick = { viewModel.selectYear(null) }
+                                                )
+                                            }
+
+                                            WeatherMetricType.PRECIPITATION -> {
+                                                WeatherGraphBarsCard(
+                                                    title = stringResource(R.string.average_stats),
+                                                    unit = precipitationUnit,
+                                                    icon = Icons.Default.WaterDrop,
+                                                    barGroups = overallGraphData.precipitation,
+                                                    dates = popUpLabels,
+                                                    startDate = normalizedStart,
+                                                    endDate = normalizedEnd,
+                                                    locale = uiState.settings.languageMode.toLocale(),
+                                                    theme = uiState.settings.themeMode,
+                                                    animate = shouldAnimateSummary,
+                                                    onClick = { viewModel.selectYear(null) }
+                                                )
+                                            }
+
+                                            WeatherMetricType.WIND -> {
+                                                WeatherGraphLineCard(
+                                                    title = stringResource(R.string.average_stats),
+                                                    unit = speedUnit,
+                                                    icon = Icons.Default.Air,
+                                                    lineList = listOfNotNull(
+                                                        overallGraphData.windSpeed,
+                                                        overallGraphData.windGustsSpeed
+                                                    ),
+                                                    dates = popUpLabels,
+                                                    startDate = normalizedStart,
+                                                    endDate = normalizedEnd,
+                                                    locale = uiState.settings.languageMode.toLocale(),
+                                                    theme = uiState.settings.themeMode,
+                                                    minIsZero = true,
+                                                    animate = shouldAnimateSummary,
+                                                    onClick = { viewModel.selectYear(null) }
+                                                )
+                                            }
+
+                                            WeatherMetricType.AIR_QUALITY -> {
+                                                WeatherGraphLineCard(
+                                                    title = stringResource(R.string.average_stats),
+                                                    icon = Icons.Default.Eco,
+                                                    lineList = listOfNotNull(
+                                                        overallGraphData.airQuality,
+                                                        overallGraphData.airQualityComp
+                                                    ),
+                                                    dates = popUpLabels,
+                                                    startDate = normalizedStart,
+                                                    endDate = normalizedEnd,
+                                                    locale = uiState.settings.languageMode.toLocale(),
+                                                    theme = uiState.settings.themeMode,
+                                                    minIsZero = true,
+                                                    animate = shouldAnimateSummary,
+                                                    valueFormat = 0,
+                                                    onClick = { viewModel.selectYear(null) }
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -270,7 +420,7 @@ fun WeatherDetailScreen(
 
                     item(key = "INSIGHTS", contentType = "HEADER") {
                         AnimatedVisibility(
-                            visible = uiState.selectedYear == null && uiState.insights.isNotEmpty(),
+                            visible = uiState.selectedYear == null && uiState.insights.isNotEmpty() && uiState.displayMode == DetailDisplayMode.LIST,
                             enter = fadeIn() + expandVertically(),
                             exit = fadeOut() + shrinkVertically()
                         ) {
@@ -485,7 +635,7 @@ private fun InsightsSection(insights: List<String>) {
 }
 
 @Composable
-private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName: String? = null, isInteger: Boolean = false) {
+private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName: String? = null, isInteger: Boolean = false, onClick: () -> Unit = {}) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -509,7 +659,8 @@ private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName:
                 unit,
                 Modifier.weight(1f),
                 MaterialTheme.colorScheme.errorContainer,
-                isInteger = isInteger
+                isInteger = isInteger,
+                onClick = onClick
             )
             SummaryItem(
                 stringResource(R.string.average_stats),
@@ -517,7 +668,8 @@ private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName:
                 unit,
                 Modifier.weight(1f),
                 MaterialTheme.colorScheme.primaryContainer,
-                isInteger = isInteger
+                isInteger = isInteger,
+                onClick = onClick
             )
             SummaryItem(
                 stringResource(R.string.record_low),
@@ -525,7 +677,8 @@ private fun SummaryHeader(summary: WeatherDetailSummary, unit: String, cityName:
                 unit,
                 Modifier.weight(1f),
                 MaterialTheme.colorScheme.tertiaryContainer,
-                isInteger = isInteger
+                isInteger = isInteger,
+                onClick = onClick
             )
         }
     }
@@ -538,9 +691,10 @@ private fun SummaryItem(
     unit: String,
     modifier: Modifier,
     color: Color,
-    isInteger: Boolean = false
+    isInteger: Boolean = false,
+    onClick: () -> Unit = {}
 ) {
-    Surface(modifier = modifier, shape = RoundedCornerShape(12.dp), color = color) {
+    Surface(modifier = modifier, shape = RoundedCornerShape(12.dp), color = color, onClick = onClick) {
         Column(
             modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -593,25 +747,32 @@ private fun LazyListScope.yearlyDataItems(
             }
         }
 
-        val colors = LocalExtendedColors.current
-        val graphData = remember(
-            data,
-            uiState.isMainVisible,
-            uiState.isCompVisible,
-            uiState.settings,
-            colors
-        ) {
-            weatherGraphDataFactory.create(
-                weatherMetrics = if (uiState.isMainVisible) data.metrics else null,
-                compMetrics = if (uiState.isCompVisible) compData?.metrics else null,
-                isDotsVisible = uiState.settings.isDotsVisible,
-                isEdgesCurved = uiState.settings.isEdgesCurved, isOneYear = true,
-                colors = colors, popUpLabels = popUpLabels, labels = weatherLabels,
-                mainCityName = uiState.cityName, compCityName = uiState.compCityName
-            )
-        }
+            val colors = LocalExtendedColors.current
+            val graphData = remember(
+                data,
+                uiState.isMainVisible,
+                uiState.isCompVisible,
+                uiState.settings,
+                colors
+            ) {
+                weatherGraphDataFactory.create(
+                    weatherMetrics = if (uiState.isMainVisible) data.metrics else null,
+                    compMetrics = if (uiState.isCompVisible) compData?.metrics else null,
+                    isDotsVisible = uiState.settings.isDotsVisible,
+                    isEdgesCurved = uiState.settings.isEdgesCurved, isOneYear = true,
+                    colors = colors, popUpLabels = popUpLabels, labels = weatherLabels,
+                    mainCityName = uiState.cityName, compCityName = uiState.compCityName
+                )
+            }
 
         val yearTitle = "${data.year} ${stringResource(R.string.year_suffix)}"
+        
+        val startMD = uiState.startDate.monthValue * 100 + uiState.startDate.dayOfMonth
+        val endMD = uiState.endDate.monthValue * 100 + uiState.endDate.dayOfMonth
+        val isWrapping = startMD > endMD
+        
+        val yearStart = uiState.startDate.withYear(data.year)
+        val yearEnd = if (!isWrapping) uiState.endDate.withYear(data.year) else uiState.endDate.withYear(data.year + 1)
 
         Box(modifier = Modifier.padding(top = 16.dp)) {
             if (uiState.isMainVisible || uiState.isCompVisible) {
@@ -627,8 +788,8 @@ private fun LazyListScope.yearlyDataItems(
                                 graphData.minTemperature
                             ),
                             dates = popUpLabels,
-                            startDate = uiState.startDate,
-                            endDate = uiState.endDate,
+                            startDate = yearStart,
+                            endDate = yearEnd,
                             locale = uiState.settings.languageMode.toLocale(),
                             theme = uiState.settings.themeMode,
                             animate = shouldAnimate,
@@ -645,8 +806,8 @@ private fun LazyListScope.yearlyDataItems(
                                 graphData.dayLightDuration
                             ),
                             dates = popUpLabels,
-                            startDate = uiState.startDate,
-                            endDate = uiState.endDate,
+                            startDate = yearStart,
+                            endDate = yearEnd,
                             locale = uiState.settings.languageMode.toLocale(),
                             theme = uiState.settings.themeMode,
                             minIsZero = true,
@@ -656,19 +817,19 @@ private fun LazyListScope.yearlyDataItems(
                     }
 
                     WeatherMetricType.PRECIPITATION -> {
-                        WeatherGraphBarsCard(
-                            title = yearTitle,
-                            unit = precUnit,
-                            icon = Icons.Default.WaterDrop,
-                            barGroups = graphData.precipitation,
-                            dates = popUpLabels,
-                            startDate = uiState.startDate,
-                            endDate = uiState.endDate,
-                            locale = uiState.settings.languageMode.toLocale(),
-                            theme = uiState.settings.themeMode,
-                            animate = shouldAnimate,
-                            onClick = { onYearClick(data.year) }
-                        )
+                                                WeatherGraphBarsCard(
+                                                    title = yearTitle,
+                                                    unit = precUnit,
+                                                    icon = Icons.Default.WaterDrop,
+                                                    barGroups = graphData.precipitation,
+                                                    dates = popUpLabels,
+                                                    startDate = yearStart,
+                                                    endDate = yearEnd,
+                                                    locale = uiState.settings.languageMode.toLocale(),
+                                                    theme = uiState.settings.themeMode,
+                                                    animate = shouldAnimate,
+                                                    onClick = { onYearClick(data.year) }
+                                                )
                     }
 
                     WeatherMetricType.WIND -> {
@@ -681,8 +842,8 @@ private fun LazyListScope.yearlyDataItems(
                                 graphData.windGustsSpeed
                             ),
                             dates = popUpLabels,
-                            startDate = uiState.startDate,
-                            endDate = uiState.endDate,
+                            startDate = yearStart,
+                            endDate = yearEnd,
                             locale = uiState.settings.languageMode.toLocale(),
                             theme = uiState.settings.themeMode,
                             minIsZero = true,
@@ -700,8 +861,8 @@ private fun LazyListScope.yearlyDataItems(
                                 graphData.airQualityComp
                             ),
                             dates = popUpLabels,
-                            startDate = uiState.startDate,
-                            endDate = uiState.endDate,
+                            startDate = yearStart,
+                            endDate = yearEnd,
                             locale = uiState.settings.languageMode.toLocale(),
                             theme = uiState.settings.themeMode,
                             minIsZero = true,
@@ -752,27 +913,53 @@ private fun LazyListScope.tableDataItems(
             }
         }
     } else {
-        val targetYear = uiState.selectedYear ?: uiState.yearlyData.firstOrNull()?.year
-        val data = uiState.yearlyData.find { it.year == targetYear }
-        data?.let {
-            itemsIndexed(it.dateLabels) { index, dateLabel ->
-                val compData = uiState.compYearlyData.find { it.year == targetYear }
-                if (uiState.isMainVisible || uiState.isCompVisible) {
-                    TableRow(
-                        label = dateLabel,
-                        metrics = if (uiState.isMainVisible) it.metrics else (compData?.metrics
-                            ?: it.metrics),
-                        dataIndex = index,
-                        metricType = uiState.metricType,
-                        isEven = index % 2 == 0,
-                        isOneDay = false,
-                        locale = locale,
-                        tempUnit = tempUnit,
-                        speedUnit = speedUnit,
-                        precUnit = precUnit,
-                        hoursUnit = hoursUnit,
-                        compMetrics = if (isComparison) compData?.metrics else null
-                    )
+        val targetYear = uiState.selectedYear
+        if (targetYear == null) {
+            // Show average data across years
+            uiState.overallMetrics?.let { mainMetrics ->
+                itemsIndexed(mainMetrics.dateLabels) { index, dateLabel ->
+                    if (uiState.isMainVisible || uiState.isCompVisible) {
+                        TableRow(
+                            label = dateLabel,
+                            metrics = if (uiState.isMainVisible) mainMetrics else (uiState.compOverallMetrics
+                                ?: mainMetrics),
+                            dataIndex = index,
+                            metricType = uiState.metricType,
+                            isEven = index % 2 == 0,
+                            isOneDay = false,
+                            locale = locale,
+                            tempUnit = tempUnit,
+                            speedUnit = speedUnit,
+                            precUnit = precUnit,
+                            hoursUnit = hoursUnit,
+                            compMetrics = if (isComparison) uiState.compOverallMetrics else null,
+                            isAggregated = true
+                        )
+                    }
+                }
+            }
+        } else {
+            val data = uiState.yearlyData.find { it.year == targetYear }
+            data?.let {
+                itemsIndexed(it.dateLabels) { index, dateLabel ->
+                    val compData = uiState.compYearlyData.find { it.year == targetYear }
+                    if (uiState.isMainVisible || uiState.isCompVisible) {
+                        TableRow(
+                            label = dateLabel,
+                            metrics = if (uiState.isMainVisible) it.metrics else (compData?.metrics
+                                ?: it.metrics),
+                            dataIndex = index,
+                            metricType = uiState.metricType,
+                            isEven = index % 2 == 0,
+                            isOneDay = false,
+                            locale = locale,
+                            tempUnit = tempUnit,
+                            speedUnit = speedUnit,
+                            precUnit = precUnit,
+                            hoursUnit = hoursUnit,
+                            compMetrics = if (isComparison) compData?.metrics else null
+                        )
+                    }
                 }
             }
         }
@@ -847,7 +1034,8 @@ private fun TableRow(
     label: String, metrics: WeatherMetrics, dataIndex: Int,
     metricType: WeatherMetricType, isEven: Boolean, isOneDay: Boolean, locale: Locale,
     tempUnit: String, speedUnit: String, precUnit: String, hoursUnit: String,
-    compMetrics: WeatherMetrics? = null
+    compMetrics: WeatherMetrics? = null,
+    isAggregated: Boolean = false
 ) {
     val backgroundColor =
         if (isEven) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant.copy(
@@ -864,8 +1052,17 @@ private fun TableRow(
     ) {
         Text(
             text = if (isOneDay) label else {
-                val date = LocalDate.parse(label)
-                "${date.dayOfMonth} ${date.month.getDisplayName(TextStyle.SHORT, locale)}"
+                if (isAggregated) {
+                    // label is "MM-dd"
+                    val parts = label.split("-")
+                    val day = parts.getOrNull(1)?.toInt() ?: 1
+                    val month = parts.getOrNull(0)?.toInt() ?: 1
+                    val date = LocalDate.of(2024, month, day)
+                    "${date.dayOfMonth} ${date.month.getDisplayName(TextStyle.SHORT, locale)}"
+                } else {
+                    val date = LocalDate.parse(label)
+                    "${date.dayOfMonth} ${date.month.getDisplayName(TextStyle.SHORT, locale)}"
+                }
             },
             modifier = Modifier.weight(if (compMetrics != null) 1.2f else 1.5f),
             style = MaterialTheme.typography.bodyMedium
