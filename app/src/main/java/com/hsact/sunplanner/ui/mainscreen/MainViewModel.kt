@@ -299,29 +299,34 @@ class MainViewModel @Inject constructor(
     }
 
     private suspend fun selectBookmark(bookmark: Bookmark) {
+        val newDates = DatesBundle(
+            LocalDate.of(
+                bookmark.dates.startYear,
+                bookmark.dates.startMonth,
+                bookmark.dates.startDay
+            ),
+            LocalDate.of(
+                bookmark.dates.endYear,
+                bookmark.dates.endMonth,
+                bookmark.dates.endDay
+            )
+        )
+
         // Update state immediately to avoid race conditions with Search click
         _mainUiState.update {
             it.copy(
                 settingsBundle = it.settingsBundle.copy(location = bookmark.location),
-                tempDates = DatesBundle(
-                    LocalDate.of(
-                        bookmark.dates.startYear,
-                        bookmark.dates.startMonth,
-                        bookmark.dates.startDay
-                    ),
-                    LocalDate.of(
-                        bookmark.dates.endYear,
-                        bookmark.dates.endMonth,
-                        bookmark.dates.endDay
-                    )
-                ),
+                tempDates = newDates,
+                confirmedDates = newDates,
                 cityName = LocationUtils.buildCityFullName(bookmark.location)
             )
         }
-        _mainUiState.update { it.copy(confirmedDates = it.tempDates) }
 
         // Sync with persistent storage
         updateLocation(bookmark.location)
+
+        // Auto-trigger weather search
+        onWeatherSearchClick()
     }
 
     private fun updateBookmarkStatus() {
