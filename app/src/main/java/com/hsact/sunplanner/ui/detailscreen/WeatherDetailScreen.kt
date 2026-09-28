@@ -3,15 +3,24 @@ package com.hsact.sunplanner.ui.detailscreen
 import android.content.Context
 import android.content.Intent
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -227,10 +236,88 @@ fun WeatherDetailScreen(
                     remember(uiState.yearlyData) { uiState.yearlyData.map { it.year } }
                 val locale = LocalLocale.current.platformLocale
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 16.dp)
-                ) {
+                var activeYear by remember { mutableStateOf(uiState.selectedYear) }
+                var activeSummary by remember { mutableStateOf(uiState.summary) }
+                var activeCompSummary by remember { mutableStateOf(uiState.compSummary) }
+
+                if (uiState.displayMode == DetailDisplayMode.TABLE) {
+                    activeYear = uiState.selectedYear
+                    activeSummary = uiState.summary
+                    activeCompSummary = uiState.compSummary
+                }
+
+                AnimatedContent(
+                    targetState = uiState.displayMode,
+                    transitionSpec = {
+                        if (targetState == DetailDisplayMode.TABLE) {
+                            (fadeIn(animationSpec = tween(350, easing = FastOutSlowInEasing)) +
+                                    slideInVertically(
+                                        animationSpec = tween(
+                                            350,
+                                            easing = FastOutSlowInEasing
+                                        ), initialOffsetY = { it / 6 }) +
+                                    scaleIn(
+                                        animationSpec = tween(
+                                            350,
+                                            easing = FastOutSlowInEasing
+                                        ), initialScale = 0.95f
+                                    )) togetherWith
+                                    (fadeOut(
+                                        animationSpec = tween(
+                                            250,
+                                            easing = FastOutLinearInEasing
+                                        )
+                                    ) +
+                                            slideOutVertically(
+                                                animationSpec = tween(
+                                                    250,
+                                                    easing = FastOutLinearInEasing
+                                                ), targetOffsetY = { -it / 6 }) +
+                                            scaleOut(
+                                                animationSpec = tween(
+                                                    250,
+                                                    easing = FastOutLinearInEasing
+                                                ), targetScale = 0.95f
+                                            ))
+                        } else {
+                            (fadeIn(animationSpec = tween(350, easing = FastOutSlowInEasing)) +
+                                    slideInVertically(
+                                        animationSpec = tween(
+                                            350,
+                                            easing = FastOutSlowInEasing
+                                        ), initialOffsetY = { -it / 6 }) +
+                                    scaleIn(
+                                        animationSpec = tween(
+                                            350,
+                                            easing = FastOutSlowInEasing
+                                        ), initialScale = 0.95f
+                                    )) togetherWith
+                                    (fadeOut(
+                                        animationSpec = tween(
+                                            250,
+                                            easing = FastOutLinearInEasing
+                                        )
+                                    ) +
+                                            slideOutVertically(
+                                                animationSpec = tween(
+                                                    250,
+                                                    easing = FastOutLinearInEasing
+                                                ), targetOffsetY = { it / 6 }) +
+                                            scaleOut(
+                                                animationSpec = tween(
+                                                    250,
+                                                    easing = FastOutLinearInEasing
+                                                ), targetScale = 0.95f
+                                            ))
+                        }
+                    },
+                    label = "DetailDisplayModeTransition",
+                    modifier = Modifier.fillMaxSize()
+                ) { displayMode ->
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 16.dp)
+                    ) {
                     item(key = "SUMMARY", contentType = "HEADER") {
                         with(sharedTransitionScope) {
                             Box(
@@ -246,11 +333,11 @@ fun WeatherDetailScreen(
                                         exit = fadeOut() + shrinkVertically()
                                     ) {
                                         SummaryHeader(
-                                            summary = uiState.summary,
+                                            summary = if (displayMode == DetailDisplayMode.TABLE) activeSummary else uiState.summary,
                                             unit = displayUnit,
                                             cityName = if (uiState.compCityName.isNotEmpty()) uiState.cityName else null,
                                             isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY,
-                                            onClick = { if (uiState.displayMode == DetailDisplayMode.LIST) viewModel.selectYear(null) }
+                                            onClick = { if (displayMode == DetailDisplayMode.LIST) viewModel.selectYear(null) }
                                         )
                                     }
                                     AnimatedVisibility(
@@ -259,16 +346,16 @@ fun WeatherDetailScreen(
                                         exit = fadeOut() + shrinkVertically()
                                     ) {
                                         SummaryHeader(
-                                            summary = uiState.compSummary,
+                                            summary = if (displayMode == DetailDisplayMode.TABLE) activeCompSummary else uiState.compSummary,
                                             unit = displayUnit,
                                             cityName = uiState.compCityName,
                                             isInteger = uiState.metricType == WeatherMetricType.AIR_QUALITY,
-                                            onClick = { if (uiState.displayMode == DetailDisplayMode.LIST) viewModel.selectYear(null) }
+                                            onClick = { if (displayMode == DetailDisplayMode.LIST) viewModel.selectYear(null) }
                                         )
                                     }
 
                                     AnimatedVisibility(
-                                        visible = uiState.selectedYear == null && uiState.displayMode == DetailDisplayMode.LIST,
+                                        visible = uiState.selectedYear == null && displayMode == DetailDisplayMode.LIST,
                                         enter = fadeIn() + expandVertically(),
                                         exit = fadeOut() + shrinkVertically()
                                     ) {
@@ -420,7 +507,7 @@ fun WeatherDetailScreen(
 
                     item(key = "INSIGHTS", contentType = "HEADER") {
                         AnimatedVisibility(
-                            visible = uiState.selectedYear == null && uiState.insights.isNotEmpty() && uiState.displayMode == DetailDisplayMode.LIST,
+                            visible = uiState.selectedYear == null && uiState.insights.isNotEmpty() && displayMode == DetailDisplayMode.LIST,
                             enter = fadeIn() + expandVertically(),
                             exit = fadeOut() + shrinkVertically()
                         ) {
@@ -430,7 +517,7 @@ fun WeatherDetailScreen(
 
                     item(key = "FILTER", contentType = "HEADER") {
                         Column {
-                            if (uiState.compCityName.isNotEmpty() || (uiState.displayMode == DetailDisplayMode.TABLE && !isOneDay)) {
+                            if (uiState.compCityName.isNotEmpty() || (displayMode == DetailDisplayMode.TABLE && !isOneDay)) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -471,16 +558,16 @@ fun WeatherDetailScreen(
                                         )
                                     }
 
-                                    if (uiState.displayMode == DetailDisplayMode.TABLE && !isOneDay && uiState.yearlyData.size > 1) {
+                                    if (displayMode == DetailDisplayMode.TABLE && !isOneDay && uiState.yearlyData.size > 1) {
                                         Spacer(modifier = Modifier.weight(1f))
                                         val currentYearLabel =
-                                            uiState.selectedYear?.toString()
+                                            activeYear?.toString()
                                                 ?: stringResource(R.string.all_years)
                                         var expanded by remember { mutableStateOf(false) }
 
                                         Box {
                                             FilterChip(
-                                                selected = uiState.selectedYear != null,
+                                                selected = activeYear != null,
                                                 onClick = { expanded = true },
                                                 label = { Text(currentYearLabel) },
                                                 trailingIcon = {
@@ -516,7 +603,7 @@ fun WeatherDetailScreen(
                         }
                     }
 
-                    if (uiState.displayMode == DetailDisplayMode.LIST) {
+                    if (displayMode == DetailDisplayMode.LIST) {
                         yearlyDataItems(
                             uiState = uiState,
                             weatherGraphDataFactory = weatherGraphDataFactory,
@@ -530,6 +617,7 @@ fun WeatherDetailScreen(
                     } else {
                         tableDataItems(
                             uiState = uiState,
+                            selectedYear = activeYear,
                             tempUnit = tempUnit,
                             speedUnit = speedUnit,
                             precUnit = precipitationUnit,
@@ -542,6 +630,7 @@ fun WeatherDetailScreen(
             }
         }
     }
+}
 }
 
 @Composable
@@ -705,10 +794,20 @@ private fun SummaryItem(
             } else {
                 "${(value * 10).roundToInt() / 10.0}"
             }
-            Text(
-                text = "$formattedValue${if (unit.isNotEmpty()) " $unit" else ""}",
-                style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold
-            )
+            AnimatedContent(
+                targetState = formattedValue,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(220)) + slideInVertically { height -> height / 2 }) togetherWith
+                            (fadeOut(animationSpec = tween(180)) + slideOutVertically { height -> -height / 2 })
+                },
+                label = "SummaryValueTransition"
+            ) { targetFormattedValue ->
+                Text(
+                    text = "$targetFormattedValue${if (unit.isNotEmpty()) " $unit" else ""}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
     }
 }
@@ -879,6 +978,7 @@ private fun LazyListScope.yearlyDataItems(
 
 private fun LazyListScope.tableDataItems(
     uiState: WeatherDetailUiState,
+    selectedYear: Int? = uiState.selectedYear,
     tempUnit: String,
     speedUnit: String,
     precUnit: String,
@@ -893,10 +993,10 @@ private fun LazyListScope.tableDataItems(
 
     item {
         if (isComparison) TableHeaderComp(uiState.cityName, uiState.compCityName)
-        else TableHeader(isOneDay && uiState.selectedYear == null)
+        else TableHeader(isOneDay && selectedYear == null)
     }
 
-    if (isOneDay && uiState.selectedYear == null) {
+    if (isOneDay && selectedYear == null) {
         itemsIndexed(uiState.yearlyData) { index, data ->
             val compData = uiState.compYearlyData.find { it.year == data.year }
             if (uiState.isMainVisible || uiState.isCompVisible) {
@@ -913,7 +1013,7 @@ private fun LazyListScope.tableDataItems(
             }
         }
     } else {
-        val targetYear = uiState.selectedYear
+        val targetYear = selectedYear
         if (targetYear == null) {
             // Show average data across years
             uiState.overallMetrics?.let { mainMetrics ->

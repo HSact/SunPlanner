@@ -1,7 +1,12 @@
 package com.hsact.sunplanner.ui.components.cards
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,10 +27,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -96,9 +103,23 @@ fun WeatherGraphBarsCard(
         contentBuilder = { it.format(valueFormat) }
     )
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.97f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "CardPressScale"
+    )
+
     ElevatedCard(
-        modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
-        onClick = onClick
+        modifier = modifier
+            .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
+            .scale(scale),
+        onClick = onClick,
+        interactionSource = interactionSource
     ) {
         BoxWithConstraints(modifier = Modifier.padding(16.dp)) {
             val numOriginalPointsFromData = if (barGroups.isNotEmpty()) barGroups.first().values.size else 0
