@@ -32,4 +32,7 @@ sealed class MainScreenIntents {
      * Intent to remove a specific location from search history.
      */
     data class DeleteHistoryItem(val city: Location) : MainScreenIntents()
+
+    data object DismissOnboarding : MainScreenIntents()
+    data object OpenOnboardingGuide : MainScreenIntents()
 }

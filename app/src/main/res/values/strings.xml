@@ -115,6 +115,23 @@
     <string name="share_period">Period: %1$s – %2$s</string>
     <string name="share_insights">Insights:</string>
     <string name="share_chooser_title">Share Report</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_finish">Get Started</string>
+    <string name="onboarding_back">Back</string>
+    <string name="onboarding_title_1">Plan Perfect Dates</string>
+    <string name="onboarding_desc_1">SunPlanner analyzes multi-year historical weather to help you pick the ideal time for vacations, events, and trips.</string>
+    <string name="onboarding_badge_1">Weather Analytics</string>
+    <string name="onboarding_title_2">Find &amp; Compare Cities</string>
+    <string name="onboarding_desc_2">Search locations worldwide, save favorites, and compare weather conditions between two cities side by side.</string>
+    <string name="onboarding_badge_2">Locations</string>
+    <string name="onboarding_title_3">Multi-Year Charts</string>
+    <string name="onboarding_desc_3">Select years and date ranges. Visual graphs illustrate temperature, sunshine, precipitation, wind, and air quality.</string>
+    <string name="onboarding_badge_3">Visualization</string>
+    <string name="onboarding_title_4">Smart Insights &amp; Details</string>
+    <string name="onboarding_desc_4">Tap any chart to open year-by-year comparisons, discover smart tips about best days, and view detailed data tables.</string>
+    <string name="onboarding_badge_4">Insights</string>
+    <string name="starter_guide">Starter Guide</string>
     <string-array name="month_choices">
         <item>January</item>
         <item>February</item>

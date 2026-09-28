@@ -43,4 +43,7 @@ class GetSettingsUseCase @Inject constructor(
 
     /** Flow emitting current precipitation unit mode. */
     val precipitationUnit: Flow<PrecipitationUnitMode> get() = repository.precipitationUnit
+
+    /** Flow emitting boolean indicating whether the user has seen onboarding guide. */
+    val hasSeenOnboarding: Flow<Boolean> get() = repository.hasSeenOnboarding
 }

@@ -90,6 +90,7 @@ import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.ui.components.CollapsibleTopBar
 import com.hsact.sunplanner.ui.components.DropdownPicker
 import com.hsact.sunplanner.ui.components.LocationSearch
+import com.hsact.sunplanner.ui.components.guide.OnboardingGuideDialog
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphBarsCard
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphLabels
@@ -233,6 +234,12 @@ fun MainScreen(
         }
     }
 
+    if (mainDataUI.showOnboarding) {
+        OnboardingGuideDialog(
+            onDismiss = { viewModel.handleIntent(MainScreenIntents.DismissOnboarding) }
+        )
+    }
+
     Scaffold(
         modifier = Modifier
             .then(if (canScroll.value) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier)
@@ -241,7 +248,8 @@ fun MainScreen(
             if (!isSearchExpanded && !isCompSearchExpanded) {
                 CollapsibleTopBar(
                     scrollBehavior = scrollBehavior,
-                    onSettingsClick = onNavigateToSettings
+                    onSettingsClick = onNavigateToSettings,
+                    onHelpClick = { viewModel.handleIntent(MainScreenIntents.OpenOnboardingGuide) }
                 )
             }
         }

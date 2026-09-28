@@ -55,7 +55,8 @@ data class MainUIState(
     val isComparisonMode: Boolean = false,
     val bookmarks: List<Bookmark> = emptyList(),
     val isBookmarked: Boolean = false,
-    val searchHistory: List<Location> = emptyList()
+    val searchHistory: List<Location> = emptyList(),
+    val showOnboarding: Boolean = false
 ) {
 
     /**

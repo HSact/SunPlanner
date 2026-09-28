@@ -28,6 +28,7 @@ import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
 import com.hsact.sunplanner.ui.detailscreen.WeatherDetailScreen
 import com.hsact.sunplanner.ui.mainscreen.MainScreen
+import com.hsact.sunplanner.ui.mainscreen.MainScreenIntents
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
 import com.hsact.sunplanner.ui.settings.SettingsScreen
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
@@ -160,7 +161,11 @@ class MainActivity : ComponentActivity() {
                                 viewModel = hiltViewModel(),
                                 onBack = { navController.popBackStack() },
                                 onApplyTheme = onApplyTheme,
-                                onChangeLanguage = onChangeLanguage
+                                onChangeLanguage = onChangeLanguage,
+                                onOpenGuide = {
+                                    navController.popBackStack()
+                                    viewModel.handleIntent(MainScreenIntents.OpenOnboardingGuide)
+                                }
                             )
                         }
                     }

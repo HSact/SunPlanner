@@ -37,6 +37,7 @@ class SettingsRepositoryImpl @Inject constructor(
         private val IS_DOTS_VISIBLE_KEY = booleanPreferencesKey("is_dots_visible")
         private val IS_GRAPH_CURVED_KEY = booleanPreferencesKey("is_graph_curved")
         private val LOCATION_KEY = stringPreferencesKey("location")
+        private val HAS_SEEN_ONBOARDING_KEY = booleanPreferencesKey("has_seen_onboarding")
     }
 
     override val theme: Flow<ThemeMode> = dataStore.data.map { preferences ->
@@ -132,6 +133,18 @@ class SettingsRepositoryImpl @Inject constructor(
         val json = Json.encodeToString(location)
         dataStore.edit { preferences ->
             preferences[LOCATION_KEY] = json
+        }
+    }
+
+    @Suppress("NullableBooleanElvis")
+    override val hasSeenOnboarding: Flow<Boolean> =
+        dataStore.data.map { preferences ->
+            preferences[HAS_SEEN_ONBOARDING_KEY] ?: false
+        }
+
+    override suspend fun setHasSeenOnboarding(hasSeen: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[HAS_SEEN_ONBOARDING_KEY] = hasSeen
         }
     }
 }

@@ -115,6 +115,23 @@
     <string name="share_period">Период: %1$s – %2$s</string>
     <string name="share_insights">Подсказки:</string>
     <string name="share_chooser_title">Поделиться отчётом</string>
+    <string name="onboarding_skip">Пропустить</string>
+    <string name="onboarding_next">Далее</string>
+    <string name="onboarding_finish">Начать использование</string>
+    <string name="onboarding_back">Назад</string>
+    <string name="onboarding_title_1">Планируйте идеальные даты</string>
+    <string name="onboarding_desc_1">SunPlanner анализирует историческую погоду за много лет, помогая легко выбрать лучшее время для отпуска, мероприятий и поездок.</string>
+    <string name="onboarding_badge_1">Аналитика погоды</string>
+    <string name="onboarding_title_2">Поиск и сравнение городов</string>
+    <string name="onboarding_desc_2">Находите локации по всему миру, сохраняйте их в Избранное и сравнивайте погоду двух городов одновременно.</string>
+    <string name="onboarding_badge_2">Локации</string>
+    <string name="onboarding_title_3">Многолетние графики</string>
+    <string name="onboarding_desc_3">Задайте диапазон лет и дат. Наглядные графики покажут температуру, количество солнца, осадки, ветер и качество воздуха.</string>
+    <string name="onboarding_badge_3">Визуализация</string>
+    <string name="onboarding_title_4">Умные подсказки и детали</string>
+    <string name="onboarding_desc_4">Нажмите на любой график, чтобы открыть детализацию по годам, узнать лучшие даты для поездки и посмотреть таблицы.</string>
+    <string name="onboarding_badge_4">Инсайты</string>
+    <string name="starter_guide">Руководство</string>
     <string-array name="month_choices">
         <item>Январь</item>
         <item>Февраль</item>

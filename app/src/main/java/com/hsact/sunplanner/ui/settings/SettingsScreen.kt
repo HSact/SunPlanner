@@ -1,20 +1,20 @@
 package com.hsact.sunplanner.ui.settings
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
@@ -44,13 +44,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import com.hsact.sunplanner.BuildConfig
 import com.hsact.sunplanner.R
 import com.hsact.sunplanner.domain.model.LanguageMode
@@ -75,7 +76,8 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBack: () -> Unit,
     onApplyTheme: (ThemeMode) -> Unit,
-    onChangeLanguage: (LanguageMode) -> Unit
+    onChangeLanguage: (LanguageMode) -> Unit,
+    onOpenGuide: (() -> Unit)? = null
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -270,9 +272,10 @@ fun SettingsScreen(
                 AboutSection(
                     version = uiState.appVersion,
                     onDonateClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(donationUrl))
+                        val intent = Intent(Intent.ACTION_VIEW, donationUrl.toUri())
                         context.startActivity(intent)
-                    }
+                    },
+                    onOpenGuide = onOpenGuide
                 )
             }
 
@@ -447,8 +450,32 @@ private fun UnitSetting(
  * @param onDonateClick Callback for the donation button.
  */
 @Composable
-private fun AboutSection(version: String, onDonateClick: () -> Unit) {
+private fun AboutSection(
+    version: String,
+    onDonateClick: () -> Unit,
+    onOpenGuide: (() -> Unit)? = null
+) {
     Column(modifier = Modifier.padding(16.dp)) {
+        if (onOpenGuide != null) {
+            Button(
+                onClick = onOpenGuide,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.HelpOutline,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(stringResource(R.string.starter_guide))
+            }
+        }
         Text(
             text = stringResource(R.string.app_description),
             style = MaterialTheme.typography.bodyMedium,

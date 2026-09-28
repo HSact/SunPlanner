@@ -28,6 +28,7 @@ import com.hsact.sunplanner.domain.repository.BookmarkRepository
 import com.hsact.sunplanner.domain.repository.HistoryRepository
 import com.hsact.sunplanner.domain.repository.StringProvider
 import com.hsact.sunplanner.domain.repository.WeatherRepository
+import com.hsact.sunplanner.domain.usecase.settings.CompleteOnboardingUseCase
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
@@ -71,7 +72,8 @@ class MainViewModel @Inject constructor(
     private val historyRepository: HistoryRepository,
     private val appLocationManager: AppLocationManager,
     private val crashReportingHelper: CrashReportingHelper,
-    private val performanceHelper: PerformanceHelper
+    private val performanceHelper: PerformanceHelper,
+    private val completeOnboardingUseCase: CompleteOnboardingUseCase
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow(MainUIState())
@@ -151,11 +153,28 @@ class MainViewModel @Inject constructor(
                 _mainUiState.update { it.copy(searchHistory = list) }
             }
         }
+
+        viewModelScope.launch {
+            getSettingsUseCase.hasSeenOnboarding.collect { hasSeen ->
+                if (!hasSeen) {
+                    _mainUiState.update { it.copy(showOnboarding = true) }
+                }
+            }
+        }
     }
 
     fun handleIntent(intent: MainScreenIntents) {
         viewModelScope.launch {
             when (intent) {
+                is MainScreenIntents.DismissOnboarding -> {
+                    _mainUiState.update { it.copy(showOnboarding = false) }
+                    completeOnboardingUseCase(hasSeen = true)
+                }
+
+                is MainScreenIntents.OpenOnboardingGuide -> {
+                    _mainUiState.update { it.copy(showOnboarding = true) }
+                }
+
                 is MainScreenIntents.FetchCityList -> fetchCityList(intent.query)
                 is MainScreenIntents.UpdateSearchQuery -> {
                     _mainUiState.update { it.copy(searchQuery = intent.query) }

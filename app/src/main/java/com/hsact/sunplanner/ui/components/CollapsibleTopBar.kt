@@ -1,6 +1,7 @@
 package com.hsact.sunplanner.ui.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,7 +18,8 @@ import com.hsact.sunplanner.R
 @Composable
 fun CollapsibleTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    onHelpClick: (() -> Unit)? = null
 ) {
     TopAppBar(
         title = {
@@ -27,10 +29,18 @@ fun CollapsibleTopBar(
             )
         },
         actions = {
+            if (onHelpClick != null) {
+                IconButton(onClick = onHelpClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.HelpOutline,
+                        contentDescription = stringResource(R.string.starter_guide)
+                    )
+                }
+            }
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings"
+                    contentDescription = stringResource(R.string.settings)
                 )
             }
         },
