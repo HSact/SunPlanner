@@ -1,11 +1,6 @@
 package com.hsact.sunplanner.domain.model
 
 import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 
 /**
  * Data class that aggregates user settings for the application.

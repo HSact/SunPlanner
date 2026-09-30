@@ -8,20 +8,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.model.ThemeMode
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.ui.components.cards.WeatherGraphDataFactory
+import com.hsact.sunplanner.ui.detailscreen.WeatherDetailScreen
 import com.hsact.sunplanner.ui.mainscreen.MainScreen
+import com.hsact.sunplanner.ui.mainscreen.MainScreenIntents
 import com.hsact.sunplanner.ui.mainscreen.MainViewModel
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.ui.settings.SettingsScreen
 import com.hsact.sunplanner.ui.theme.SunPlannerTheme
 import com.hsact.sunplanner.ui.utils.AppLocaleManager
 import com.hsact.sunplanner.ui.utils.LocalizedContextWrapper
@@ -33,7 +42,11 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
+/**
+ * The main activity and entry point of the SunPlanner application.
+ * Manages navigation, theme application, and locale settings.
+ */
+@OptIn(FlowPreview::class, ExperimentalSharedTransitionApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -50,6 +63,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var selectedLocale: Locale
     val isPreAndroid13 = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
 
+    /**
+     * Overridden to wrap the context with the selected locale on older Android versions.
+     */
     override fun attachBaseContext(base: Context) {
         if (isPreAndroid13) {
             selectedLocale = Locale.getDefault()
@@ -99,17 +115,68 @@ class MainActivity : ComponentActivity() {
                     setAppLocaleLegacy(selectedLanguage)
                 }
             }
+            val navController = rememberNavController()
             SunPlannerTheme(darkTheme = isDarkTheme) {
-                MainScreen(
-                    viewModel,
-                    weatherGraphDataFactory = weatherGraphDataFactory,
-                    onApplyTheme = onApplyTheme,
-                    onChangeLanguage = onChangeLanguage
-                )
+                SharedTransitionLayout {
+                    NavHost(navController = navController, startDestination = "main") {
+                        composable("main") {
+                            MainScreen(
+                                viewModel,
+                                weatherGraphDataFactory = weatherGraphDataFactory,
+                                onNavigateToSettings = { navController.navigate("settings") },
+                                onNavigateToDetail = { metricType ->
+                                    val state = viewModel.mainUiState.value
+                                    val start = state.confirmedDates.start
+                                    val end = state.confirmedDates.end
+                                    val comp = state.comparisonLocation
+                                    val route = if (comp != null) {
+                                        "detail/${metricType.name}/$start/$end?compLat=${comp.latitude}&compLon=${comp.longitude}&compName=${comp.name}"
+                                    } else {
+                                        "detail/${metricType.name}/$start/$end"
+                                    }
+                                    navController.navigate(route)
+                                },
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@composable
+                            )
+                        }
+                        composable(
+                            route = "detail/{metricType}/{start}/{end}?compLat={compLat}&compLon={compLon}&compName={compName}",
+                            arguments = listOf(
+                                navArgument("compLat") { nullable = true },
+                                navArgument("compLon") { nullable = true },
+                                navArgument("compName") { nullable = true }
+                            )
+                        ) {
+                            WeatherDetailScreen(
+                                viewModel = hiltViewModel(),
+                                weatherGraphDataFactory = weatherGraphDataFactory,
+                                onBack = { navController.popBackStack() },
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@composable
+                            )
+                        }
+                        composable("settings") {
+                            SettingsScreen(
+                                viewModel = hiltViewModel(),
+                                onBack = { navController.popBackStack() },
+                                onApplyTheme = onApplyTheme,
+                                onChangeLanguage = onChangeLanguage,
+                                onOpenGuide = {
+                                    navController.popBackStack()
+                                    viewModel.handleIntent(MainScreenIntents.OpenOnboardingGuide)
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 
+    /**
+     * Applies the theme settings for Android versions older than 13.
+     */
     @Suppress("DEPRECATION")
     @Composable
     private fun ApplyThemeLegacy(isDarkTheme: Boolean) {
@@ -129,10 +196,16 @@ class MainActivity : ComponentActivity() {
         controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
     }
 
+    /**
+     * Updates the application language using [AppLocaleManager].
+     */
     private fun setAppLocale(languageMode: LanguageMode) {
         appLocaleManager.changeLanguage(this, languageMode.toName())
     }
 
+    /**
+     * Updates the application language and restarts the app for older Android versions.
+     */
     @Suppress("DEPRECATION")
     private fun setAppLocaleLegacy(languageMode: LanguageMode) {
         val locale = when (languageMode) {
@@ -147,6 +220,9 @@ class MainActivity : ComponentActivity() {
         restartApp()
     }
 
+    /**
+     * Restarts the activity to apply locale changes.
+     */
     private fun restartApp() {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)

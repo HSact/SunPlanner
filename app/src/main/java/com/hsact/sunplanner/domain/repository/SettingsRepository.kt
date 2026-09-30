@@ -1,11 +1,11 @@
 package com.hsact.sunplanner.domain.repository
 
 import com.hsact.sunplanner.data.responses.Location
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
+import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
+import com.hsact.sunplanner.domain.model.TemperatureUnitMode
+import com.hsact.sunplanner.domain.model.ThemeMode
+import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -38,6 +38,9 @@ interface SettingsRepository {
 
     /** Flow emitting the saved location, or null if none. */
     val location: Flow<Location?>
+
+    /** Flow emitting whether the user has seen the onboarding starter guide. */
+    val hasSeenOnboarding: Flow<Boolean>
 
     /**
      * Save the selected theme mode.
@@ -94,4 +97,11 @@ interface SettingsRepository {
      * @param location Location to save.
      */
     suspend fun setLocation(location: Location)
+
+    /**
+     * Save whether the user has completed or skipped the onboarding starter guide.
+     *
+     * @param hasSeen True if onboarding seen, false otherwise.
+     */
+    suspend fun setHasSeenOnboarding(hasSeen: Boolean)
 }

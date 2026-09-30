@@ -1,8 +1,8 @@
 package com.hsact.sunplanner.domain.error
 
-import com.squareup.moshi.JsonDataException
-import com.squareup.moshi.JsonEncodingException
+import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
+import java.io.IOException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -34,6 +34,7 @@ fun Throwable.toApiError(): ApiError = when (this) {
         else -> ApiError.Unknown(this)
     }
 
-    is JsonDataException, is JsonEncodingException -> ApiError.InvalidResponse
+    is SerializationException -> ApiError.InvalidResponse
+    is IOException -> ApiError.NoConnection
     else -> ApiError.Unknown(this)
 }

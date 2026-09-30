@@ -2,6 +2,13 @@ package com.hsact.sunplanner.ui.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.model.PrecipitationUnitMode
+import com.hsact.sunplanner.domain.model.TemperatureUnitMode
+import com.hsact.sunplanner.domain.model.ThemeMode
+import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
+import com.hsact.sunplanner.domain.repository.BookmarkRepository
+import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateCurveOptionUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateDotsOptionUseCase
@@ -10,20 +17,22 @@ import com.hsact.sunplanner.domain.usecase.settings.UpdatePrecipitationUnitUseCa
 import com.hsact.sunplanner.domain.usecase.settings.UpdateTemperatureUnitUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateThemeUseCase
 import com.hsact.sunplanner.domain.usecase.settings.UpdateWindSpeedUnitUseCase
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
-import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.PrecipitationUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.TemperatureUnitMode
-import com.hsact.sunplanner.ui.settings.modes.unitModes.WindSpeedUnitMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Settings screen, responsible for managing user preferences
+ * and app data (cache).
+ *
+ * Uses domain-level use cases to interact with settings storage and repositories.
+ */
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
@@ -33,129 +42,99 @@ class SettingsViewModel @Inject constructor(
     private val updateCurveOptionUseCase: UpdateCurveOptionUseCase,
     private val updateTemperatureUnitUseCase: UpdateTemperatureUnitUseCase,
     private val updateWindSpeedUnitUseCase: UpdateWindSpeedUnitUseCase,
-    private val updatePrecipitationUnitUseCase: UpdatePrecipitationUnitUseCase
+    private val updatePrecipitationUnitUseCase: UpdatePrecipitationUnitUseCase,
+    private val weatherRepository: WeatherRepository,
+    private val bookmarkRepository: BookmarkRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(SettingsUIState())
-    val uiState: StateFlow<SettingsUIState> get() = _uiState
+    /**
+     * Observable state for the Settings UI.
+     */
+    val uiState: StateFlow<SettingsUIState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            observeSettings()
-        }
+        observeSettings()
     }
 
-    private data class UnitsData(
-        val temperatureUnit: TemperatureUnitMode,
-        val windUnit: WindSpeedUnitMode,
-        val precipitationUnit: PrecipitationUnitMode
-    )
-
+    /**
+     * Sets up a combined observer for all setting preferences.
+     * Updates [uiState] whenever any preference changes.
+     */
     private fun observeSettings() {
         viewModelScope.launch {
-            val unitsFlow = combine(
-                getSettingsUseCase.temperatureUnit,
-                getSettingsUseCase.windUnit,
-                getSettingsUseCase.precipitationUnit
-            ) { temperatureUnit, windUnit, precipitationUnit ->
-                UnitsData(temperatureUnit, windUnit, precipitationUnit)
-            }
-
             combine(
                 getSettingsUseCase.theme,
                 getSettingsUseCase.language,
-                unitsFlow,
+                getSettingsUseCase.temperatureUnit,
+                getSettingsUseCase.windUnit,
+                getSettingsUseCase.precipitationUnit,
                 getSettingsUseCase.isDotsVisible,
                 getSettingsUseCase.isEdgesCurved
-            ) { theme, language, units, showDots, isCurved ->
-                _uiState.value.copy(
-                    currentTheme = theme,
-                    currentLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
-                    currentTemperatureUnit = units.temperatureUnit,
-                    currentWindSpeedUnit = units.windUnit,
-                    currentPrecipitationUnit = units.precipitationUnit,
-                    currentDotsOption = if (showDots) 1 else 0,
-                    currentCurvedOption = if (isCurved) 1 else 0,
-                    selectedLanguage = language ?: nameToLanguageMode(Locale.getDefault().language),
+            ) { args: Array<Any?> ->
+                val theme = args[0] as ThemeMode
+                val language = args[1] as? LanguageMode
+                val tempUnit = args[2] as TemperatureUnitMode
+                val windUnit = args[3] as WindSpeedUnitMode
+                val precUnit = args[4] as PrecipitationUnitMode
+                val showDots = args[5] as Boolean
+                val isCurved = args[6] as Boolean
+
+                SettingsUIState(
+                    theme = theme,
+                    language = language ?: LanguageMode.fromName(Locale.getDefault().language),
+                    temperatureUnit = tempUnit,
+                    windSpeedUnit = windUnit,
+                    precipitationUnit = precUnit,
+                    isDotsVisible = showDots,
+                    isEdgesCurved = isCurved
                 )
             }.collect { newState ->
-                _uiState.value = newState
+                _uiState.update {
+                    newState.copy(
+                        isClearCacheDialogOpen = it.isClearCacheDialogOpen,
+                        appVersion = it.appVersion
+                    )
+                }
             }
         }
     }
 
+    /**
+     * Processes user intents from the Settings screen.
+     *
+     * @param intent The [SettingsIntents] to handle.
+     */
     fun handleIntent(intent: SettingsIntents) {
         viewModelScope.launch {
             when (intent) {
-                is SettingsIntents.UpdateTheme -> {
-                    changeTheme(intent.theme)
+                is SettingsIntents.UpdateTheme -> updateThemeUseCase(intent.theme)
+                is SettingsIntents.UpdateLanguage -> updateLanguageUseCase(intent.language)
+                is SettingsIntents.UpdateDotsOption -> updateDotsOptionUseCase(if (intent.isVisible) 1 else 0)
+                is SettingsIntents.UpdateCurveOption -> updateCurveOptionUseCase(if (intent.isCurved) 1 else 0)
+                is SettingsIntents.UpdateTemperatureUnit -> updateTemperatureUnitUseCase(intent.unitTemp)
+                is SettingsIntents.UpdateWindSpeedUnit -> updateWindSpeedUnitUseCase(intent.unitWind)
+                is SettingsIntents.UpdatePrecipitationUnit -> updatePrecipitationUnitUseCase(intent.unitPrecipitation)
+                is SettingsIntents.SetClearCacheDialogVisible -> _uiState.update {
+                    it.copy(
+                        isClearCacheDialogOpen = intent.visible
+                    )
                 }
 
-                is SettingsIntents.UpdateLanguage -> {
-                    changeLanguage(intent.language)
-                }
-
-                is SettingsIntents.UpdateDotsOption -> {
-                    changeDotsOption(intent.dots)
-                }
-
-                is SettingsIntents.UpdateCurveOption -> {
-                    changeCurveOption(intent.curve)
-                }
-
-                is SettingsIntents.UpdateTemperatureUnit -> {
-                    changeTemperatureUnit(intent.unitTemp)
-                }
-
-                is SettingsIntents.UpdateWindSpeedUnit -> {
-                    changeWindSpeedUnit(intent.unitWind)
-                }
-
-                is SettingsIntents.UpdatePrecipitationUnit -> {
-                    changePrecipitationUnit(intent.unitPrecipitation)
-                }
-
-                is SettingsIntents.ApplySettings -> {
-                    applySettings()
+                is SettingsIntents.ClearCache -> {
+                    weatherRepository.clearCache()
+                    bookmarkRepository.clearAll()
+                    _uiState.update { it.copy(isClearCacheDialogOpen = false) }
                 }
             }
         }
     }
 
-    private fun changeTemperatureUnit(temperatureUnit: TemperatureUnitMode) {
-        _uiState.value = _uiState.value.copy(selectedTemperatureUnit = temperatureUnit)
-    }
-
-    private fun changeWindSpeedUnit(windSpeedUnit: WindSpeedUnitMode) {
-        _uiState.value = _uiState.value.copy(selectedWindSpeedUnit = windSpeedUnit)
-    }
-
-    private fun changePrecipitationUnit(precipitationUnit: PrecipitationUnitMode) {
-        _uiState.value = _uiState.value.copy(selectedPrecipitationUnit = precipitationUnit)
-    }
-
-    private suspend fun changeTheme(theme: ThemeMode) {
-        _uiState.value = _uiState.value.copy(selectedTheme = theme)
-        updateThemeUseCase(theme)
-    }
-
-    private fun changeLanguage(language: LanguageMode) {
-        _uiState.value = _uiState.value.copy(selectedLanguage = language)
-    }
-
-    private fun changeDotsOption(dotsOption: Int) {
-        _uiState.value = _uiState.value.copy(selectedDotsOption = dotsOption)
-    }
-
-    private fun changeCurveOption(curveOption: Int) {
-        _uiState.value = _uiState.value.copy(selectedCurvedOption = curveOption)
-    }
-
-    private suspend fun applySettings() {
-        updateLanguageUseCase(_uiState.value.selectedLanguage)
-        updateDotsOptionUseCase(_uiState.value.selectedDotsOption)
-        updateCurveOptionUseCase(_uiState.value.selectedCurvedOption)
-        updateTemperatureUnitUseCase(_uiState.value.selectedTemperatureUnit)
-        updateWindSpeedUnitUseCase(_uiState.value.selectedWindSpeedUnit)
-        updatePrecipitationUnitUseCase(_uiState.value.selectedPrecipitationUnit)
+    /**
+     * Updates the application version string in the UI state.
+     *
+     * @param version The version string (e.g., from BuildConfig).
+     */
+    fun setAppVersion(version: String) {
+        _uiState.update { it.copy(appVersion = version) }
     }
 }

@@ -26,4 +26,15 @@ object LocationUtils {
             city.country
         ).joinToString(", ")
     }
+
+    /**
+     * Builds a secondary, supporting name for the city (admin regions and country).
+     */
+    fun buildCitySecondaryName(city: Location): String {
+        return listOfNotNull(
+            city.admin1,
+            city.admin2,
+            city.country
+        ).distinct().joinToString(", ")
+    }
 }

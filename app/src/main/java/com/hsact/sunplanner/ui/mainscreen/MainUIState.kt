@@ -3,6 +3,7 @@ package com.hsact.sunplanner.ui.mainscreen
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.domain.error.ApiError
+import com.hsact.sunplanner.domain.model.Bookmark
 import com.hsact.sunplanner.domain.model.DatesBundle
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetrics
@@ -23,6 +24,7 @@ import java.time.LocalDate
  * @property isOneDay True if the user has selected a single day, false if a range.
  * @property isOneYear True if the user is requesting stats for one year.
  * @property cityName Name of the city entered by the user.
+ * @property searchQuery Current search query for location search.
  * @property cities List of possible city matches for the entered city name.
  * @property tempDates Temporary date selection (used before confirmation).
  * @property confirmedDates Confirmed date selection (used for querying data).
@@ -37,14 +39,24 @@ data class MainUIState(
     val networkErrorId: String? = null,
     val isLoading: Boolean = false,
     val cityName: String = "",
+    val searchQuery: String = "",
     val cities: List<Location> = emptyList(),
+    val isSearchingCities: Boolean = false,
     val tempDates: DatesBundle = DatesBundle(
         LocalDate.now().minusYears(10),
-        LocalDate.now().minusYears(1)
+        LocalDate.now().plusDays(13).minusYears(1)
     ),
     val confirmedDates: DatesBundle = tempDates,
     val weatherData: WeatherResponse? = null,
     val weatherMetrics: WeatherMetrics = WeatherMetrics(),
+    val comparisonLocation: Location? = null,
+    val comparisonWeatherData: WeatherResponse? = null,
+    val comparisonWeatherMetrics: WeatherMetrics? = null,
+    val isComparisonMode: Boolean = false,
+    val bookmarks: List<Bookmark> = emptyList(),
+    val isBookmarked: Boolean = false,
+    val searchHistory: List<Location> = emptyList(),
+    val showOnboarding: Boolean = false
 ) {
 
     /**

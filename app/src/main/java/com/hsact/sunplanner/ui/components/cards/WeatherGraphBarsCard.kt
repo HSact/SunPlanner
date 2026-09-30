@@ -1,30 +1,49 @@
 package com.hsact.sunplanner.ui.components.cards
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hsact.sunplanner.data.utils.DateUtils
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.domain.model.ThemeMode
 import ir.ehsannarmani.compose_charts.ColumnChart
 import ir.ehsannarmani.compose_charts.extensions.format
 import ir.ehsannarmani.compose_charts.models.AnimationMode
@@ -41,21 +60,23 @@ import java.util.Locale
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun WeatherGraphBarsCard(
-    header: String,
+    title: String,
     barGroups: List<Bars>,
     dates: List<String>,
     startDate: LocalDate,
     endDate: LocalDate,
     locale: Locale,
-    theme: ThemeMode = ThemeMode.SYSTEM
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    unit: String? = null,
+    theme: ThemeMode = ThemeMode.SYSTEM,
+    animate: Boolean = true,
+    valueFormat: Int = 1,
+    onClick: () -> Unit = {}
 ) {
     val max = remember(barGroups) {
         val allValues = barGroups.flatMap { it.values.map { data -> data.value } }
         allValues.maxOrNull() ?: 0.0
-    }
-
-    val hasAnyLabel = remember(barGroups) {
-        barGroups.any { it.label.isNotBlank() }
     }
 
     val isDarkTheme =
@@ -71,83 +92,200 @@ fun WeatherGraphBarsCard(
         else TextStyle(color = Color.Black)
     }
 
-    val labelHelperProperties = LabelHelperProperties(
-        enabled = hasAnyLabel,
-        textStyle = textStyle
-    )
+    // We disable the library's built-in label helper (legend) and draw it manually for better control
+    val labelHelperProperties = LabelHelperProperties(enabled = false)
 
     val gridProperties = GridProperties(enabled = false)
 
     val indicatorProperties = HorizontalIndicatorProperties(
         enabled = true,
         textStyle = textStyle,
+        contentBuilder = { it.format(valueFormat) }
     )
 
-    val popupProperties = PopupProperties(
-        textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
-        contentBuilder = { _, dataIndex, value ->
-            val rounded = value.format(1).toDouble()
-            val date = dates.getOrNull(dataIndex) ?: ""
-            "${rounded.format(1)}\n$date"
-        }
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.97f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "CardPressScale"
     )
 
-    Card(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+    ElevatedCard(
+        modifier = modifier
+            .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
+            .scale(scale),
+        onClick = onClick,
+        interactionSource = interactionSource
+    ) {
         BoxWithConstraints(modifier = Modifier.padding(16.dp)) {
-            var labels = DateUtils.generateAxisXLabels(
+            val numOriginalPointsFromData = if (barGroups.isNotEmpty()) barGroups.first().values.size else 0
+            val numGroups = barGroups.size
+
+            // Compression Detection: if we have fewer data points than dates, we need to map indices.
+            val datesCount = dates.size
+            val ratio = if (numOriginalPointsFromData > 0) datesCount.toDouble() / numOriginalPointsFromData else 1.0
+
+            val popupProperties = PopupProperties(
+                textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
+                contentBuilder = { popup ->
+                    val numGroupsInPopup = barGroups.size
+                    val valueIndexInGroup = popup.valueIndex / numGroupsInPopup
+                    val groupIndex = popup.valueIndex % numGroupsInPopup
+
+                    val dateIdx = (valueIndexInGroup * ratio).toInt().coerceIn(0, datesCount - 1)
+                    val nextDateIdx =
+                        ((valueIndexInGroup + 1) * ratio).toInt().coerceIn(0, datesCount)
+
+                    val date = if (nextDateIdx > dateIdx + 1) {
+                        val d1 = dates.getOrNull(dateIdx) ?: ""
+                        val d2 = dates.getOrNull(nextDateIdx - 1) ?: ""
+                        if (d1 == d2) d1 else "$d1 - $d2"
+                    } else {
+                        dates.getOrNull(dateIdx) ?: ""
+                    }
+                    
+                    val group = barGroups.getOrNull(groupIndex)
+                    val valStr = popup.value.format(valueFormat)
+                    val unitStr = if (unit != null) " $unit" else ""
+                    val labelPrefix = if (group?.label?.isNotBlank() == true) "${group.label}: " else ""
+
+                    "$labelPrefix$valStr$unitStr\n$date"
+                }
+            )
+
+            // Interleave logic: city1 day1, city2 day1, city1 day2...
+
+            // Interleave logic: city1 day1, city2 day1, city1 day2...
+            // We pad with zero-height bars to keep them side-by-side
+            val processedData = if (numGroups > 1) {
+                barGroups.mapIndexed { groupIdx, group ->
+                    val interleavedValues = mutableListOf<Bars.Data>()
+                    val seriesColor = group.values.firstOrNull()?.color ?: SolidColor(Color.Gray)
+                    for (i in 0 until numOriginalPointsFromData) {
+                        for (j in 0 until numGroups) {
+                            if (j == groupIdx) {
+                                interleavedValues.add(group.values[i])
+                            } else {
+                                interleavedValues.add(
+                                    group.values[i].copy(
+                                        value = 0.0,
+                                        color = seriesColor
+                                    )
+                                )
+                            }
+                        }
+                    }
+                    Bars(label = group.label, values = interleavedValues)
+                }
+            } else {
+                barGroups
+            }
+
+            val totalInterleavedPoints =
+                if (processedData.isNotEmpty()) processedData.first().values.size else 0
+
+            var axisLabels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
                 endDate = endDate,
                 locale = locale
             )
+
+            // Fix Axis Labels Alignment: they must match the data points count.
+            if (axisLabels.size > numOriginalPointsFromData && numOriginalPointsFromData > 0) {
+                val labelRatio = axisLabels.size.toDouble() / numOriginalPointsFromData
+                axisLabels = (0 until numOriginalPointsFromData).map { i ->
+                    val idx = (i * labelRatio).toInt().coerceIn(0, axisLabels.size - 1)
+                    axisLabels[idx]
+                }
+            }
+
+            if (numGroups > 1) {
+                axisLabels = axisLabels.flatMap { listOf(it) + List(numGroups - 1) { "" } }
+            }
+
             val density = LocalDensity.current
             val screenWidthPx = with(density) { maxWidth.toPx() }
-            val totalWidth = totalTextWidth(labels, textStyle)
-            labels = DateUtils.reduceAxisXLabels(labels, totalWidth, screenWidthPx.toDouble())
-            if (labels.size < 2) {
-                labels = labels + labels
+            val totalWidth = totalTextWidth(axisLabels, textStyle)
+            axisLabels =
+                DateUtils.reduceAxisXLabels(axisLabels, totalWidth, screenWidthPx.toDouble())
+            if (axisLabels.size < 2) {
+                axisLabels = axisLabels + axisLabels
             }
             val labelProperties = LabelProperties(
                 enabled = true,
                 textStyle = textStyle,
-                labels = labels,
+                labels = axisLabels,
                 rotation = LabelProperties.Rotation(degree = 0f)
             )
 
-            val totalBars = barGroups.first().values.size
-            val spacing = if ((120 / totalBars) > 2) 2.dp else (120 / totalBars).dp
-            val totalSpacing = spacing * (totalBars - 1)
-            val barThickness = (maxWidth - (18 * 2).dp - totalSpacing) / totalBars
+            val spacing = 2.dp
+            val barThickness = if (totalInterleavedPoints > 0) {
+                (maxWidth - (spacing * (totalInterleavedPoints - 1))) / totalInterleavedPoints
+            } else 15.dp
+
             val barProperties = BarProperties(
-                thickness = barThickness,
+                thickness = barThickness.coerceAtLeast(2.dp),
                 spacing = spacing,
-                cornerRadius = Bars.Data.Radius.Rectangle(topRight = 8.dp, topLeft = 8.dp),
+                cornerRadius = Bars.Data.Radius.Rectangle(topRight = 4.dp, topLeft = 4.dp),
             )
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
-                Text(
-                    text = header,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
+                Column {
+                    WeatherCardHeader(title = title, unit = unit, icon = icon)
 
-                ColumnChart(
-                    modifier = Modifier
-                        .heightIn(max = 300.dp)
-                        .padding(top = 52.dp),
-                    data = barGroups,
-                    barProperties = barProperties,
-                    animationMode =
-                        if (totalBars < 100) AnimationMode.Together(delayBuilder = { it * 10L })
-                        else AnimationMode.Together(delayBuilder = { 0L }
-                        ),
-                    gridProperties = gridProperties,
-                    indicatorProperties = indicatorProperties,
-                    labelHelperProperties = labelHelperProperties,
-                    labelProperties = labelProperties,
-                    popupProperties = popupProperties,
-                    maxValue = max
-                )
+                    // Manual Legend
+                    if (numGroups > 1) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            barGroups.forEach { group ->
+                                val brush =
+                                    group.values.firstOrNull()?.color ?: SolidColor(Color.Gray)
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.padding(horizontal = 8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .clip(CircleShape)
+                                            .background(brush)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = group.label,
+                                        style = MaterialTheme.typography.labelSmall
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    ColumnChart(
+                        modifier = Modifier
+                            .heightIn(max = 300.dp),
+                        data = processedData,
+                        barProperties = barProperties,
+                        animationMode =
+                            if (animate && numOriginalPointsFromData < 100) AnimationMode.Together(
+                                delayBuilder = { it * 10L })
+                            else AnimationMode.None,
+                        gridProperties = gridProperties,
+                        indicatorProperties = indicatorProperties,
+                        labelHelperProperties = labelHelperProperties,
+                        labelProperties = labelProperties,
+                        popupProperties = popupProperties,
+                        maxValue = max
+                    )
+                }
             }
         }
     }
@@ -168,11 +306,11 @@ private fun CardPreview() {
     )
 
     WeatherGraphBarsCard(
-        header = "Average Temperature",
+        title = "Average Temperature",
         barGroups = listOf(previewBars),
         dates = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"),
         startDate = LocalDate.now().minusDays(10),
         endDate = LocalDate.now(),
-        locale = Locale.getDefault()
+        locale = LocalLocale.current.platformLocale
     )
 }

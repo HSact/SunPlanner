@@ -7,9 +7,9 @@ import com.google.firebase.Firebase
 import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.analytics
+import com.hsact.sunplanner.domain.model.LanguageMode
+import com.hsact.sunplanner.domain.monitoring.CrashReportingHelper
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
-import com.hsact.sunplanner.ui.settings.modes.LanguageMode
-import com.hsact.sunplanner.ui.settings.modes.nameToLanguageMode
 import com.hsact.sunplanner.ui.utils.AppLocaleManager
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +43,9 @@ class SunPlanner : Application() {
     @Inject
     lateinit var appLocaleManager: AppLocaleManager
 
+    @Inject
+    lateinit var crashReportingHelper: CrashReportingHelper
+
     /**
      * Flag indicating whether the device is running an Android version older than Android 13 (Tiramisu).
      */
@@ -60,6 +63,11 @@ class SunPlanner : Application() {
         Log.d("FirebaseInit", "Firebase initialized: ${FirebaseApp.getInstance().name}")
         Log.d("FirebaseInit", "Firebase analytics: ${Firebase.analytics}")
         Firebase.analytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null)
+        
+        crashReportingHelper.setCustomKey("app_version", BuildConfig.VERSION_NAME)
+        crashReportingHelper.setCustomKey("build_type", BuildConfig.BUILD_TYPE)
+        crashReportingHelper.setCustomKey("android_sdk", Build.VERSION.SDK_INT)
+        
         applySavedLanguage()
     }
 
@@ -81,7 +89,7 @@ class SunPlanner : Application() {
         } else {
             CoroutineScope(Dispatchers.Default).launch {
                 val langMode = getSettingsUseCase.language.firstOrNull()
-                    ?: nameToLanguageMode(Locale.getDefault().language)
+                    ?: LanguageMode.fromName(Locale.getDefault().language)
                 appLocaleManager.changeLanguage(this@SunPlanner, langMode.toName())
                 setLocale(langMode)
             }

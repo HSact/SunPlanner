@@ -1,65 +1,82 @@
 package com.hsact.sunplanner.ui.components.cards
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.core.EaseInOutCubic
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hsact.sunplanner.data.utils.DateUtils
-import com.hsact.sunplanner.ui.settings.modes.ThemeMode
+import com.hsact.sunplanner.domain.model.ThemeMode
 import ir.ehsannarmani.compose_charts.LineChart
+import ir.ehsannarmani.compose_charts.extensions.format
 import ir.ehsannarmani.compose_charts.models.AnimationMode
-import ir.ehsannarmani.compose_charts.models.DrawStyle
 import ir.ehsannarmani.compose_charts.models.GridProperties
 import ir.ehsannarmani.compose_charts.models.HorizontalIndicatorProperties
 import ir.ehsannarmani.compose_charts.models.LabelHelperProperties
 import ir.ehsannarmani.compose_charts.models.LabelProperties
 import ir.ehsannarmani.compose_charts.models.Line
+import ir.ehsannarmani.compose_charts.models.PopupProperties
 import ir.ehsannarmani.compose_charts.models.ZeroLineProperties
 import java.time.LocalDate
 import java.util.Locale
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun WeatherGraphLineCard(
-    header: String,
+    title: String,
     lineList: List<Line>,
+    dates: List<String>,
     startDate: LocalDate,
     endDate: LocalDate,
     locale: Locale,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+    unit: String? = null,
     theme: ThemeMode = ThemeMode.SYSTEM,
-    minIsZero: Boolean = false
+    minIsZero: Boolean = false,
+    animate: Boolean = true,
+    valueFormat: Int = 1,
+    onClick: () -> Unit = {}
 ) {
-
     val (min, max) = remember(lineList) {
         val allValues = lineList.flatMap { it.values }
         val max = allValues.maxOrNull() ?: 0.0
         val min = if (minIsZero) 0.0 else allValues.minOrNull() ?: 0.0
         min to max
-    }
-
-    val hasAnyLabel = remember(lineList) {
-        lineList.any { it.label.isNotBlank() }
     }
 
     val isDarkTheme =
@@ -75,31 +92,85 @@ fun WeatherGraphLineCard(
         else TextStyle(color = Color.Black)
     }
 
-    val labelHelperProperties = LabelHelperProperties(
-        enabled = hasAnyLabel,
-        textStyle = textStyle
-    )
+    // Compression Detection for Popups
+    val datesCount = dates.size
+    val numPoints = if (lineList.isNotEmpty()) lineList.first().values.size else 0
+    val ratio = if (numPoints > 0) datesCount.toDouble() / numPoints else 1.0
+
+    // We disable the library's built-in label helper (legend) and draw it manually
+    val labelHelperProperties = LabelHelperProperties(enabled = false)
 
     val gridProperties = GridProperties(enabled = false)
 
     val indicatorProperties = HorizontalIndicatorProperties(
         enabled = true,
         textStyle = textStyle,
+        contentBuilder = { it.format(valueFormat) }
     )
 
-    val animationMode = if (lineList.first().values.size < 100) {
-        AnimationMode.Together(delayBuilder = { it * 500L })
+    val popupProperties = PopupProperties(
+        textStyle = TextStyle.Default.copy(fontSize = 12.sp, color = Color.White),
+        contentBuilder = { popup ->
+            val dateIdx = (popup.valueIndex * ratio).toInt().coerceIn(0, datesCount - 1)
+            val nextDateIdx = ((popup.valueIndex + 1) * ratio).toInt().coerceIn(0, datesCount)
+
+            val date = if (nextDateIdx > dateIdx + 1) {
+                val d1 = dates.getOrNull(dateIdx) ?: ""
+                val d2 = dates.getOrNull(nextDateIdx - 1) ?: ""
+                if (d1 == d2) d1 else "$d1 - $d2"
+            } else {
+                dates.getOrNull(dateIdx) ?: ""
+            }
+            
+            val line = lineList.getOrNull(popup.dataIndex)
+            val labelPrefix = if (line?.label != null) "${line.label}: " else ""
+            val rounded = popup.value.format(valueFormat)
+            val unitStr = if (unit != null) " $unit" else ""
+            "$labelPrefix$rounded$unitStr\n$date"
+        }
+    )
+
+    val animationMode =
+        if (animate && numPoints > 0 && numPoints < 100) {
+            AnimationMode.Together(delayBuilder = { it * 10L })
     } else {
-        AnimationMode.Together(delayBuilder = { 0L })
+            AnimationMode.None
     }
 
-    Card(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 24.dp)) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.97f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "CardPressScale"
+    )
+
+    ElevatedCard(
+        modifier = modifier
+            .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
+            .scale(scale),
+        onClick = onClick,
+        interactionSource = interactionSource
+    ) {
         BoxWithConstraints(modifier = Modifier.padding(16.dp)) {
             var labels = DateUtils.generateAxisXLabels(
                 startDate = startDate,
                 endDate = endDate,
                 locale = locale
             )
+
+            // Fix Axis Labels Alignment
+            if (labels.size > numPoints && numPoints > 0) {
+                val labelRatio = labels.size.toDouble() / numPoints
+                labels = (0 until numPoints).map { i ->
+                    val idx = (i * labelRatio).toInt().coerceIn(0, labels.size - 1)
+                    labels[idx]
+                }
+            }
+            
             val density = LocalDensity.current
             val screenWidthPx = with(density) { maxWidth.toPx() }
             val totalWidth = totalTextWidth(labels, textStyle)
@@ -115,51 +186,97 @@ fun WeatherGraphLineCard(
                 rotation = LabelProperties.Rotation(degree = 0f)
             )
             CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.bodyLarge) {
-                Text(
-                    text = header,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentWidth(Alignment.CenterHorizontally)
-                )
+                Column {
+                    WeatherCardHeader(title = title, unit = unit, icon = icon)
 
-                LineChart(
-                    data = lineList,
-                    animationMode = animationMode,
-                    gridProperties = gridProperties,
-                    zeroLineProperties = ZeroLineProperties(enabled = false),
-                    indicatorProperties = indicatorProperties,
-                    labelHelperProperties = labelHelperProperties,
-                    labelProperties = labelProperties,
-                    minValue = min,
-                    maxValue = max,
-                    modifier = Modifier
-                        .heightIn(max = 300.dp)
-                        .padding(top = 52.dp)
-                )
+                    // Manual Legend for Line Cards
+                    if (lineList.size > 1) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            lineList.forEach { line ->
+                                if (line.label?.isNotBlank() == true) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 8.dp)
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(8.dp)
+                                                .clip(CircleShape)
+                                                .background(line.color)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = line.label!!,
+                                            style = MaterialTheme.typography.labelSmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LineChart(
+                        data = lineList,
+                        animationMode = animationMode,
+                        gridProperties = gridProperties,
+                        zeroLineProperties = ZeroLineProperties(enabled = false),
+                        indicatorProperties = indicatorProperties,
+                        labelHelperProperties = labelHelperProperties,
+                        labelProperties = labelProperties,
+                        popupProperties = popupProperties,
+                        minValue = min,
+                        maxValue = max,
+                        modifier = Modifier
+                            .heightIn(max = 300.dp)
+                    )
+                }
             }
         }
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-private fun WeatherGraphLineCardPreview() {
-    val previewLine = Line(
-        label = "Max",
-        values = listOf(0.0, 2.0, -3.0, 7.0, 10.0, 12.0, 18.0, 25.0, 27.0, 30.0),
-        color = SolidColor(Color(0xFFFF0000)),
-        firstGradientFillColor = Color(0xFFFF0000).copy(alpha = .5f),
-        secondGradientFillColor = Color.Transparent,
-        strokeAnimationSpec = tween(2000, easing = EaseInOutCubic),
-        gradientAnimationDelay = 1000,
-        drawStyle = DrawStyle.Stroke(width = 2.dp)
-    )
-    WeatherGraphLineCard(
-        lineList = listOf(previewLine),
-        header = "Temperature",
-        startDate = LocalDate.now().minusDays(14),
-        endDate = LocalDate.now(),
-        locale = Locale.getDefault()
-    )
+fun WeatherCardHeader(
+    modifier: Modifier = Modifier,
+    title: String,
+    unit: String? = null,
+    icon: ImageVector? = null,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+        }
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        if (unit != null) {
+            Text(
+                text = " ($unit)",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .alignByBaseline()
+            )
+        }
+    }
 }
