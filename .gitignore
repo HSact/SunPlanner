@@ -1,11 +1,15 @@
 # Built artifacts
 /build
 /app/build
+/app/release
 *.apk
 *.aar
 *.ap_
 *.dex
 *.class
+mapping.txt
+native-debug-symbols.zip
+output-metadata.json
 
 # IDE - IntelliJ / Android Studio
 .idea/
