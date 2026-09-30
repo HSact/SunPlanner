@@ -44,13 +44,32 @@ See the documentation [here](https://hsact.github.io/SunPlanner/).
 
 ## Screenshots
 
-| Main screen | Search city | Weather data 1 | Weather data 2 |
-| :---: | :---: | :---: | :---: |
-| ![Main screen](screenshots/main_screen.png) | ![Search city](screenshots/search.png) | ![Weather data 1](screenshots/graph1.png) | ![Weather data 2](screenshots/graph2.png) |
-
-| Detail view | Settings | Comparison 1 | Comparison 2 |
-| :---: | :---: | :---: | :---: |
-| ![Detail view](screenshots/detail.png) | ![Settings](screenshots/settings.png) | ![Comparison 1](screenshots/compare1.png) | ![Comparison 2](screenshots/compare2.png) |
+<table width="100%">
+  <tr>
+    <td width="25%" align="center"><b>Main screen</b></td>
+    <td width="25%" align="center"><b>Search city</b></td>
+    <td width="25%" align="center"><b>Weather data 1</b></td>
+    <td width="25%" align="center"><b>Weather data 2</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/main_screen.png" alt="Main screen" /></td>
+    <td align="center"><img src="screenshots/search.png" alt="Search city" /></td>
+    <td align="center"><img src="screenshots/graph1.png" alt="Weather data 1" /></td>
+    <td align="center"><img src="screenshots/graph2.png" alt="Weather data 2" /></td>
+  </tr>
+  <tr>
+    <td width="25%" align="center"><b>Detail view</b></td>
+    <td width="25%" align="center"><b>Settings</b></td>
+    <td width="25%" align="center"><b>Comparison 1</b></td>
+    <td width="25%" align="center"><b>Comparison 2</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/detail.png" alt="Detail view" /></td>
+    <td align="center"><img src="screenshots/settings.png" alt="Settings" /></td>
+    <td align="center"><img src="screenshots/compare1.png" alt="Comparison 1" /></td>
+    <td align="center"><img src="screenshots/compare2.png" alt="Comparison 2" /></td>
+  </tr>
+</table>
 
 ## 📥 Installation 
 
@@ -103,13 +122,32 @@ SunPlanner — это приложение для анализа истории 
 
 ## Скриншоты
 
-| Главный экран | Поиск города | Данные погоды 1 | Данные погоды 2 |
-| :---: | :---: | :---: | :---: |
-| ![Главный экран](screenshots/main_screen.png) | ![Поиск города](screenshots/search.png) | ![Данные погоды 1](screenshots/graph1.png) | ![Данные погоды 2](screenshots/graph2.png) |
-
-| Детальная информация | Настройки | Сравнение 1 | Сравнение 2 |
-| :---: | :---: | :---: | :---: |
-| ![Детальная информация](screenshots/detail.png) | ![Настройки](screenshots/settings.png) | ![Сравнение 1](screenshots/compare1.png) | ![Сравнение 2](screenshots/compare2.png) |
+<table width="100%">
+  <tr>
+    <td width="25%" align="center"><b>Главный экран</b></td>
+    <td width="25%" align="center"><b>Поиск города</b></td>
+    <td width="25%" align="center"><b>Данные погоды 1</b></td>
+    <td width="25%" align="center"><b>Данные погоды 2</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/main_screen.png" alt="Главный экран" /></td>
+    <td align="center"><img src="screenshots/search.png" alt="Поиск города" /></td>
+    <td align="center"><img src="screenshots/graph1.png" alt="Данные погоды 1" /></td>
+    <td align="center"><img src="screenshots/graph2.png" alt="Данные погоды 2" /></td>
+  </tr>
+  <tr>
+    <td width="25%" align="center"><b>Детальная информация</b></td>
+    <td width="25%" align="center"><b>Настройки</b></td>
+    <td width="25%" align="center"><b>Сравнение 1</b></td>
+    <td width="25%" align="center"><b>Сравнение 2</b></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/detail.png" alt="Детальная информация" /></td>
+    <td align="center"><img src="screenshots/settings.png" alt="Настройки" /></td>
+    <td align="center"><img src="screenshots/compare1.png" alt="Сравнение 1" /></td>
+    <td align="center"><img src="screenshots/compare2.png" alt="Сравнение 2" /></td>
+  </tr>
+</table>
 
 ## 📥 Установка
 
