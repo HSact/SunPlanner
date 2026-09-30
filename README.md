@@ -44,24 +44,10 @@ See the documentation [here](https://hsact.github.io/SunPlanner/).
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td><img src="screenshots/main_screen.png" alt="Main screen" width="250"/></td>
-    <td><img src="screenshots/search.png" alt="Search city" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/graph1.png" alt="Weather data 1" width="250"/></td>
-    <td><img src="screenshots/graph2.png" alt="Weather data 2" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/detail.png" alt="Detail view" width="250"/></td>
-    <td><img src="screenshots/settings.png" alt="Settings" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/compare1.png" alt="Comparison 1" width="250"/></td>
-    <td><img src="screenshots/compare2.png" alt="Comparison 2" width="250"/></td>
-  </tr>
-</table>
+| | | | |
+| :---: | :---: | :---: | :---: |
+| ![Main screen](screenshots/main_screen.png) | ![Search city](screenshots/search.png) | ![Weather data 1](screenshots/graph1.png) | ![Weather data 2](screenshots/graph2.png) |
+| ![Detail view](screenshots/detail.png) | ![Settings](screenshots/settings.png) | ![Comparison 1](screenshots/compare1.png) | ![Comparison 2](screenshots/compare2.png) |
 
 ## 📥 Installation 
 
@@ -114,24 +100,10 @@ SunPlanner — это приложение для анализа истории 
 
 ## Скриншоты
 
-<table>
-  <tr>
-    <td><img src="screenshots/main_screen.png" alt="Главный экран" width="250"/></td>
-    <td><img src="screenshots/search.png" alt="Поиск города" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/graph1.png" alt="Данные погоды 1" width="250"/></td>
-    <td><img src="screenshots/graph2.png" alt="Данные погоды 2" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/detail.png" alt="Детальная информация" width="250"/></td>
-    <td><img src="screenshots/settings.png" alt="Настройки" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/compare1.png" alt="Сравнение 1" width="250"/></td>
-    <td><img src="screenshots/compare2.png" alt="Сравнение 2" width="250"/></td>
-  </tr>
-</table>
+| | | | |
+| :---: | :---: | :---: | :---: |
+| ![Главный экран](screenshots/main_screen.png) | ![Поиск города](screenshots/search.png) | ![Данные погоды 1](screenshots/graph1.png) | ![Данные погоды 2](screenshots/graph2.png) |
+| ![Детальная информация](screenshots/detail.png) | ![Настройки](screenshots/settings.png) | ![Сравнение 1](screenshots/compare1.png) | ![Сравнение 2](screenshots/compare2.png) |
 
 ## 📥 Установка
 
