@@ -44,9 +44,12 @@ See the documentation [here](https://hsact.github.io/SunPlanner/).
 
 ## Screenshots
 
-| | | | |
+| Main screen | Search city | Weather data 1 | Weather data 2 |
 | :---: | :---: | :---: | :---: |
 | ![Main screen](screenshots/main_screen.png) | ![Search city](screenshots/search.png) | ![Weather data 1](screenshots/graph1.png) | ![Weather data 2](screenshots/graph2.png) |
+
+| Detail view | Settings | Comparison 1 | Comparison 2 |
+| :---: | :---: | :---: | :---: |
 | ![Detail view](screenshots/detail.png) | ![Settings](screenshots/settings.png) | ![Comparison 1](screenshots/compare1.png) | ![Comparison 2](screenshots/compare2.png) |
 
 ## 📥 Installation 
@@ -100,9 +103,12 @@ SunPlanner — это приложение для анализа истории 
 
 ## Скриншоты
 
-| | | | |
+| Главный экран | Поиск города | Данные погоды 1 | Данные погоды 2 |
 | :---: | :---: | :---: | :---: |
 | ![Главный экран](screenshots/main_screen.png) | ![Поиск города](screenshots/search.png) | ![Данные погоды 1](screenshots/graph1.png) | ![Данные погоды 2](screenshots/graph2.png) |
+
+| Детальная информация | Настройки | Сравнение 1 | Сравнение 2 |
+| :---: | :---: | :---: | :---: |
 | ![Детальная информация](screenshots/detail.png) | ![Настройки](screenshots/settings.png) | ![Сравнение 1](screenshots/compare1.png) | ![Сравнение 2](screenshots/compare2.png) |
 
 ## 📥 Установка
