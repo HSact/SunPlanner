@@ -47,18 +47,26 @@ See the documentation [here](https://hsact.github.io/SunPlanner/).
 <table>
   <tr>
     <td><img src="screenshots/main_screen.png" alt="Main screen" width="250"/></td>
-    <td><img src="screenshots/search.png" alt="Search your city" width="250"/></td>
+    <td><img src="screenshots/search.png" alt="Search city" width="250"/></td>
   </tr>
   <tr>
     <td><img src="screenshots/graph1.png" alt="Weather data 1" width="250"/></td>
     <td><img src="screenshots/graph2.png" alt="Weather data 2" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/detail.png" alt="Detail view" width="250"/></td>
+    <td><img src="screenshots/settings.png" alt="Settings" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/compare1.png" alt="Comparison 1" width="250"/></td>
+    <td><img src="screenshots/compare2.png" alt="Comparison 2" width="250"/></td>
   </tr>
 </table>
 
 ## 📥 Installation 
 
 🔹 **Via [Obtainium](https://github.com/ImranR98/Obtainium)**  
-Obtainium is an app that allows automatic APK updates from GitHub. If you have Obtainium installed, add this repository to keep TaxiLog up to date.  
+Obtainium is an app that allows automatic APK updates from GitHub. If you have Obtainium installed, add this repository to keep SunPlanner up to date.  
 
 🔹 **Alternative method**  
 1. Go to the [Releases](https://github.com/HSact/SunPlanner/releases) section.  
@@ -104,6 +112,26 @@ SunPlanner — это приложение для анализа истории 
 
 Смотрите документацию [тут](https://hsact.github.io/SunPlanner/).
 
+## Скриншоты
+
+<table>
+  <tr>
+    <td><img src="screenshots/main_screen.png" alt="Главный экран" width="250"/></td>
+    <td><img src="screenshots/search.png" alt="Поиск города" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/graph1.png" alt="Данные погоды 1" width="250"/></td>
+    <td><img src="screenshots/graph2.png" alt="Данные погоды 2" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/detail.png" alt="Детальная информация" width="250"/></td>
+    <td><img src="screenshots/settings.png" alt="Настройки" width="250"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/compare1.png" alt="Сравнение 1" width="250"/></td>
+    <td><img src="screenshots/compare2.png" alt="Сравнение 2" width="250"/></td>
+  </tr>
+</table>
 
 ## 📥 Установка
 
