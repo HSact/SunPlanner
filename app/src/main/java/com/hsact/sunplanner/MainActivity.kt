@@ -8,8 +8,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,7 +48,7 @@ import javax.inject.Inject
  * The main activity and entry point of the SunPlanner application.
  * Manages navigation, theme application, and locale settings.
  */
-@OptIn(FlowPreview::class, ExperimentalSharedTransitionApi::class)
+@OptIn(FlowPreview::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -116,9 +118,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
             val navController = rememberNavController()
+            val animDurationMillis = 300
             SunPlannerTheme(darkTheme = isDarkTheme) {
                 SharedTransitionLayout {
-                    NavHost(navController = navController, startDestination = "main") {
+                    NavHost(
+                        navController = navController,
+                        startDestination = "main",
+                        enterTransition = { fadeIn(animationSpec = tween(animDurationMillis)) },
+                        exitTransition = { fadeOut(animationSpec = tween(animDurationMillis)) },
+                        popEnterTransition = { fadeIn(animationSpec = tween(animDurationMillis)) },
+                        popExitTransition = { fadeOut(animationSpec = tween(animDurationMillis)) }
+                    ) {
                         composable("main") {
                             MainScreen(
                                 viewModel,

@@ -6,6 +6,14 @@
         <entry key="Firebase Crashlytics">
           <value>
             <InsightsFilterSettings>
+              <option name="connection">
+                <ConnectionSetting>
+                  <option name="appId" value="com.hsact.sunplanner" />
+                  <option name="mobileSdkAppId" value="1:557808204953:android:236ce062c2acf906120c08" />
+                  <option name="projectId" value="sunplanner0" />
+                  <option name="projectNumber" value="557808204953" />
+                </ConnectionSetting>
+              </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
               <option name="timeIntervalDays" value="THIRTY_DAYS" />
               <option name="visibilityType" value="ALL" />
