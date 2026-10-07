@@ -10,9 +10,12 @@ import com.hsact.sunplanner.data.network.OpenMeteoService
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import com.hsact.sunplanner.di.DefaultDispatcher
 import com.hsact.sunplanner.domain.repository.WeatherRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,7 +25,8 @@ class WeatherRepositoryImpl @Inject constructor(
     private val openMeteoService: OpenMeteoService,
     private val openMeteoGeo: OpenMeteoGeo,
     private val airQualityService: OpenMeteoAirQuality,
-    private val cacheDao: WeatherCacheDao
+    private val cacheDao: WeatherCacheDao,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : WeatherRepository {
 
     override suspend fun getCitiesList(cityName: String, language: String): List<Location>? {
@@ -63,7 +67,9 @@ class WeatherRepositoryImpl @Inject constructor(
         if (cached != null) {
             Log.d("SunPlannerDebug", "Found data in cache")
             try {
-                return Json.decodeFromString<WeatherResponse>(cached.jsonResponse)
+                return withContext(defaultDispatcher) {
+                    Json.decodeFromString<WeatherResponse>(cached.jsonResponse)
+                }
             } catch (e: Exception) {
                 Log.e("SunPlannerDebug", "Error decoding cache", e)
             }
@@ -102,7 +108,9 @@ class WeatherRepositoryImpl @Inject constructor(
             val aqiResponse = aqiDeferred.await()
             Log.d("SunPlannerDebug", "AQI network response: ${aqiResponse != null}")
 
-            val dailyAqi = aggregateHourlyAqiToDaily(aqiResponse, weatherResponse.daily.time)
+            val dailyAqi = withContext(defaultDispatcher) {
+                aggregateHourlyAqiToDaily(aqiResponse, weatherResponse.daily.time)
+            }
             Log.d("SunPlannerDebug", "Processed AQI size: ${dailyAqi.size}")
 
             val finalResponse = weatherResponse.copy(
@@ -110,7 +118,9 @@ class WeatherRepositoryImpl @Inject constructor(
             )
 
             try {
-                val json = Json.encodeToString(finalResponse)
+                val json = withContext(defaultDispatcher) {
+                    Json.encodeToString(finalResponse)
+                }
                 cacheDao.insertWeather(CachedWeather(cacheId, json))
                 cacheDao.clearOldCache()
                 Log.d("SunPlannerDebug", "Response saved to cache")

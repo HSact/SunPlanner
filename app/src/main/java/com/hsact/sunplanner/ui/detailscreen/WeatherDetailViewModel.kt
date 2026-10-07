@@ -94,30 +94,40 @@ class WeatherDetailViewModel @Inject constructor(
     }
 
     fun selectYear(year: Int?) {
-        _uiState.update { 
-            it.copy(
-                selectedYear = year, 
-                displayMode = DetailDisplayMode.TABLE,
-                summary = calculateCurrentSummary(it.yearlyData, year),
-                compSummary = calculateCurrentSummary(it.compYearlyData, year)
-            ) 
+        viewModelScope.launch {
+            val current = _uiState.value
+            val summary = calculateCurrentSummary(current.yearlyData, year)
+            val compSummary = calculateCurrentSummary(current.compYearlyData, year)
+            _uiState.update { 
+                it.copy(
+                    selectedYear = year, 
+                    displayMode = DetailDisplayMode.TABLE,
+                    summary = summary,
+                    compSummary = compSummary
+                ) 
+            }
         }
     }
 
     fun toggleDisplayMode() {
-        _uiState.update { 
-            val newMode = if (it.displayMode == DetailDisplayMode.LIST) DetailDisplayMode.TABLE else DetailDisplayMode.LIST
-            val year = if (newMode == DetailDisplayMode.LIST) null else it.selectedYear
-            it.copy(
-                displayMode = newMode, 
-                selectedYear = year,
-                summary = calculateCurrentSummary(it.yearlyData, year),
-                compSummary = calculateCurrentSummary(it.compYearlyData, year)
-            )
+        viewModelScope.launch {
+            val current = _uiState.value
+            val newMode = if (current.displayMode == DetailDisplayMode.LIST) DetailDisplayMode.TABLE else DetailDisplayMode.LIST
+            val year = if (newMode == DetailDisplayMode.LIST) null else current.selectedYear
+            val summary = calculateCurrentSummary(current.yearlyData, year)
+            val compSummary = calculateCurrentSummary(current.compYearlyData, year)
+            _uiState.update { 
+                it.copy(
+                    displayMode = newMode, 
+                    selectedYear = year,
+                    summary = summary,
+                    compSummary = compSummary
+                ) 
+            }
         }
     }
 
-    private fun calculateCurrentSummary(data: List<DetailedYearlyData>, year: Int?): WeatherDetailSummary {
+    private suspend fun calculateCurrentSummary(data: List<DetailedYearlyData>, year: Int?): WeatherDetailSummary {
         val filtered = if (year != null) data.filter { it.year == year } else data
         return analyticHelper.calculateSummary(filtered, metricType)
     }
