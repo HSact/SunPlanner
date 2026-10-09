@@ -27,6 +27,7 @@ import com.hsact.sunplanner.domain.monitoring.PerformanceHelper
 import com.hsact.sunplanner.domain.repository.BookmarkRepository
 import com.hsact.sunplanner.domain.repository.HistoryRepository
 import com.hsact.sunplanner.domain.repository.StringProvider
+import com.hsact.sunplanner.di.DefaultDispatcher
 import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.CompleteOnboardingUseCase
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase
@@ -34,7 +35,7 @@ import com.hsact.sunplanner.domain.usecase.settings.UpdateLocationUseCase
 import com.hsact.sunplanner.domain.usecase.weather.FetchFilteredWeatherUseCase
 import com.hsact.sunplanner.ui.utils.AppLocationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -73,7 +74,8 @@ class MainViewModel @Inject constructor(
     private val appLocationManager: AppLocationManager,
     private val crashReportingHelper: CrashReportingHelper,
     private val performanceHelper: PerformanceHelper,
-    private val completeOnboardingUseCase: CompleteOnboardingUseCase
+    private val completeOnboardingUseCase: CompleteOnboardingUseCase,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private val _mainUiState = MutableStateFlow(MainUIState())
@@ -410,11 +412,10 @@ class MainViewModel @Inject constructor(
             return
         }
 
-        _mainUiState.update { it.copy(confirmedDates = it.tempDates) }
-        updateBookmarkStatus()
+        val targetDates = state.tempDates
 
         val params =
-            prepareParamsForRequest(state.settingsBundle, state.confirmedDates) ?: return
+            prepareParamsForRequest(state.settingsBundle, targetDates) ?: return
         Log.d("SunPlannerDebug", "Params prepared: ${params.latitude}, ${params.longitude}")
 
         val traceName = "weather_fetch_trace"
@@ -430,8 +431,8 @@ class MainViewModel @Inject constructor(
                 val mainDeferred = async {
                     fetchFilteredWeatherUseCase.execute(
                         params,
-                        state.confirmedDates.start,
-                        state.confirmedDates.end
+                        targetDates.start,
+                        targetDates.end
                     )
                 }
 
@@ -448,8 +449,8 @@ class MainViewModel @Inject constructor(
                         async {
                             fetchFilteredWeatherUseCase.execute(
                                 compParams,
-                                state.confirmedDates.start,
-                                state.confirmedDates.end
+                                targetDates.start,
+                                targetDates.end
                             )
                         }
                     } else null
@@ -462,7 +463,7 @@ class MainViewModel @Inject constructor(
                     "Comparison weather response received"
                 )
 
-                updateWeatherState(mainResponse, compResponse)
+                updateWeatherState(mainResponse, compResponse, targetDates)
                 performanceHelper.stopTrace(traceName)
             }
         } catch (e: Exception) {
@@ -514,15 +515,19 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateWeatherState(mainData: WeatherResponse, compData: WeatherResponse?) {
-        val state = _mainUiState.value
+    private suspend fun updateWeatherState(
+        mainData: WeatherResponse, 
+        compData: WeatherResponse?,
+        targetDates: DatesBundle
+    ) {
         Log.d("SunPlannerDebug", "updateWeatherState started")
-        val isOneDay = state.isOneDay
-        val start = state.confirmedDates.start
-        val end = state.confirmedDates.end
+        val isOneDay = targetDates.start.month == targetDates.end.month &&
+                targetDates.start.dayOfMonth == targetDates.end.dayOfMonth
+        val start = targetDates.start
+        val end = targetDates.end
 
         try {
-            val (mainMetrics, compMetrics) = withContext(Dispatchers.Default) {
+            val (mainMetrics, compMetrics) = withContext(defaultDispatcher) {
                 val m = weatherMetricsFactory.create(mainData, isOneDay, start, end)
                 val c = compData?.let { weatherMetricsFactory.create(it, isOneDay, start, end) }
                 m to c
@@ -534,12 +539,14 @@ class MainViewModel @Inject constructor(
 
             _mainUiState.update {
                 it.copy(
+                    confirmedDates = targetDates,
                     weatherData = mainData,
                     weatherMetrics = mainMetrics,
                     comparisonWeatherData = compData,
                     comparisonWeatherMetrics = compMetrics
                 )
             }
+            updateBookmarkStatus()
             Log.d("SunPlannerDebug", "MainUIState updated with data")
         } catch (e: Exception) {
             Log.e("SunPlannerDebug", "Error creating metrics", e)
