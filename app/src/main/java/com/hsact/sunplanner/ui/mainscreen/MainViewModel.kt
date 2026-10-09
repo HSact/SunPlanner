@@ -8,6 +8,7 @@ import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
 import com.hsact.sunplanner.data.utils.DateUtils
 import com.hsact.sunplanner.data.utils.LocationUtils
+import com.hsact.sunplanner.di.DefaultDispatcher
 import com.hsact.sunplanner.domain.analytics.AnalyticsHelper
 import com.hsact.sunplanner.domain.error.ApiError
 import com.hsact.sunplanner.domain.error.toApiError
@@ -27,7 +28,6 @@ import com.hsact.sunplanner.domain.monitoring.PerformanceHelper
 import com.hsact.sunplanner.domain.repository.BookmarkRepository
 import com.hsact.sunplanner.domain.repository.HistoryRepository
 import com.hsact.sunplanner.domain.repository.StringProvider
-import com.hsact.sunplanner.di.DefaultDispatcher
 import com.hsact.sunplanner.domain.repository.WeatherRepository
 import com.hsact.sunplanner.domain.usecase.settings.CompleteOnboardingUseCase
 import com.hsact.sunplanner.domain.usecase.settings.GetSettingsUseCase

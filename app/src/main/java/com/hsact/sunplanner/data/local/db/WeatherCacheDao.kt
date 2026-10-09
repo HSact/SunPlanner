@@ -11,6 +11,23 @@ interface WeatherCacheDao {
     @Query("SELECT * FROM weather_cache WHERE id = :id")
     suspend fun getCachedWeather(id: String): CachedWeather?
 
+    @Query("""
+        SELECT * FROM weather_cache 
+        WHERE ABS(latitude - :latitude) < 0.001 
+          AND ABS(longitude - :longitude) < 0.001 
+          AND tempUnit = :tempUnit 
+          AND windUnit = :windUnit 
+          AND precipUnit = :precipUnit 
+        ORDER BY timestamp DESC
+    """)
+    suspend fun getCachedWeatherForLocation(
+        latitude: Double,
+        longitude: Double,
+        tempUnit: String,
+        windUnit: String,
+        precipUnit: String
+    ): List<CachedWeather>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertWeather(cachedWeather: CachedWeather)
 
