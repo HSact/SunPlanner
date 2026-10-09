@@ -51,6 +51,7 @@ import java.time.LocalDate
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * ViewModel for the Main Screen responsible for managing weather searches, location selection,
@@ -114,7 +115,7 @@ class MainViewModel @Inject constructor(
                     windUnitMode = windUnit,
                     precipitationUnitMode = precipitationUnit
                 )
-            }.debounce(200).collect { updatedBundle ->
+            }.debounce(200.milliseconds).collect { updatedBundle ->
                 val oldLocation = _mainUiState.value.settingsBundle.location
                 val isLocationChanged = updatedBundle.location != oldLocation
 
