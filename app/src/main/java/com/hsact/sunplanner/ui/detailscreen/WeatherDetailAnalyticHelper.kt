@@ -1,10 +1,13 @@
 package com.hsact.sunplanner.ui.detailscreen
 
+import com.hsact.sunplanner.di.DefaultDispatcher
 import com.hsact.sunplanner.domain.model.DetailedYearlyData
 import com.hsact.sunplanner.domain.model.SettingsBundle
 import com.hsact.sunplanner.domain.model.WeatherMetricType
 import com.hsact.sunplanner.domain.model.WindSpeedUnitMode
 import com.hsact.sunplanner.domain.repository.StringProvider
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -16,7 +19,8 @@ import kotlin.math.abs
  * qualitative insights (tips) based on historical weather data.
  */
 class WeatherDetailAnalyticHelper @Inject constructor(
-    private val stringProvider: StringProvider
+    private val stringProvider: StringProvider,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
     /**
      * Generates a list of textual insights for a single location.
@@ -33,13 +37,13 @@ class WeatherDetailAnalyticHelper @Inject constructor(
      * @param locale User's current locale for date formatting.
      * @return List of strings representing human-readable tips.
      */
-    fun generateInsights(
+    suspend fun generateInsights(
         data: List<DetailedYearlyData>,
         type: WeatherMetricType,
         settings: SettingsBundle,
         locale: Locale
-    ): List<String> {
-        if (data.isEmpty()) return emptyList()
+    ): List<String> = withContext(defaultDispatcher) {
+        if (data.isEmpty()) return@withContext emptyList()
         val insights = mutableListOf<String>()
 
         findBestWindow(data, type, locale)?.let { insights.add(it) }
@@ -85,19 +89,19 @@ class WeatherDetailAnalyticHelper @Inject constructor(
                 else if (avgAqi > 50.0) insights.add(stringProvider.insightAqiModerate())
             }
         }
-        return insights
+        insights
     }
 
     /**
      * Generates a comparative list of insights comparing two locations.
      */
-    fun generateComparisonInsights(
+    suspend fun generateComparisonInsights(
         main: List<DetailedYearlyData>,
         comp: List<DetailedYearlyData>,
         type: WeatherMetricType,
         mainName: String,
         compName: String
-    ): List<String> {
+    ): List<String> = withContext(defaultDispatcher) {
         val insights = mutableListOf<String>()
         when (type) {
             WeatherMetricType.TEMPERATURE -> {
@@ -133,7 +137,7 @@ class WeatherDetailAnalyticHelper @Inject constructor(
 
             else -> {}
         }
-        return insights
+        insights
     }
 
     /**
@@ -201,12 +205,12 @@ class WeatherDetailAnalyticHelper @Inject constructor(
     /**
      * Calculates the statistical summary (Max, Min, Avg) for a given set of yearly data.
      */
-    fun calculateSummary(
+    suspend fun calculateSummary(
         data: List<DetailedYearlyData>,
         type: WeatherMetricType
-    ): WeatherDetailSummary {
-        if (data.isEmpty()) return WeatherDetailSummary()
-        return when (type) {
+    ): WeatherDetailSummary = withContext(defaultDispatcher) {
+        if (data.isEmpty()) return@withContext WeatherDetailSummary()
+        when (type) {
             WeatherMetricType.TEMPERATURE -> {
                 val allMax = data.flatMap { it.metrics.maxTemps }
                 val allMin = data.flatMap { it.metrics.minTemps }

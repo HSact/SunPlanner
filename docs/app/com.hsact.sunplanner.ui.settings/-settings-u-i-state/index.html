@@ -1,44 +1,41 @@
 <!DOCTYPE html>
-<html class="no-js">
+<html class="no-js" lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
     <title>SettingsUIState</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
-    <script>var pathToRoot = "../../../";</script>
-    <script>document.documentElement.classList.replace("no-js","js");</script>
+        <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
-    if (storage == null) {
+      if (storage == null) {
         const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
         if (osDarkSchemePreferred === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    } else {
+      } else {
         const savedDarkMode = JSON.parse(storage)
-        if(savedDarkMode === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
         }
-    }
+      }
     </script>
-<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
 <link href="../../../styles/style.css" rel="Stylesheet">
 <link href="../../../styles/main.css" rel="Stylesheet">
 <link href="../../../styles/prism.css" rel="Stylesheet">
 <link href="../../../styles/logo-styles.css" rel="Stylesheet">
-<link href="../../../styles/font-jb-sans-auto.css" rel="Stylesheet">
 <link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
-<script type="text/javascript" src="../../../scripts/clipboard.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
 <script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
 <script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
 <script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
 <script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer="defer"></script>
-<script type="text/javascript" src="../../../scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
 </head>
 <body>
-    <div class="root">
-    <nav class="navigation theme-dark" id="navigation-wrapper">
-            <a class="library-name--link" href="../../../index.html">
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../../index.html" tabindex="1">
                     app
             </a>
         <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
@@ -48,9 +45,9 @@
         <div class="library-version" id="library-version">
         </div>
         <div class="navigation-controls">
-        <div class="filter-section filter-section_loading" id="filter-section">
-                <button class="platform-tag platform-selector jvm-like" data-active=""
-                        data-filter=":app:dokkaHtml/release">androidJvm</button>
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
+                        data-filter=":app/release">release</button>
             <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
                 <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
                         data-role="dropdown-toggle"
@@ -59,24 +56,24 @@
                         aria-expanded="false"
                         aria-label="Toggle source sets"
                 ></button>
-                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox">
-                    <div class="dropdown--header"><span>Platform filter</span>
-                        <button class="button" data-role="dropdown-toggle" aria-label="Close platform filter">
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
                             <i class="ui-kit-icon ui-kit-icon_cross"></i>
                         </button>
                     </div>
                         <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
                             <label class="checkbox">
-                                <input type="checkbox" class="checkbox--input" id=":app:dokkaHtml/release"
-                                       data-filter=":app:dokkaHtml/release"/>
+                                <input type="checkbox" class="checkbox--input" id=":app/release"
+                                       data-filter=":app/release"/>
                                 <span class="checkbox--icon"></span>
-                                androidJvm
+                                release
                             </label>
                         </li>
                 </ul>
                 <div class="dropdown--overlay"></div>
             </div>
-        </div>
+        </ul>
             <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
                     type="button">Switch theme
             </button>
@@ -84,48 +81,50 @@
                 API
             </div>
         </div>
-    </nav>
-        <div id="container">
-            <div class="sidebar" id="leftColumn">
-                <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
-                    <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
-                        data-role="dropdown-listbox">
-                        <div class="dropdown--header">
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
                             <span>
                                     app
                             </span>
-                            <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
-                                <i class="ui-kit-icon ui-kit-icon_cross"></i>
-                            </button>
-                        </div>
-                        <div class="sidebar--inner" id="sideMenu"></div>
-                    </ul>
-                    <div class="dropdown--overlay"></div>
-                </div>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
             </div>
-            <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageIds="app::com.hsact.sunplanner.ui.settings/SettingsUIState///PointingToDeclaration//492899073">
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="app::com.hsact.sunplanner.ui.settings/SettingsUIState///PointingToDeclaration//-865142711">
   <div class="breadcrumbs"><a href="../../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.hsact.sunplanner.ui.settings</a><span class="delimiter">/</span><span class="current">SettingsUIState</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Settings</span><wbr></wbr><span><span>UIState</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">SettingsUIState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">var </span>currentTheme<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-theme-mode/index.html">ThemeMode</a><span class="token operator"> = </span>ThemeMode.SYSTEM<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>selectedTheme<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-theme-mode/index.html">ThemeMode</a><span class="token operator"> = </span>currentTheme<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>currentLanguage<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-language-mode/index.html">LanguageMode</a><span class="token operator"> = </span>LanguageMode.ENGLISH<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>selectedLanguage<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-language-mode/index.html">LanguageMode</a><span class="token operator"> = </span>currentLanguage<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>currentDotsOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>selectedDotsOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>currentDotsOption<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>currentCurvedOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>selectedCurvedOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>currentCurvedOption<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>currentTemperatureUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-temperature-unit-mode/index.html">TemperatureUnitMode</a><span class="token operator"> = </span>TemperatureUnitMode.CELSIUS<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>selectedTemperatureUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-temperature-unit-mode/index.html">TemperatureUnitMode</a><span class="token operator"> = </span>currentTemperatureUnit<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>currentWindSpeedUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a><span class="token operator"> = </span>WindSpeedUnitMode.MS<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>selectedWindSpeedUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a><span class="token operator"> = </span>currentWindSpeedUnit<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>currentPrecipitationUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a><span class="token operator"> = </span>PrecipitationUnitMode.MM<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">var </span>selectedPrecipitationUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a><span class="token operator"> = </span>currentPrecipitationUnit</span></span><span class="token punctuation">)</span></div><p class="paragraph">UI state holder for the Settings screen.</p><p class="paragraph">Keeps track of both the current (saved) and selected (temporary) values for all settings, allowing the user to preview changes before applying them.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">SettingsUIState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>theme<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-theme-mode/index.html">ThemeMode</a><span class="token operator"> = </span>ThemeMode.SYSTEM<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>language<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-language-mode/index.html">LanguageMode</a><span class="token operator"> = </span>LanguageMode.ENGLISH<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isDotsVisible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isEdgesCurved<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>temperatureUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-temperature-unit-mode/index.html">TemperatureUnitMode</a><span class="token operator"> = </span>TemperatureUnitMode.CELSIUS<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>windSpeedUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a><span class="token operator"> = </span>WindSpeedUnitMode.MS<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>precipitationUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a><span class="token operator"> = </span>PrecipitationUnitMode.MM<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isClearCacheDialogOpen<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>appVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span></span></span><span class="token punctuation">)</span></div><p class="paragraph">UI state holder for the Settings screen.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
-        <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-982021877%2FConstructors%2F492899073" anchor-label="SettingsUIState" id="-982021877%2FConstructors%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="1688958404%2FConstructors%2F-865142711" anchor-label="SettingsUIState" id="1688958404%2FConstructors%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-settings-u-i-state.html"><span>Settings</span><wbr></wbr><span><span>UIState</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-982021877%2FConstructors%2F492899073"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1688958404%2FConstructors%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">currentTheme<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-theme-mode/index.html">ThemeMode</a><span class="token operator"> = </span>ThemeMode.SYSTEM<span class="token punctuation">, </span></span><span class="parameter ">selectedTheme<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-theme-mode/index.html">ThemeMode</a><span class="token operator"> = </span>currentTheme<span class="token punctuation">, </span></span><span class="parameter ">currentLanguage<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-language-mode/index.html">LanguageMode</a><span class="token operator"> = </span>LanguageMode.ENGLISH<span class="token punctuation">, </span></span><span class="parameter ">selectedLanguage<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-language-mode/index.html">LanguageMode</a><span class="token operator"> = </span>currentLanguage<span class="token punctuation">, </span></span><span class="parameter ">currentDotsOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span><span class="token punctuation">, </span></span><span class="parameter ">selectedDotsOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>currentDotsOption<span class="token punctuation">, </span></span><span class="parameter ">currentCurvedOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span><span class="token constant">1</span><span class="token punctuation">, </span></span><span class="parameter ">selectedCurvedOption<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator"> = </span>currentCurvedOption<span class="token punctuation">, </span></span><span class="parameter ">currentTemperatureUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-temperature-unit-mode/index.html">TemperatureUnitMode</a><span class="token operator"> = </span>TemperatureUnitMode.CELSIUS<span class="token punctuation">, </span></span><span class="parameter ">selectedTemperatureUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-temperature-unit-mode/index.html">TemperatureUnitMode</a><span class="token operator"> = </span>currentTemperatureUnit<span class="token punctuation">, </span></span><span class="parameter ">currentWindSpeedUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a><span class="token operator"> = </span>WindSpeedUnitMode.MS<span class="token punctuation">, </span></span><span class="parameter ">selectedWindSpeedUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a><span class="token operator"> = </span>currentWindSpeedUnit<span class="token punctuation">, </span></span><span class="parameter ">currentPrecipitationUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a><span class="token operator"> = </span>PrecipitationUnitMode.MM<span class="token punctuation">, </span></span><span class="parameter ">selectedPrecipitationUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a><span class="token operator"> = </span>currentPrecipitationUnit</span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">theme<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-theme-mode/index.html">ThemeMode</a><span class="token operator"> = </span>ThemeMode.SYSTEM<span class="token punctuation">, </span></span><span class="parameter ">language<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-language-mode/index.html">LanguageMode</a><span class="token operator"> = </span>LanguageMode.ENGLISH<span class="token punctuation">, </span></span><span class="parameter ">isDotsVisible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">isEdgesCurved<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">temperatureUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-temperature-unit-mode/index.html">TemperatureUnitMode</a><span class="token operator"> = </span>TemperatureUnitMode.CELSIUS<span class="token punctuation">, </span></span><span class="parameter ">windSpeedUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a><span class="token operator"> = </span>WindSpeedUnitMode.MS<span class="token punctuation">, </span></span><span class="parameter ">precipitationUnit<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a><span class="token operator"> = </span>PrecipitationUnitMode.MM<span class="token punctuation">, </span></span><span class="parameter ">isClearCacheDialogOpen<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">false</span><span class="token punctuation">, </span></span><span class="parameter ">appVersion<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -133,213 +132,138 @@
         </div>
       </div>
       <div data-togglable="PROPERTY">
-        <h2 class="">Properties</h2>
-        <div class="table"><a data-name="459006101%2FProperties%2F492899073" anchor-label="currentCurvedOption" id="459006101%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-90433525%2FProperties%2F-865142711" anchor-label="appVersion" id="-90433525%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="current-curved-option.html"><span>current</span><wbr></wbr><span>Curved</span><wbr></wbr><span><span>Option</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="459006101%2FProperties%2F492899073"></span>
+                  <div><a href="app-version.html"><span>app</span><wbr></wbr><span><span>Version</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-90433525%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="current-curved-option.html">currentCurvedOption</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Whether graph edges are currently curved (0 = off, 1 = on).</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="app-version.html">appVersion</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1750711424%2FProperties%2F492899073" anchor-label="currentDotsOption" id="-1750711424%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="2114896433%2FProperties%2F-865142711" anchor-label="isClearCacheDialogOpen" id="2114896433%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="current-dots-option.html"><span>current</span><wbr></wbr><span>Dots</span><wbr></wbr><span><span>Option</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1750711424%2FProperties%2F492899073"></span>
+                  <div><a href="is-clear-cache-dialog-open.html"><span>is</span><wbr></wbr><span>Clear</span><wbr></wbr><span>Cache</span><wbr></wbr><span>Dialog</span><wbr></wbr><span><span>Open</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2114896433%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="current-dots-option.html">currentDotsOption</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Whether dots on the graph are currently visible (0 = off, 1 = on).</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-clear-cache-dialog-open.html">isClearCacheDialogOpen</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1119122393%2FProperties%2F492899073" anchor-label="currentLanguage" id="-1119122393%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="1604416058%2FProperties%2F-865142711" anchor-label="isDotsVisible" id="1604416058%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="current-language.html"><span>current</span><wbr></wbr><span><span>Language</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1119122393%2FProperties%2F492899073"></span>
+                  <div><a href="is-dots-visible.html"><span>is</span><wbr></wbr><span>Dots</span><wbr></wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1604416058%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="current-language.html">currentLanguage</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-language-mode/index.html">LanguageMode</a></div><div class="brief "><p class="paragraph">The language currently saved in preferences.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-dots-visible.html">isDotsVisible</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1564049548%2FProperties%2F492899073" anchor-label="currentPrecipitationUnit" id="-1564049548%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="1904008471%2FProperties%2F-865142711" anchor-label="isEdgesCurved" id="1904008471%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="current-precipitation-unit.html"><span>current</span><wbr></wbr><span>Precipitation</span><wbr></wbr><span><span>Unit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1564049548%2FProperties%2F492899073"></span>
+                  <div><a href="is-edges-curved.html"><span>is</span><wbr></wbr><span>Edges</span><wbr></wbr><span><span>Curved</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1904008471%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="current-precipitation-unit.html">currentPrecipitationUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a></div><div class="brief "><p class="paragraph">Current precipitation unit (mm or inches).</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-edges-curved.html">isEdgesCurved</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-323957085%2FProperties%2F492899073" anchor-label="currentTemperatureUnit" id="-323957085%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="1603136650%2FProperties%2F-865142711" anchor-label="language" id="1603136650%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="current-temperature-unit.html"><span>current</span><wbr></wbr><span>Temperature</span><wbr></wbr><span><span>Unit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-323957085%2FProperties%2F492899073"></span>
+                  <div><a href="language.html"><span><span>language</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1603136650%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="current-temperature-unit.html">currentTemperatureUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-temperature-unit-mode/index.html">TemperatureUnitMode</a></div><div class="brief "><p class="paragraph">Current temperature unit (°C or °F).</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="language.html">language</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-language-mode/index.html">LanguageMode</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="884871314%2FProperties%2F492899073" anchor-label="currentTheme" id="884871314%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="1838603889%2FProperties%2F-865142711" anchor-label="precipitationUnit" id="1838603889%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="current-theme.html"><span>current</span><wbr></wbr><span><span>Theme</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="884871314%2FProperties%2F492899073"></span>
+                  <div><a href="precipitation-unit.html"><span>precipitation</span><wbr></wbr><span><span>Unit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1838603889%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="current-theme.html">currentTheme</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-theme-mode/index.html">ThemeMode</a></div><div class="brief "><p class="paragraph">The theme mode currently saved in preferences.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="precipitation-unit.html">precipitationUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1699191384%2FProperties%2F492899073" anchor-label="currentWindSpeedUnit" id="1699191384%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="957794528%2FProperties%2F-865142711" anchor-label="temperatureUnit" id="957794528%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="current-wind-speed-unit.html"><span>current</span><wbr></wbr><span>Wind</span><wbr></wbr><span>Speed</span><wbr></wbr><span><span>Unit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1699191384%2FProperties%2F492899073"></span>
+                  <div><a href="temperature-unit.html"><span>temperature</span><wbr></wbr><span><span>Unit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="957794528%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="current-wind-speed-unit.html">currentWindSpeedUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a></div><div class="brief "><p class="paragraph">Current wind speed unit (km/h, m/s, etc.).</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="temperature-unit.html">temperatureUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-temperature-unit-mode/index.html">TemperatureUnitMode</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="1602393245%2FProperties%2F492899073" anchor-label="selectedCurvedOption" id="1602393245%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="63914767%2FProperties%2F-865142711" anchor-label="theme" id="63914767%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="selected-curved-option.html"><span>selected</span><wbr></wbr><span>Curved</span><wbr></wbr><span><span>Option</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1602393245%2FProperties%2F492899073"></span>
+                  <div><a href="theme.html"><span><span>theme</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="63914767%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="selected-curved-option.html">selectedCurvedOption</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Whether graph edges should be curved based on selection.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="theme.html">theme</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-theme-mode/index.html">ThemeMode</a></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-<a data-name="-1065723512%2FProperties%2F492899073" anchor-label="selectedDotsOption" id="-1065723512%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
+<a data-name="1450246101%2FProperties%2F-865142711" anchor-label="windSpeedUnit" id="1450246101%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="selected-dots-option.html"><span>selected</span><wbr></wbr><span>Dots</span><wbr></wbr><span><span>Option</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1065723512%2FProperties%2F492899073"></span>
+                  <div><a href="wind-speed-unit.html"><span>wind</span><wbr></wbr><span>Speed</span><wbr></wbr><span><span>Unit</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1450246101%2FProperties%2F-865142711"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="selected-dots-option.html">selectedDotsOption</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief "><p class="paragraph">Whether dots should be visible based on current selection.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="2059240495%2FProperties%2F492899073" anchor-label="selectedLanguage" id="2059240495%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="selected-language.html"><span>selected</span><wbr></wbr><span><span>Language</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2059240495%2FProperties%2F492899073"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="selected-language.html">selectedLanguage</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-language-mode/index.html">LanguageMode</a></div><div class="brief "><p class="paragraph">The language currently selected by the user in UI.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="1012338796%2FProperties%2F492899073" anchor-label="selectedPrecipitationUnit" id="1012338796%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="selected-precipitation-unit.html"><span>selected</span><wbr></wbr><span>Precipitation</span><wbr></wbr><span><span>Unit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1012338796%2FProperties%2F492899073"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="selected-precipitation-unit.html">selectedPrecipitationUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-precipitation-unit-mode/index.html">PrecipitationUnitMode</a></div><div class="brief "><p class="paragraph">Selected precipitation unit in the UI.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1063174757%2FProperties%2F492899073" anchor-label="selectedTemperatureUnit" id="-1063174757%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="selected-temperature-unit.html"><span>selected</span><wbr></wbr><span>Temperature</span><wbr></wbr><span><span>Unit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1063174757%2FProperties%2F492899073"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="selected-temperature-unit.html">selectedTemperatureUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-temperature-unit-mode/index.html">TemperatureUnitMode</a></div><div class="brief "><p class="paragraph">Selected temperature unit in the UI.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="229004682%2FProperties%2F492899073" anchor-label="selectedTheme" id="229004682%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="selected-theme.html"><span>selected</span><wbr></wbr><span><span>Theme</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="229004682%2FProperties%2F492899073"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="selected-theme.html">selectedTheme</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes/-theme-mode/index.html">ThemeMode</a></div><div class="brief "><p class="paragraph">The theme mode currently selected by the user in UI.</p></div></div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-<a data-name="-1510512816%2FProperties%2F492899073" anchor-label="selectedWindSpeedUnit" id="-1510512816%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
-          <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
-            <div class="main-subrow keyValue ">
-              <div class=""><span class="inline-flex">
-                  <div><a href="selected-wind-speed-unit.html"><span>selected</span><wbr></wbr><span>Wind</span><wbr></wbr><span>Speed</span><wbr></wbr><span><span>Unit</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1510512816%2FProperties%2F492899073"></span>
-                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-                  </span></span></div>
-              <div>
-                <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">var </span><a href="selected-wind-speed-unit.html">selectedWindSpeedUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.ui.settings.modes.unitModes/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a></div><div class="brief "><p class="paragraph">Selected wind speed unit in the UI.</p></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="wind-speed-unit.html">windSpeedUnit</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-wind-speed-unit-mode/index.html">WindSpeedUnitMode</a></div></div></div>
                 </div>
               </div>
             </div>
@@ -350,17 +274,21 @@
   </div>
 </div>
     <div class="footer">
-        <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
-        <span>© 2025 Copyright</span>
-        <span class="pull-right">
-            <span>Generated by </span>
-            <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
-                <span>dokka</span>
-            </a>
-        </span>
-    </div>
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
             </div>
         </div>
     </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

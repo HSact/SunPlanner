@@ -10,10 +10,14 @@ import com.hsact.sunplanner.data.network.OpenMeteoService
 import com.hsact.sunplanner.data.network.WeatherRequestParams
 import com.hsact.sunplanner.data.responses.Location
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import com.hsact.sunplanner.di.DefaultDispatcher
 import com.hsact.sunplanner.domain.repository.WeatherRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,7 +26,8 @@ class WeatherRepositoryImpl @Inject constructor(
     private val openMeteoService: OpenMeteoService,
     private val openMeteoGeo: OpenMeteoGeo,
     private val airQualityService: OpenMeteoAirQuality,
-    private val cacheDao: WeatherCacheDao
+    private val cacheDao: WeatherCacheDao,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) : WeatherRepository {
 
     override suspend fun getCitiesList(cityName: String, language: String): List<Location>? {
@@ -61,12 +66,48 @@ class WeatherRepositoryImpl @Inject constructor(
 
         val cached = cacheDao.getCachedWeather(cacheId)
         if (cached != null) {
-            Log.d("SunPlannerDebug", "Found data in cache")
+            Log.d("SunPlannerDebug", "Found exact data match in cache")
             try {
-                return Json.decodeFromString<WeatherResponse>(cached.jsonResponse)
+                return withContext(defaultDispatcher) {
+                    Json.decodeFromString<WeatherResponse>(cached.jsonResponse)
+                }
             } catch (e: Exception) {
                 Log.e("SunPlannerDebug", "Error decoding cache", e)
             }
+        }
+
+        // Search for a candidate cached entry for the location that covers the requested date range
+        try {
+            val candidates = cacheDao.getCachedWeatherForLocation(
+                latitude = params.latitude,
+                longitude = params.longitude,
+                tempUnit = params.temperatureUnit,
+                windUnit = params.windSpeedUnit,
+                precipUnit = params.precipitationUnit
+            )
+            if (candidates.isNotEmpty()) {
+                val reqStart = LocalDate.parse(params.startDate)
+                val reqEnd = LocalDate.parse(params.endDate)
+
+                val covering = candidates.find { candidate ->
+                    try {
+                        val cachedStart = LocalDate.parse(candidate.startDate)
+                        val cachedEnd = LocalDate.parse(candidate.endDate)
+                        isDateRangeCovered(reqStart, reqEnd, cachedStart, cachedEnd)
+                    } catch (_: Exception) {
+                        false
+                    }
+                }
+
+                if (covering != null) {
+                    Log.d("SunPlannerDebug", "Found covering cache entry: ${covering.id}")
+                    return withContext(defaultDispatcher) {
+                        Json.decodeFromString<WeatherResponse>(covering.jsonResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("SunPlannerDebug", "Error checking covering cache entries", e)
         }
 
         return coroutineScope {
@@ -102,7 +143,9 @@ class WeatherRepositoryImpl @Inject constructor(
             val aqiResponse = aqiDeferred.await()
             Log.d("SunPlannerDebug", "AQI network response: ${aqiResponse != null}")
 
-            val dailyAqi = aggregateHourlyAqiToDaily(aqiResponse, weatherResponse.daily.time)
+            val dailyAqi = withContext(defaultDispatcher) {
+                aggregateHourlyAqiToDaily(aqiResponse, weatherResponse.daily.time)
+            }
             Log.d("SunPlannerDebug", "Processed AQI size: ${dailyAqi.size}")
 
             val finalResponse = weatherResponse.copy(
@@ -110,8 +153,22 @@ class WeatherRepositoryImpl @Inject constructor(
             )
 
             try {
-                val json = Json.encodeToString(finalResponse)
-                cacheDao.insertWeather(CachedWeather(cacheId, json))
+                val json = withContext(defaultDispatcher) {
+                    Json.encodeToString(finalResponse)
+                }
+                cacheDao.insertWeather(
+                    CachedWeather(
+                        id = cacheId,
+                        latitude = params.latitude,
+                        longitude = params.longitude,
+                        startDate = params.startDate,
+                        endDate = params.endDate,
+                        tempUnit = params.temperatureUnit,
+                        windUnit = params.windSpeedUnit,
+                        precipUnit = params.precipitationUnit,
+                        jsonResponse = json
+                    )
+                )
                 cacheDao.clearOldCache()
                 Log.d("SunPlannerDebug", "Response saved to cache")
             } catch (e: Exception) {
@@ -119,6 +176,34 @@ class WeatherRepositoryImpl @Inject constructor(
             }
 
             finalResponse
+        }
+    }
+
+    private fun isDateRangeCovered(
+        reqStart: LocalDate,
+        reqEnd: LocalDate,
+        cachedStart: LocalDate,
+        cachedEnd: LocalDate
+    ): Boolean {
+        val reqStartMD = reqStart.monthValue * 100 + reqStart.dayOfMonth
+        val reqEndMD = reqEnd.monthValue * 100 + reqEnd.dayOfMonth
+        val cachedStartMD = cachedStart.monthValue * 100 + cachedStart.dayOfMonth
+        val cachedEndMD = cachedEnd.monthValue * 100 + cachedEnd.dayOfMonth
+
+        val reqWraps = reqStartMD > reqEndMD
+        val cachedWraps = cachedStartMD > cachedEndMD
+
+        return when {
+            !reqWraps && !cachedWraps -> {
+                reqStartMD >= cachedStartMD && reqEndMD <= cachedEndMD
+            }
+            reqWraps && cachedWraps -> {
+                reqStartMD >= cachedStartMD && reqEndMD <= cachedEndMD
+            }
+            !reqWraps && cachedWraps -> {
+                reqStartMD >= cachedStartMD || reqEndMD <= cachedEndMD
+            }
+            else -> false
         }
     }
 

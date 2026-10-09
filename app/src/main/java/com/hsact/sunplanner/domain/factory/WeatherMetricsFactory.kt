@@ -2,8 +2,11 @@ package com.hsact.sunplanner.domain.factory
 
 import android.util.Log
 import com.hsact.sunplanner.data.responses.WeatherResponse
+import com.hsact.sunplanner.di.DefaultDispatcher
 import com.hsact.sunplanner.domain.model.WeatherMetrics
 import com.hsact.sunplanner.domain.usecase.weather.AggregateWeatherByDateUseCase
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 import kotlin.math.round
@@ -14,15 +17,16 @@ import kotlin.math.roundToInt
  * [WeatherMetrics] model.
  */
 class WeatherMetricsFactory @Inject constructor(
-    private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase
+    private val aggregateWeatherByDateUseCase: AggregateWeatherByDateUseCase,
+    @DefaultDispatcher private val defaultDispatcher: CoroutineDispatcher
 ) {
 
-    fun create(
+    suspend fun create(
         data: WeatherResponse, 
         isOneDay: Boolean, 
         filterStart: LocalDate, 
         filterEnd: LocalDate
-    ): WeatherMetrics {
+    ): WeatherMetrics = withContext(defaultDispatcher) {
         val daily = data.daily
         val size = daily.time.size
         Log.d("SunPlannerDebug", "Factory: Creating metrics. Input size: $size")
@@ -59,10 +63,10 @@ class WeatherMetricsFactory @Inject constructor(
             "SunPlannerDebug",
             "Factory: Finished. Final result size: ${weatherMetrics.maxTemps.size}"
         )
-        return weatherMetrics
+        weatherMetrics
     }
 
-    private fun createAverage(
+    private suspend fun createAverage(
         data: WeatherResponse,
         weatherMetrics: WeatherMetrics,
         filterStart: LocalDate,

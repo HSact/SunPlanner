@@ -22,7 +22,9 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "sunplanner_db"
-        ).build()
+        )
+        .fallbackToDestructiveMigration(dropAllTables = true)
+        .build()
     }
 
     @Provides

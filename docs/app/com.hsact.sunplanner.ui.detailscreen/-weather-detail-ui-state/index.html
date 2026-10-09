@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>WeatherDetailUiState</title>
+    <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
+        <script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async="async"></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async="async"></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer="defer"></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async="async"></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer="defer"></script>
+</head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+            <a class="library-name--link" href="../../../index.html" tabindex="1">
+                    app
+            </a>
+        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle"
+                type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true"
+                        data-filter=":app/release">release</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox"
+                        data-role="dropdown-toggle"
+                        aria-controls="platform-tags-listbox"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-label="Toggle source sets"
+                ></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":app/release"
+                                       data-filter=":app/release"/>
+                                <span class="checkbox--icon"></span>
+                                release
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button"
+                    type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config='{"defaultSize": 280, "minSize": 200, "maxSize": 400}'>
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list"
+                    data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    app
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageIds="app::com.hsact.sunplanner.ui.detailscreen/WeatherDetailUiState///PointingToDeclaration//-865142711">
+  <div class="breadcrumbs"><a href="../../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.hsact.sunplanner.ui.detailscreen</a><span class="delimiter">/</span><span class="current">WeatherDetailUiState</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Weather</span><wbr></wbr><span>Detail</span><wbr></wbr><span>Ui</span><wbr></wbr><span><span>State</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">WeatherDetailUiState</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>metricType<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metric-type/index.html">WeatherMetricType</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>startDate<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/time/LocalDate.html">LocalDate</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>endDate<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/time/LocalDate.html">LocalDate</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isLoading<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>title<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>cityName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>compCityName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isMainVisible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>isCompVisible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>displayMode<span class="token operator">: </span><a href="../-detail-display-mode/index.html">DetailDisplayMode</a><span class="token operator"> = </span>DetailDisplayMode.LIST<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>yearlyData<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../com.hsact.sunplanner.domain.model/-detailed-yearly-data/index.html">DetailedYearlyData</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>compYearlyData<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../com.hsact.sunplanner.domain.model/-detailed-yearly-data/index.html">DetailedYearlyData</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>overallMetrics<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>compOverallMetrics<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>settings<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-settings-bundle/index.html">SettingsBundle</a><span class="token operator"> = </span>SettingsBundle()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>summary<span class="token operator">: </span><a href="../-weather-detail-summary/index.html">WeatherDetailSummary</a><span class="token operator"> = </span>WeatherDetailSummary()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>compSummary<span class="token operator">: </span><a href="../-weather-detail-summary/index.html">WeatherDetailSummary</a><span class="token operator"> = </span>WeatherDetailSummary()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>insights<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>error<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.error/-api-error/index.html">ApiError</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>selectedYear<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="CONSTRUCTOR">
+        <h2 class="tableheader">Constructors</h2>
+        <div class="table"><a data-name="1277306954%2FConstructors%2F-865142711" anchor-label="WeatherDetailUiState" id="1277306954%2FConstructors%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-togglable="CONSTRUCTOR" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-weather-detail-ui-state.html"><span>Weather</span><wbr></wbr><span>Detail</span><wbr></wbr><span>Ui</span><wbr></wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1277306954%2FConstructors%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">metricType<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metric-type/index.html">WeatherMetricType</a><span class="token punctuation">, </span></span><span class="parameter ">startDate<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/time/LocalDate.html">LocalDate</a><span class="token punctuation">, </span></span><span class="parameter ">endDate<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/time/LocalDate.html">LocalDate</a><span class="token punctuation">, </span></span><span class="parameter ">isLoading<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">title<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter ">cityName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter ">compCityName<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator"> = </span><span class="token string">&quot;&quot;</span><span class="token punctuation">, </span></span><span class="parameter ">isMainVisible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">isCompVisible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a><span class="token operator"> = </span><span class="token boolean">true</span><span class="token punctuation">, </span></span><span class="parameter ">displayMode<span class="token operator">: </span><a href="../-detail-display-mode/index.html">DetailDisplayMode</a><span class="token operator"> = </span>DetailDisplayMode.LIST<span class="token punctuation">, </span></span><span class="parameter ">yearlyData<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../com.hsact.sunplanner.domain.model/-detailed-yearly-data/index.html">DetailedYearlyData</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">compYearlyData<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../com.hsact.sunplanner.domain.model/-detailed-yearly-data/index.html">DetailedYearlyData</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">overallMetrics<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">compOverallMetrics<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">settings<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-settings-bundle/index.html">SettingsBundle</a><span class="token operator"> = </span>SettingsBundle()<span class="token punctuation">, </span></span><span class="parameter ">summary<span class="token operator">: </span><a href="../-weather-detail-summary/index.html">WeatherDetailSummary</a><span class="token operator"> = </span>WeatherDetailSummary()<span class="token punctuation">, </span></span><span class="parameter ">compSummary<span class="token operator">: </span><a href="../-weather-detail-summary/index.html">WeatherDetailSummary</a><span class="token operator"> = </span>WeatherDetailSummary()<span class="token punctuation">, </span></span><span class="parameter ">insights<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span><span class="token operator"> = </span>emptyList()<span class="token punctuation">, </span></span><span class="parameter ">error<span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.error/-api-error/index.html">ApiError</a><span class="token operator">?</span><span class="token operator"> = </span>null<span class="token punctuation">, </span></span><span class="parameter ">selectedYear<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span><span class="token operator"> = </span>null</span></span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-630549540%2FProperties%2F-865142711" anchor-label="cityName" id="-630549540%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="city-name.html"><span>city</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-630549540%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="city-name.html">cityName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1384333299%2FProperties%2F-865142711" anchor-label="compCityName" id="-1384333299%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="comp-city-name.html"><span>comp</span><wbr></wbr><span>City</span><wbr></wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1384333299%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="comp-city-name.html">compCityName</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="357314157%2FProperties%2F-865142711" anchor-label="compOverallMetrics" id="357314157%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="comp-overall-metrics.html"><span>comp</span><wbr></wbr><span>Overall</span><wbr></wbr><span><span>Metrics</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="357314157%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="comp-overall-metrics.html">compOverallMetrics</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1081271281%2FProperties%2F-865142711" anchor-label="compSummary" id="1081271281%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="comp-summary.html"><span>comp</span><wbr></wbr><span><span>Summary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1081271281%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="comp-summary.html">compSummary</a><span class="token operator">: </span><a href="../-weather-detail-summary/index.html">WeatherDetailSummary</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-118517361%2FProperties%2F-865142711" anchor-label="compYearlyData" id="-118517361%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="comp-yearly-data.html"><span>comp</span><wbr></wbr><span>Yearly</span><wbr></wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-118517361%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="comp-yearly-data.html">compYearlyData</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../com.hsact.sunplanner.domain.model/-detailed-yearly-data/index.html">DetailedYearlyData</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="654526403%2FProperties%2F-865142711" anchor-label="displayMode" id="654526403%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="display-mode.html"><span>display</span><wbr></wbr><span><span>Mode</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="654526403%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="display-mode.html">displayMode</a><span class="token operator">: </span><a href="../-detail-display-mode/index.html">DetailDisplayMode</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-563289057%2FProperties%2F-865142711" anchor-label="endDate" id="-563289057%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="end-date.html"><span>end</span><wbr></wbr><span><span>Date</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-563289057%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="end-date.html">endDate</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/time/LocalDate.html">LocalDate</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-127950624%2FProperties%2F-865142711" anchor-label="error" id="-127950624%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="error.html"><span><span>error</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-127950624%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="error.html">error</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.error/-api-error/index.html">ApiError</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1605026249%2FProperties%2F-865142711" anchor-label="insights" id="-1605026249%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="insights.html"><span><span>insights</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1605026249%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="insights.html">insights</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="847461935%2FProperties%2F-865142711" anchor-label="isCompVisible" id="847461935%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-comp-visible.html"><span>is</span><wbr></wbr><span>Comp</span><wbr></wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="847461935%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-comp-visible.html">isCompVisible</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1007472650%2FProperties%2F-865142711" anchor-label="isLoading" id="-1007472650%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-loading.html"><span>is</span><wbr></wbr><span><span>Loading</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1007472650%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-loading.html">isLoading</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="754085081%2FProperties%2F-865142711" anchor-label="isMainVisible" id="754085081%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-main-visible.html"><span>is</span><wbr></wbr><span>Main</span><wbr></wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="754085081%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="is-main-visible.html">isMainVisible</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="599297704%2FProperties%2F-865142711" anchor-label="metricType" id="599297704%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="metric-type.html"><span>metric</span><wbr></wbr><span><span>Type</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="599297704%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="metric-type.html">metricType</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metric-type/index.html">WeatherMetricType</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1518753028%2FProperties%2F-865142711" anchor-label="overallMetrics" id="-1518753028%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="overall-metrics.html"><span>overall</span><wbr></wbr><span><span>Metrics</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1518753028%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="overall-metrics.html">overallMetrics</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-weather-metrics/index.html">WeatherMetrics</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1787337542%2FProperties%2F-865142711" anchor-label="selectedYear" id="-1787337542%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="selected-year.html"><span>selected</span><wbr></wbr><span><span>Year</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1787337542%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="selected-year.html">selectedYear</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a><span class="token operator">?</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-338912529%2FProperties%2F-865142711" anchor-label="settings" id="-338912529%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="settings.html"><span><span>settings</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-338912529%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="settings.html">settings</a><span class="token operator">: </span><a href="../../com.hsact.sunplanner.domain.model/-settings-bundle/index.html">SettingsBundle</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1070081224%2FProperties%2F-865142711" anchor-label="startDate" id="-1070081224%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="start-date.html"><span>start</span><wbr></wbr><span><span>Date</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1070081224%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="start-date.html">startDate</a><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/time/LocalDate.html">LocalDate</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="967039554%2FProperties%2F-865142711" anchor-label="summary" id="967039554%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="summary.html"><span><span>summary</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="967039554%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="summary.html">summary</a><span class="token operator">: </span><a href="../-weather-detail-summary/index.html">WeatherDetailSummary</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1403762032%2FProperties%2F-865142711" anchor-label="title" id="-1403762032%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="title.html"><span><span>title</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1403762032%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="title.html">title</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-string/index.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1581797986%2FProperties%2F-865142711" anchor-label="yearlyData" id="-1581797986%2FProperties%2F-865142711" data-filterable-set=":app/release"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/release" data-filterable-set=":app/release">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="yearly-data.html"><span>yearly</span><wbr></wbr><span><span>Data</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1581797986%2FProperties%2F-865142711"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/release"><div class="symbol monospace"><span class="token keyword">val </span><a href="yearly-data.html">yearlyData</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><a href="../../com.hsact.sunplanner.domain.model/-detailed-yearly-data/index.html">DetailedYearlyData</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

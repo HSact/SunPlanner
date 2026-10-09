@@ -123,8 +123,8 @@ fun WeatherDetailScreen(
         }
     }
 
-    // Intercept back button if we are in year detail OR in table mode for overall stats
-    BackHandler(enabled = (uiState.selectedYear != null || uiState.displayMode == DetailDisplayMode.TABLE) && !(isOneDay || isOneYear), onBack = handleBack)
+    // Always intercept back gesture on WeatherDetailScreen to prevent NavHost predictive back scale glitch
+    BackHandler(enabled = true, onBack = handleBack)
 
     if (uiState.error != null) {
         val errorMessage = when (val err = uiState.error!!) {
